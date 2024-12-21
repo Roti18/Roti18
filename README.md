@@ -1,4 +1,8 @@
-[![MasterHead](https://i.pinimg.com/originals/1a/7f/06/1a7f068ec7604b03c4f2cf428f347194.gif)](https://roti18.github.io/personalWebBooting/)
+<div align="center">
+  <a href="https://roti18.github.io/personalWebBooting/">
+    <img src="https://i.pinimg.com/originals/1a/7f/06/1a7f068ec7604b03c4f2cf428f347194.gif" alt="MasterHead" />
+  </a>
+</div>
 
 <h1 align="center">Hi 👋, I'm Roti F</h1>
 <h3 align="center">I'm a Cyber Security and Web Developer from Indonesia</h3>
@@ -12,9 +16,6 @@
     <img src="https://img.shields.io/twitter/follow/roti_id?logo=twitter&style=for-the-badge" alt="roti_id" />
   </a>
 </p>
-
-- 🌱 I’m currently learning **Advanced Networking and Protocols**
-- 📫 How to reach me **fahrezazamroni@gmail.com**
 
 <h3 align="center">Connect with me:</h3>
 <p align="center">
