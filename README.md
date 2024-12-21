@@ -1,8 +1,6 @@
-<center>
-![MasterHead](https://i.pinimg.com/originals/1a/7f/06/1a7f068ec7604b03c4f2cf428f347194.gif)
-</center>
+[![MasterHead](https://i.pinimg.com/originals/1a/7f/06/1a7f068ec7604b03c4f2cf428f347194.gif)](https://roti18.github.io/personalWebBooting/)
 <h1 align="center">Hi 👋, I'm Roti F</h1>
-<h3 align="center">I'm a Cyber scurity and Web Develper from Indonesia</h3>
+<h3 align="center">I'm a Cyber Scurity and Web Develper from Indonesia</h3>
 
 
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=roti18&label=Profile%20views&color=0e75b6&style=flat" alt="roti18" /> </p>
