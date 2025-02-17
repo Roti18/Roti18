@@ -64,6 +64,3 @@
   <img align="center" src="https://github-readme-stats.vercel.app/api?username=roti18&show_icons=true&locale=en" alt="roti18" />
 </p>
 
-<p align="center">
-  <img align="center" src="https://github-readme-streak-stats.herokuapp.com/?user=roti18&" alt="roti18" />
-</p>
