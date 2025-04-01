@@ -5,8 +5,7 @@
 </div>
 
 <h1 align="center">Hello 👋</h1>
-<h3 align="center">I'm a Cyber
-  Security Student from Indonesia</h3>
+<h3 align="center">I'm a Full Stack Student from Indonesia</h3>
 
 <p align="center">
   <img src="https://komarev.com/ghpvc/?username=roti18&label=Profile%20views&color=0e75b6&style=flat" alt="roti18" />
