@@ -16,7 +16,7 @@
   <a href="https://twitter.com/roti_id" target="blank">
     <img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/twitter.svg" alt="roti_id" height="30" width="40" />
   </a>
-  <a href="[https://fb.com/roti](https://www.facebook.com/profile.php?id=100037575160222)" target="blank">
+  <a href="https://www.facebook.com/profile.php?id=100037575160222" target="blank">
     <img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/facebook.svg" alt="roti" height="30" width="40" />
   </a>
   <a href="https://instagram.com/roti.co.id" target="blank">
