@@ -4,7 +4,7 @@
   </div>
 
   <h3 align="center" style="color: #c9d1d9; font-weight: 600; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 1rem;">
-    System Security & Web Dev Enthusiast
+    Cyber Security & Web Dev Enthusiast
   </h3>
 
   <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #30363d, transparent); margin: 1rem auto 2rem auto; width: 50%;" />
