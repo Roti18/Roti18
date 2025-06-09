@@ -28,7 +28,7 @@
     height: 190px;
     width: 100%;
   ">
-    <img src="https://github-readme-stats.vercel.app/api?username=roti18&show_icons=true&theme=github_dark&hide_border=true" width="420" height="180" alt="GitHub Stats" />
-    <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=roti18&layout=compact&theme=github_dark&hide_border=true" width="420" height="175" alt="Top Languages" />
+    <img src="https://github-readme-stats.vercel.app/api?username=roti18&show_icons=true&theme=github_dark&hide_border=true" width="400" height="180" alt="GitHub Stats" />
+    <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=roti18&layout=compact&theme=github_dark&hide_border=true" width="400" height="175" alt="Top Languages" />
   </div>
 </div>
