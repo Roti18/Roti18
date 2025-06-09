@@ -15,22 +15,20 @@
     Passionate about solving real-world problems through code, and eager to explore more in backend development.
   </p>
 
-<div style="
-  display: flex; 
-  justify-content: center; 
-  align-items: center; /* vertikal center */
-  gap: 20px; 
-  border: 1.5px solid #30363d; 
-  border-radius: 12px; 
-  padding: 1rem; 
-  box-shadow: 0 2px 6px #30363d; 
-  margin-top: 2rem;
-  flex-wrap: nowrap; /* pastikan gak wrap */
-  flex-direction: row; /* pastikan baris, bukan kolom */
-  max-width: 860px; /* pastikan cukup untuk 2 gambar */
-  margin-left: auto;
-  margin-right: auto;
-">
-  <img src="https://github-readme-stats.vercel.app/api?username=roti18&show_icons=true&theme=github_dark&hide_border=true" width="420" height="180" alt="GitHub Stats" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=roti18&layout=compact&theme=github_dark&hide_border=true" width="420" height="175" alt="Top Languages" />
+  <div style="
+    display: flex; 
+    justify-content: center; 
+    gap: 20px; 
+    align-items: center; 
+    border: 1.5px solid #30363d; 
+    border-radius: 12px; 
+    padding: 1rem; 
+    box-shadow: 0 2px 6px #30363d; 
+    margin-top: 2rem;
+    height: 190px;
+    width: 100%;
+  ">
+    <img src="https://github-readme-stats.vercel.app/api?username=roti18&show_icons=true&theme=github_dark&hide_border=true" width="420" height="180" alt="GitHub Stats" />
+    <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=roti18&layout=compact&theme=github_dark&hide_border=true" width="420" height="175" alt="Top Languages" />
+  </div>
 </div>
