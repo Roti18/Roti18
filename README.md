@@ -11,7 +11,7 @@
     I enjoy learning about system architecture, threat mitigation, ethical hacking, and how to build secure infrastructure.  
     Passionate about solving real-world problems through code, and eager to explore more in backend development.
   </p>
-  <div align="center" style="margin-top: 2rem;">
-    <img src="https://github-readme-stats.vercel.app/api?username=roti18&show_icons=true&theme=github_dark&hide_border=true&include_all_commits=true&count_private=true" alt="GitHub Stats" />
-  </div>
+<div align="center" style="margin-top: 2rem;">
+  <img src="https://github-readme-streak-stats.herokuapp.com/?user=roti18&theme=github-dark-blue&hide_border=true" alt="GitHub Streak" />
+</div>
 </div>
