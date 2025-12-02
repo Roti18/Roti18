@@ -12,6 +12,6 @@
     Passionate about solving real-world problems through code, and eager to explore more in backend development.
   </p>
 <div align="center" style="margin-top: 2rem;">
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=roti18&theme=github-dark-blue&hide_border=true" alt="GitHub Streak" />
+  <img src="https://github-profile-trophy.vercel.app/?username=roti18&theme=darkhub&no-frame=true&row=1" alt="GitHub Trophies" />
 </div>
 </div>
