@@ -4,6 +4,9 @@
 	import Projects from '$lib/components/Projects.svelte';
 	import { onMount } from 'svelte';
 
+	export let data;
+
+	let { hero, profile, projects } = data;
 	let scrollY = 0;
 	let isMobile = false;
 
@@ -79,8 +82,8 @@
 	{/if}
 
 	<div class="relative z-10">
-		<Hero {isMobile} />
-		<Profile />
-		<Projects {isMobile} />
+		<Hero {isMobile} {hero} />
+		<Profile {profile} />
+		<Projects {isMobile} {projects} />
 	</div>
 </div>
