@@ -3,7 +3,7 @@
   
   # 🔐 Cyber Security & Web Dev Enthusiast
   
-  > Currently in 2nd semester | Passionate about System Security (SysSec)
+  > Currently in 3nd semester | Passionate about System Security (SysSec)
   
   Learning about **system architecture**, **threat mitigation**, **ethical hacking**, and building **secure infrastructure**.  
   Passionate about solving real-world problems through code 💻
