@@ -1,7 +1,16 @@
+import bcrypt from 'bcryptjs';
 import { db } from './index';
-import { profile, projects, hero } from './schema';
+import { profile, projects, hero, user } from './schema';
+const hash = await bcrypt.hash('admin123', 10);
 
 async function seed() {
+	await db.insert(user).values({
+		id: 'admin',
+		email: 'admin@local.dev',
+		passwordHash: hash,
+		name: 'Admin'
+	});
+
 	await db
 		.insert(profile)
 		.values({
