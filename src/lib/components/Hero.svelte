@@ -1,16 +1,7 @@
-<script>
-	import { onMount } from 'svelte';
+<script lang="ts">
+	export let isMobile: boolean = false;
 
 	let scrollY = 0;
-
-	onMount(() => {
-		const handleScroll = () => {
-			scrollY = window.scrollY;
-		};
-
-		window.addEventListener('scroll', handleScroll);
-		return () => window.removeEventListener('scroll', handleScroll);
-	});
 </script>
 
 <svelte:window bind:scrollY />
@@ -36,9 +27,10 @@
 		</p>
 	</div>
 
+	<!-- Scroll Indicator -->
 	<div
 		class="absolute bottom-12 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-300"
-		style="opacity: {1 - scrollY / 300}"
+		style="opacity: {isMobile ? 0.4 : 1 - scrollY / 300}"
 	>
 		<div class="h-15 w-px bg-linear-to-b from-transparent to-red-500/80"></div>
 		<svg class="animate-bounce-slow h-6 w-6 text-red-500" viewBox="0 0 24 24" fill="none">

@@ -1,10 +1,9 @@
 <script lang="ts">
 	import ProjectCard from './ProjectCard.svelte';
-	import { onMount } from 'svelte';
 
 	export let isMobile: boolean = false;
 
-	let scrollY: number = 0;
+	let scrollY = 0;
 
 	interface Project {
 		title: string;
@@ -38,15 +37,6 @@
 			url: '/projects/echo'
 		}
 	];
-
-	onMount(() => {
-		const handleScroll = (): void => {
-			scrollY = window.scrollY;
-		};
-
-		window.addEventListener('scroll', handleScroll, { passive: true });
-		return () => window.removeEventListener('scroll', handleScroll);
-	});
 </script>
 
 <svelte:window bind:scrollY />

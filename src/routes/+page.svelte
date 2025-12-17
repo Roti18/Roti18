@@ -4,26 +4,28 @@
 	import Projects from '$lib/components/Projects.svelte';
 	import { onMount } from 'svelte';
 
-	let scrollY: number = 0;
-	let isMobile: boolean = false;
+	let scrollY = 0;
+	let isMobile = false;
 
-	onMount(() => {
+	const updateDevice = () => {
 		isMobile = window.innerWidth < 768;
 
-		const handleScroll = (): void => {
+		document.documentElement.style.scrollBehavior = isMobile ? 'auto' : 'smooth';
+	};
+
+	onMount(() => {
+		updateDevice();
+
+		const handleScroll = () => {
 			scrollY = window.scrollY;
 		};
 
-		const handleResize = (): void => {
-			isMobile = window.innerWidth < 768;
-		};
-
-		window.addEventListener('scroll', handleScroll);
-		window.addEventListener('resize', handleResize);
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		window.addEventListener('resize', updateDevice, { passive: true });
 
 		return () => {
 			window.removeEventListener('scroll', handleScroll);
-			window.removeEventListener('resize', handleResize);
+			window.removeEventListener('resize', updateDevice);
 		};
 	});
 </script>
@@ -36,14 +38,6 @@
 			padding: 0;
 			background: #0a0000;
 			overflow-x: hidden;
-			scroll-behavior: smooth;
-		}
-
-		@media (max-width: 768px) {
-			body,
-			html {
-				scroll-behavior: auto;
-			}
 		}
 
 		* {
@@ -62,15 +56,15 @@
 		<div class="pointer-events-none fixed inset-0 overflow-hidden will-change-transform">
 			<div
 				class="absolute h-150 w-150 rounded-full bg-red-600/50 opacity-30 blur-[150px]"
-				style="top: 5%; right: 10%; transform: translateY({scrollY * 0.3}px) translateZ(0)"
+				style="top: 5%; right: 10%; transform: translateY({scrollY * 0.3}px)"
 			></div>
 			<div
 				class="absolute h-125 w-125 rounded-full bg-rose-600/40 opacity-25 blur-[150px]"
-				style="top: 50%; left: 5%; transform: translateY({scrollY * 0.5}px) translateZ(0)"
+				style="top: 50%; left: 5%; transform: translateY({scrollY * 0.5}px)"
 			></div>
 			<div
 				class="absolute h-112.5 w-112.5 rounded-full bg-red-700/35 opacity-20 blur-[150px]"
-				style="bottom: 15%; right: -5%; transform: translateY({scrollY * 0.2}px) translateZ(0)"
+				style="bottom: 15%; right: -5%; transform: translateY({scrollY * 0.2}px)"
 			></div>
 		</div>
 	{:else}
