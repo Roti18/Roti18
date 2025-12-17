@@ -1,48 +1,46 @@
 <script lang="ts">
+	import type { Hero } from '$lib/server/db/schema';
+	import { ArrowDown } from '@lucide/svelte';
+
 	export let isMobile: boolean = false;
+	export let hero: Hero;
 
 	let scrollY = 0;
 </script>
 
 <svelte:window bind:scrollY />
 
-<section class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
-	<div class="z-10 w-full space-y-4 px-6 text-center">
-		<h1
-			class="animate-fade-in-up text-5xl leading-tight font-light tracking-[0.15em] text-amber-50 sm:text-6xl md:text-7xl lg:text-8xl"
-		>
-			M.ZAMRONI FAHREZA
-		</h1>
+{#if hero}
+	<section class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
+		<div class="z-10 w-full space-y-4 px-6 text-center">
+			<h1
+				class="animate-fade-in-up text-5xl leading-tight font-light tracking-[0.15em] text-amber-50 sm:text-6xl md:text-7xl lg:text-8xl"
+			>
+				{hero.name}
+			</h1>
 
-		<p
-			class="animate-fade-in-up-delay-1 text-xs font-normal tracking-[0.2em] text-neutral-300 uppercase sm:text-sm sm:tracking-[0.3em] md:text-base"
-		>
-			DESIGNER & CREATIVE DIRECTOR
-		</p>
+			<p
+				class="animate-fade-in-up-delay-1 text-xs font-normal tracking-[0.2em] text-neutral-300 uppercase sm:text-sm sm:tracking-[0.3em] md:text-base"
+			>
+				{hero.role}
+			</p>
 
-		<p
-			class="animate-fade-in-up-delay-2 mt-6 text-lg font-light text-neutral-400 italic sm:mt-8 sm:text-xl md:text-2xl lg:text-3xl"
-		>
-			Crafting narratives through thoughtful design
-		</p>
-	</div>
+			<p
+				class="animate-fade-in-up-delay-2 mt-6 text-lg font-light text-neutral-400 italic sm:mt-8 sm:text-xl md:text-2xl lg:text-3xl"
+			>
+				{hero.tagline}
+			</p>
+		</div>
 
-	<!-- Scroll Indicator -->
-	<div
-		class="absolute bottom-12 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-300"
-		style="opacity: {isMobile ? 0.4 : 1 - scrollY / 300}"
-	>
-		<div class="h-15 w-px bg-linear-to-b from-transparent to-red-500/80"></div>
-		<svg class="animate-bounce-slow h-6 w-6 text-red-500" viewBox="0 0 24 24" fill="none">
-			<path
-				d="M12 5v14M19 12l-7 7-7-7"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-			/>
-		</svg>
-	</div>
-</section>
+		<div
+			class="absolute bottom-12 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-300"
+			style="opacity: {isMobile ? 0.4 : 1 - scrollY / 300}"
+		>
+			<div class="h-15 w-px bg-linear-to-b from-transparent to-red-500/80"></div>
+			<ArrowDown class="animate-bounce-slow h-6 w-6 text-red-500" />
+		</div>
+	</section>
+{/if}
 
 <style>
 	@keyframes fade-in-up {
@@ -76,9 +74,5 @@
 		50% {
 			transform: translateY(10px);
 		}
-	}
-
-	.animate-bounce-slow {
-		animation: bounce-slow 2s infinite;
 	}
 </style>

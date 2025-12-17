@@ -1,42 +1,10 @@
 <script lang="ts">
 	import ProjectCard from './ProjectCard.svelte';
+	import type { Project } from '$lib/server/db/schema';
 
 	export let isMobile: boolean = false;
-
+	export let projects: Project[] = [];
 	let scrollY = 0;
-
-	interface Project {
-		title: string;
-		subtitle: string;
-		description: string;
-		image: string;
-		url: string;
-	}
-
-	const projects: Project[] = [
-		{
-			title: 'AURORA',
-			subtitle: 'BRAND IDENTITY & APP DESIGN',
-			description:
-				'A holistic re-imagination a wellness platform, emotive navigation and calming visuals.',
-			image: '/images/aurora.jpg',
-			url: '/projects/aurora'
-		},
-		{
-			title: 'SOLSTICE',
-			subtitle: 'INTERACTIVE ART INSTALLATION',
-			description: 'Immersive digital experience blending light and motion.',
-			image: '/images/solstice.jpg',
-			url: '/projects/solstice'
-		},
-		{
-			title: 'ECHO',
-			subtitle: 'LUXURY PACKAGING SUITE',
-			description: 'Sophisticated brand materials for high-end products.',
-			image: '/images/echo.jpg',
-			url: '/projects/echo'
-		}
-	];
 </script>
 
 <svelte:window bind:scrollY />
@@ -54,7 +22,6 @@
 		{/each}
 	</div>
 
-	<!-- Decorative Star - Desktop only -->
 	{#if !isMobile}
 		<div
 			class="animate-rotate-slow pointer-events-none fixed right-8 bottom-8 hidden text-rose-400/40 opacity-30 transition-opacity duration-500 sm:right-12 sm:bottom-12 md:block"

@@ -1,4 +1,6 @@
 <script lang="ts">
+	// export type { ProjectCard } from '$lib/server/db/schema.ts';
+	// export let id: number;
 	export let title: string;
 	export let subtitle: string;
 	export let description: string;
@@ -56,10 +58,7 @@
 		>
 			<div
 				class="absolute inset-0 bg-cover bg-center transition-transform duration-700"
-				style="
-					background-image: url('{image}');
-					transform: scale({isHovered ? 1.1 : 1});
-				"
+				style="background-image: url({image}); transform: scale({isHovered ? 1.1 : 1});"
 			></div>
 
 			<div
