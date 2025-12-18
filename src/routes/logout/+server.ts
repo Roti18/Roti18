@@ -9,6 +9,5 @@ export async function POST({ locals, cookies }) {
 	await invalidateSession(locals.session.id);
 
 	deleteSessionTokenCookie(cookies);
-
 	throw redirect(302, '/login');
 }
