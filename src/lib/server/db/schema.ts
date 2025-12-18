@@ -25,9 +25,9 @@ export const profile = sqliteTable('profile', {
 
 export const hero = sqliteTable('hero', {
 	id: integer('id').primaryKey(),
-	name: text('name').notNull(), // M. ZAMRONI FAHREZA
-	role: text('role').notNull(), // DESIGNER & CREATIVE DIRECTOR
-	tagline: text('tagline').notNull() // Crafting narratives...
+	name: text('name').notNull(),
+	role: text('role').notNull(),
+	tagline: text('tagline').notNull()
 });
 
 export const projects = sqliteTable('projects', {
