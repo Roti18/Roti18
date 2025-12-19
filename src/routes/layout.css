@@ -1,2 +1,113 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
+
+html,
+body {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+	display: none;
+}
+
+.projects-masonry {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 32px;
+	align-items: stretch;
+}
+
+@media (min-width: 1024px) {
+	.projects-masonry {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+.project-item {
+	break-inside: avoid;
+	background: #0f0f0f;
+	border: 1px solid #1a1a1a;
+	cursor: pointer;
+	position: relative;
+	overflow: hidden;
+	transition:
+		border-color 200ms ease,
+		transform 200ms ease;
+}
+
+.project-item:hover {
+	border-color: #dc2626;
+	transform: translateY(-2px);
+}
+
+.project-image {
+	transition: transform 400ms ease;
+}
+
+.project-item:hover .project-image {
+	transform: scale(1.04);
+}
+
+.minimal-link {
+	position: relative;
+	display: inline-block;
+	text-decoration: none;
+	transition: color 200ms ease;
+}
+
+.minimal-link::after {
+	content: '';
+	position: absolute;
+	bottom: -2px;
+	left: 0;
+	width: 0;
+	height: 1px;
+	background-color: #dc2626;
+	transition: width 250ms ease;
+}
+
+.minimal-link:hover::after {
+	width: 100%;
+}
+
+.about-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 48px;
+}
+
+@media (min-width: 768px) {
+	.about-grid {
+		grid-template-columns: 1fr 1fr;
+		gap: 64px;
+	}
+}
+
+.section-divider {
+	width: 40px;
+	height: 1px;
+	background: linear-gradient(to right, #dc2626, transparent);
+	margin-bottom: 32px;
+}
+
+.tech-tag {
+	display: inline-block;
+	font-size: 11px;
+	padding: 4px 8px;
+	background: #1a1a1a;
+	border: 1px solid #252525;
+	color: #737373;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin: 2px;
+	transition:
+		border-color 200ms ease,
+		color 200ms ease;
+}
+
+.tech-tag:hover {
+	border-color: #dc2626;
+	color: #dc2626;
+}
