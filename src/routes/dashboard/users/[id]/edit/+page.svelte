@@ -26,16 +26,40 @@
 		<PageHeader back={() => goto('/dashboard/users')}>Edit user</PageHeader>
 
 		<Card>
-			<form method="POST" action="?/update" class="space-y-4">
+			<form method="POST" action="?/update" enctype="multipart/form-data" class="space-y-4">
 				<Input label="Email Address" type="email" name="email" bind:value={email} required />
 
 				<Input label="Full Name" name="name" bind:value={name} />
 
-				<Input label="Avatar URL" name="image" bind:value={image} />
+				<div class="space-y-1">
+					<label for="avatar" class="text-sm text-white/60">Avatar</label>
+					<input
+						id="avatar"
+						type="file"
+						name="image"
+						accept="image/*"
+						class="block w-full text-sm text-white file:mr-4 file:rounded-md
+						       file:border-0 file:bg-white/10 file:px-4 file:py-2
+						       file:text-white hover:file:bg-white/20"
+					/>
+					<p class="text-xs text-white/40">
+						Optional. Upload new avatar to replace the current one.
+					</p>
+				</div>
+
+				{#if image}
+					<div class="space-y-2">
+						<p class="text-sm text-white/60">Current Avatar</p>
+						<img
+							src={image}
+							alt="Avatar preview"
+							class="h-24 w-24 rounded-full border border-white/10 object-cover"
+						/>
+					</div>
+				{/if}
 
 				<div class="flex gap-3 pt-6">
 					<Button type="submit" class="flex-1">Update User</Button>
-
 					<Button
 						type="button"
 						variant="ghost"
