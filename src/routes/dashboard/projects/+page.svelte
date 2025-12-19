@@ -59,19 +59,9 @@
 		<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 			{#each filteredProjects as project (project.id)}
 				<Card>
-					<a
-						href={project.url}
-						target="_blank"
-						rel="noopener noreferrer"
-						class="mb-3 block overflow-hidden rounded"
-					>
-						<img
-							src={project.image}
-							alt={project.title}
-							class="aspect-video w-full object-cover transition hover:opacity-90"
-						/>
-					</a>
-
+					<div class="mb-3 block overflow-hidden rounded">
+						<img src={project.image} alt={project.title} class="aspect-video w-full object-cover" />
+					</div>
 					<h3 class="mb-1 font-semibold text-white">
 						{project.title}
 					</h3>
