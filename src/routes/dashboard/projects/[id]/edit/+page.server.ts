@@ -4,32 +4,30 @@ import { projects } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { redirect, fail, error } from '@sveltejs/kit';
 import { put, del } from '@vercel/blob';
+import sharp from 'sharp';
+
+function normalizeTitle(title: string) {
+	return title
+		.toLowerCase()
+		.trim()
+		.replace(/[^\w\s-]/g, '')
+		.replace(/\s+/g, '-');
+}
 
 export const load: PageServerLoad = async ({ params }) => {
 	const id = Number(params.id);
-
-	if (!id || Number.isNaN(id)) {
-		throw error(404, 'Not found');
-	}
+	if (!id || Number.isNaN(id)) throw error(404, 'Not found');
 
 	const result = await db.select().from(projects).where(eq(projects.id, id)).limit(1);
 
-	if (result.length === 0) {
-		throw error(404, 'Not found');
-	}
-
-	return {
-		project: result[0]
-	};
+	if (!result.length) throw error(404, 'Not found');
+	return { project: result[0] };
 };
 
 export const actions: Actions = {
 	update: async ({ request, params }) => {
 		const id = Number(params.id);
-
-		if (!id || Number.isNaN(id)) {
-			return fail(400, { message: 'Invalid ID' });
-		}
+		if (!id || Number.isNaN(id)) return fail(400, { message: 'Invalid ID' });
 
 		const data = await request.formData();
 
@@ -49,17 +47,27 @@ export const actions: Actions = {
 			.where(eq(projects.id, id))
 			.limit(1);
 
-		if (existing.length === 0) {
+		if (!existing.length) {
 			return fail(404, { message: 'Project not found' });
 		}
 
 		let imageUrl = existing[0].image;
 
 		if (imageFile instanceof File && imageFile.size > 0) {
-			const filename = `${crypto.randomUUID()}-${imageFile.name}`;
+			const buffer = Buffer.from(await imageFile.arrayBuffer());
 
-			const blob = await put(filename, imageFile, {
-				access: 'public'
+			const webpBuffer = await sharp(buffer)
+				.resize(1600, 900, { fit: 'inside' })
+				.webp({ quality: 80 })
+				.toBuffer();
+
+			const folder = normalizeTitle(title);
+			const baseName = imageFile.name.replace(/\.[^/.]+$/, '');
+			const path = `projects/${folder}/${baseName}.webp`;
+
+			const blob = await put(path, webpBuffer, {
+				access: 'public',
+				contentType: 'image/webp'
 			});
 
 			imageUrl = blob.url;
