@@ -11,11 +11,11 @@
 	<article
 		class="
 				relative
-				min-h-125
-				w-full overflow-hidden rounded-sm border border-gray-600/20
-			bg-black
-			transition-all duration-300
-			hover:border-red-400/40
+				w-full
+				overflow-hidden rounded-sm border border-gray-600/20 bg-black
+			transition-all
+			duration-300 hover:border-red-400/40
+			lg:min-h-110
 		"
 	>
 		<div class="relative aspect-video overflow-hidden bg-black">
@@ -56,6 +56,6 @@
 		overflow: hidden;
 		display: -webkit-box;
 		-webkit-box-orient: vertical;
-		-webkit-line-clamp: 4;
+		-webkit-line-clamp: 6;
 	}
 </style>
