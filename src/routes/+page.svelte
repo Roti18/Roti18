@@ -81,7 +81,7 @@
 		</div>
 	{/if}
 
-	<div class="relative z-10">
+	<div class="relative z-10 -mt-16 md:-mt-8">
 		<Hero {isMobile} {hero} />
 		<Profile {profile} />
 		<Projects {isMobile} {projects} />
