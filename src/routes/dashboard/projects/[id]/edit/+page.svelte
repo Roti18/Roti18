@@ -22,14 +22,13 @@
 	<PageHeader back={() => goto('/dashboard/projects')}>Edit Project</PageHeader>
 
 	<Card>
-		<form method="POST" action="?/update" class="space-y-6">
+		<form method="POST" action="?/update" enctype="multipart/form-data" class="space-y-6">
 			<div class="space-y-4">
 				<h3 class="text-sm font-semibold tracking-wider text-white/60 uppercase">
 					Basic Information
 				</h3>
 
 				<Input label="Project Title" name="title" bind:value={title} required />
-
 				<Input label="Subtitle" name="subtitle" bind:value={subtitle} required />
 			</div>
 
@@ -46,8 +45,19 @@
 
 			<div class="grid gap-4 sm:grid-cols-2">
 				<div class="space-y-1">
-					<Input label="Image URL" name="image" bind:value={image} required />
-					<p class="text-xs text-white/40">Used as project thumbnail / cover</p>
+					<label for="project" class="text-sm text-white/60">Project Image</label>
+					<input
+						id="project"
+						type="file"
+						name="image"
+						accept="image/*"
+						class="block w-full text-sm text-white file:mr-4 file:rounded-md
+						       file:border-0 file:bg-white/10 file:px-4 file:py-2
+						       file:text-white hover:file:bg-white/20"
+					/>
+					<p class="text-xs text-white/40">
+						Optional. Upload new image to replace the current one.
+					</p>
 				</div>
 
 				<div class="space-y-1">
@@ -58,7 +68,7 @@
 
 			{#if image}
 				<div class="space-y-2">
-					<p class="text-sm text-white/60">Image Preview</p>
+					<p class="text-sm text-white/60">Current Image</p>
 					<img
 						src={image}
 						alt="Project preview"
@@ -69,7 +79,6 @@
 
 			<FormActions>
 				<Button type="submit">Update Project</Button>
-
 				<Button type="button" variant="ghost" on:click={() => goto('/dashboard/projects')}>
 					Cancel
 				</Button>
