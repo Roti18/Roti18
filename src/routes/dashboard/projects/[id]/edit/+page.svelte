@@ -18,7 +18,7 @@
 	let url = project.url;
 </script>
 
-<div class="mx-auto max-w-3xl space-y-8">
+<div class="mx-auto w-full space-y-8">
 	<PageHeader back={() => goto('/dashboard/projects')}>Edit Project</PageHeader>
 
 	<Card>
