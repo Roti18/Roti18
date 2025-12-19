@@ -11,7 +11,7 @@
 	<article
 		class="
 				relative
-				min-h-[500px]
+				min-h-125
 				w-full overflow-hidden rounded-sm border border-gray-600/20
 			bg-black
 			transition-all duration-300
