@@ -34,11 +34,12 @@ export const actions: Actions = {
 		const title = data.get('title')?.toString().trim();
 		const subtitle = data.get('subtitle')?.toString().trim();
 		const description = data.get('description')?.toString().trim();
-		const url = data.get('url')?.toString().trim();
+		const repoUrl = data.get('repoUrl')?.toString().trim();
+		const liveUrl = data.get('liveUrl')?.toString().trim();
 		const imageFile = data.get('image');
 
-		if (!title || !subtitle || !description || !url) {
-			return fail(400, { message: 'All fields are required' });
+		if (!title || !subtitle || !description) {
+			return fail(400, { message: 'Title, Subtitle, and Description are required' });
 		}
 
 		const existing = await db
@@ -88,7 +89,8 @@ export const actions: Actions = {
 				subtitle,
 				description,
 				image: imageUrl,
-				url
+				repoUrl,
+				liveUrl
 			})
 			.where(eq(projects.id, id));
 
