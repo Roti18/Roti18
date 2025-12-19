@@ -41,7 +41,7 @@
 <div class="space-y-6">
 	<CrudHeader hint="Manage projects">
 		<button
-			on:click={() => goto('/dashboard/users/create')}
+			on:click={() => goto('/dashboard/projects/create')}
 			class="text-red-400 transition hover:text-red-300"
 		>
 			Create
@@ -50,7 +50,6 @@
 
 	<SearchInput placeholder="Search projects..." bind:value={searchTerm} />
 
-	<!-- CONTENT -->
 	{#if filteredProjects.length === 0}
 		<EmptyState
 			title="No projects found"
