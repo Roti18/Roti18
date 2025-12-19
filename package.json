@@ -49,6 +49,7 @@
 	},
 	"dependencies": {
 		"@libsql/client": "^0.15.15",
+		"@studio-freight/lenis": "^1.0.42",
 		"@vercel/blob": "^2.0.0",
 		"bcryptjs": "^3.0.3",
 		"dotenv": "^17.2.3",
