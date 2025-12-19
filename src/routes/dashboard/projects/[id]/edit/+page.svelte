@@ -15,7 +15,9 @@
 	let subtitle = project.subtitle;
 	let description = project.description;
 	let image = project.image;
-	let url = project.url;
+	// Make sure project.repoUrl and project.liveUrl are not null
+	let repoUrl = project.repoUrl ?? '';
+	let liveUrl = project.liveUrl ?? '';
 </script>
 
 <div class="mx-auto w-full space-y-8">
@@ -43,26 +45,29 @@
 				/>
 			</div>
 
-			<div class="grid gap-4 sm:grid-cols-2">
-				<div class="space-y-1">
-					<label for="project" class="text-sm text-white/60">Project Image</label>
-					<input
-						id="project"
-						type="file"
-						name="image"
-						accept="image/*"
-						class="block w-full text-sm text-white file:mr-4 file:rounded-md
-						       file:border-0 file:bg-white/10 file:px-4 file:py-2
-						       file:text-white hover:file:bg-white/20"
-					/>
-					<p class="text-xs text-white/40">
-						Optional. Upload new image to replace the current one.
-					</p>
-				</div>
+			<div class="space-y-4">
+				<h3 class="text-sm font-semibold tracking-wider text-white/60 uppercase">Image & Links</h3>
+				<div class="grid gap-4 sm:grid-cols-2">
+					<div class="space-y-1">
+						<label for="project" class="text-sm text-white/60">Project Image</label>
+						<input
+							id="project"
+							type="file"
+							name="image"
+							accept="image/*"
+							class="block w-full text-sm text-white file:mr-4 file:rounded-md
+								file:border-0 file:bg-white/10 file:px-4 file:py-2
+								file:text-white hover:file:bg-white/20"
+						/>
+						<p class="text-xs text-white/40">
+							Optional. Upload new image to replace the current one.
+						</p>
+					</div>
 
-				<div class="space-y-1">
-					<Input label="Project URL" name="url" bind:value={url} required />
-					<p class="text-xs text-white/40">Live demo, repository, or external link</p>
+					<div class="space-y-4">
+						<Input label="Repository URL" name="repoUrl" bind:value={repoUrl} />
+						<Input label="Live Demo URL" name="liveUrl" bind:value={liveUrl} />
+					</div>
 				</div>
 			</div>
 
