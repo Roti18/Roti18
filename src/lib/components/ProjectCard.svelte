@@ -7,11 +7,12 @@
 	export let isMobile: boolean;
 </script>
 
-<a href={url} class="block focus:outline-none">
+<a href={url} class="block w-full focus:outline-none">
 	<article
 		class="
-			relative overflow-hidden rounded-sm
-			border border-red-900/30
+				relative
+				min-h-[500px]
+				w-full overflow-hidden rounded-sm border border-gray-600/20
 			bg-black
 			transition-all duration-300
 			hover:border-red-400/40
@@ -39,9 +40,22 @@
 				{subtitle}
 			</p>
 
-			<p class={`leading-relaxed text-neutral-500 ${isMobile ? 'text-[11px]' : 'text-xs'}`}>
+			<p
+				class={`line-clamp-2 leading-relaxed text-neutral-500 ${
+					isMobile ? 'text-[11px]' : 'text-xs'
+				}`}
+			>
 				{description}
 			</p>
 		</div>
 	</article>
 </a>
+
+<style>
+	.line-clamp-2 {
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 4;
+	}
+</style>
