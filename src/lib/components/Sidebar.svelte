@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { sidebarOpen } from '$lib/stores/navigation';
 
-	import { Users, User, Briefcase, Folder, Clock, LayoutDashboard } from '@lucide/svelte';
+	import { Users, User, Briefcase, Folder, Clock, LayoutDashboard, Link } from '@lucide/svelte';
 
 	const navItems = [
 		{ path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -11,6 +11,7 @@
 		{ path: '/dashboard/profile', label: 'Profile', icon: User },
 		{ path: '/dashboard/hero', label: 'Hero', icon: Briefcase },
 		{ path: '/dashboard/projects', label: 'Projects', icon: Folder },
+        { path: '/dashboard/social', label: 'Social', icon: Link },
 		{ path: '/dashboard/sessions', label: 'Sessions', icon: Clock }
 	];
 
