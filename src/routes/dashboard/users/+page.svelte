@@ -42,10 +42,10 @@
 						<div class="flex items-center gap-4">
 							<Avatar src={user.image} name={user.name || user.email} />
 							<div>
-								<p class="font-medium text-white">
+								<p class="truncate font-medium text-white">
 									{user.name || 'Unnamed User'}
 								</p>
-								<p class="text-sm text-white/60">
+								<p class="truncate text-sm text-white/60">
 									{user.email}
 								</p>
 							</div>
