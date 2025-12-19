@@ -5,6 +5,10 @@
 	import AlertModal from '$lib/components/AlertModal.svelte';
 </script>
 
+<svelte:head>
+	<link rel="icon" href="/favred.svg" />
+</svelte:head>
+
 <div class="min-h-screen bg-black text-white">
 	<Topbar />
 
