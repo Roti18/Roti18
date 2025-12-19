@@ -5,6 +5,15 @@ import { fail } from '@sveltejs/kit';
 import { nanoid } from 'nanoid';
 import bcrypt from 'bcryptjs';
 import { put } from '@vercel/blob';
+import sharp from 'sharp';
+
+function normalizeName(name: string) {
+	return name
+		.toLowerCase()
+		.trim()
+		.replace(/[^\w\s-]/g, '')
+		.replace(/\s+/g, '-');
+}
 
 export const actions: Actions = {
 	create: async ({ request }) => {
@@ -16,20 +25,26 @@ export const actions: Actions = {
 		const imageFile = form.get('image');
 
 		if (!email || !password) {
-			return fail(400, {
-				error: 'Email and password are required'
-			});
+			return fail(400, { error: 'Email and password are required' });
 		}
 
 		const passwordHash = await bcrypt.hash(password, 10);
-
 		let imageUrl: string | null = null;
 
-		if (imageFile instanceof File && imageFile.size > 0) {
-			const filename = `avatars/${nanoid()}-${imageFile.name}`;
+		if (imageFile instanceof File && imageFile.size > 0 && name) {
+			const buffer = Buffer.from(await imageFile.arrayBuffer());
 
-			const blob = await put(filename, imageFile, {
-				access: 'public'
+			const webpBuffer = await sharp(buffer)
+				.resize(512, 512, { fit: 'cover' })
+				.webp({ quality: 80 })
+				.toBuffer();
+
+			const folder = normalizeName(name);
+			const path = `avatars/${folder}/avatar.webp`;
+
+			const blob = await put(path, webpBuffer, {
+				access: 'public',
+				contentType: 'image/webp'
 			});
 
 			imageUrl = blob.url;
