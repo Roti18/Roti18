@@ -1,61 +1,50 @@
 <script lang="ts">
-	export let title: string;
-	export let subtitle: string;
-	export let description: string;
-	export let image: string;
-	export let url: string;
-	export let isMobile: boolean;
+	import type { Project as ProjectType } from '$lib/server/db/schema';
+
+	export let project: ProjectType;
 </script>
 
-<a href={url} class="block w-full focus:outline-none">
-	<article
-		class="
-				relative
-				w-full
-				overflow-hidden rounded-lg border border-gray-600/20 bg-black
-			transition-all
-			duration-300 hover:border-red-400/40
-			lg:min-h-110
-		"
-	>
-		<div class="relative aspect-video overflow-hidden bg-black">
-			<img src={image} alt={title} class="h-full w-full object-cover" loading="lazy" />
-			<div
-				class="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent"
-			></div>
+<article
+	class="project-item fade-in flex h-full flex-col overflow-hidden rounded-lg border border-[#1A1A1A] bg-[#0F0F0F]"
+>
+	<div class="relative aspect-video overflow-hidden bg-black">
+		<img
+			src={project.image}
+			alt={project.title}
+			class="project-image h-full w-full object-cover opacity-80 transition-transform duration-500 ease-in-out"
+		/>
+	</div>
+
+	<div class="flex grow flex-col p-4">
+		<div>
+			<h3 class="mb-1 text-base font-semibold text-white">{project.title}</h3>
+			<p class="text-xs tracking-wider text-neutral-600 uppercase">{project.subtitle}</p>
 		</div>
 
-		<div class={isMobile ? 'p-3' : 'p-5'}>
-			<div class="mb-2 h-px w-10 bg-red-500"></div>
+		<p class="my-3 grow text-xs leading-relaxed text-neutral-500">
+			{project.description}
+		</p>
 
-			<h3
-				class={`mb-1.5 font-light tracking-wider text-white ${isMobile ? 'text-sm' : 'text-base'}`}
-			>
-				{title}
-			</h3>
-
-			<p
-				class={`mb-2 rounded-sm bg-black/50 font-light tracking-[0.2em] text-stone-200/70 uppercase ${isMobile ? 'text-[10px]' : 'text-[11px]'}`}
-			>
-				{subtitle}
-			</p>
-
-			<p
-				class={`line-clamp-2 leading-relaxed text-neutral-500 ${
-					isMobile ? 'text-[11px]' : 'text-xs'
-				}`}
-			>
-				{description}
-			</p>
+		<div class="mt-auto flex gap-4 text-xs">
+            {#if project.repoUrl}
+                <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" class="minimal-link text-neutral-400 hover:text-white">
+                    Repository
+                </a>
+            {:else}
+                <span class="minimal-link text-neutral-400 cursor-not-allowed opacity-50">
+                    Repository
+                </span>
+            {/if}
+            
+            {#if project.liveUrl}
+                <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" class="minimal-link text-red-500 hover:text-red-400">
+                    Live Demo
+                </a>
+            {:else}
+                <span class="minimal-link text-neutral-400 cursor-not-allowed opacity-50">
+                    Live Demo
+                </span>
+            {/if}
 		</div>
-	</article>
-</a>
-
-<style>
-	.line-clamp-2 {
-		overflow: hidden;
-		display: -webkit-box;
-		-webkit-box-orient: vertical;
-		-webkit-line-clamp: 6;
-	}
-</style>
+	</div>
+</article>
