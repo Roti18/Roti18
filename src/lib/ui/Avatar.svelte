@@ -2,7 +2,7 @@
 	export let src: string | null = null;
 	export let name = '';
 
-	const imageSrc = src || '/images/echo.jpg';
+	const imageSrc = src || '/avatars/default/default.webp';
 </script>
 
 <div class="flex h-10 w-full items-center justify-center overflow-hidden rounded-full bg-white/10">
