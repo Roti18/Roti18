@@ -9,7 +9,7 @@
 	import Button from '$lib/ui/Button.svelte';
 </script>
 
-<div class="max-w-2xl space-y-6">
+<div class=" space-y-6">
 	<PageHeader back={() => goto('/dashboard/projects')}>Create Project</PageHeader>
 
 	<Card>
