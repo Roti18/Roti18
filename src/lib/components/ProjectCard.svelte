@@ -14,7 +14,7 @@
 			border border-red-900/30
 			bg-black
 			transition-all duration-300
-			hover:border-red-600/50
+			hover:border-red-400/40
 		"
 	>
 		<div class="relative aspect-video overflow-hidden bg-black">
