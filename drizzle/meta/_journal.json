@@ -5,8 +5,22 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1765958937438,
-      "tag": "0000_milky_may_parker",
+      "when": 1766171144357,
+      "tag": "0000_many_living_lightning",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1766172690382,
+      "tag": "0001_sour_meggan",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1766173330602,
+      "tag": "0002_flashy_jack_murdock",
       "breakpoints": true
     }
   ]

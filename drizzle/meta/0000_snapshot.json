@@ -1,11 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "dd3717d6-8928-4b70-9131-fca4c76b1473",
+  "id": "cb5598f2-aff9-48ea-b9fc-d9fd8c068b87",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "main_content": {
-      "name": "main_content",
+    "hero": {
+      "name": "hero",
       "columns": {
         "id": {
           "name": "id",
@@ -14,8 +14,22 @@
           "notNull": true,
           "autoincrement": false
         },
-        "content": {
-          "name": "content",
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tagline": {
+          "name": "tagline",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -76,39 +90,46 @@
           "notNull": true,
           "autoincrement": false
         },
-        "name": {
-          "name": "name",
+        "title": {
+          "name": "title",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "subname": {
-          "name": "subname",
+        "subtitle": {
+          "name": "subtitle",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "job_title": {
-          "name": "job_title",
+        "description": {
+          "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "thumbnail": {
-          "name": "thumbnail",
+        "image": {
+          "name": "image",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "project_url": {
-          "name": "project_url",
+        "repo_url": {
+          "name": "repo_url",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "live_url": {
+          "name": "live_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -177,7 +198,14 @@
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         },
         "name": {

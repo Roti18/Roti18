@@ -36,6 +36,13 @@ export const projects = sqliteTable('projects', {
 	subtitle: text('subtitle').notNull(),
 	description: text('description').notNull(),
 	image: text('image').notNull(),
+	repoUrl: text('repo_url'),
+	liveUrl: text('live_url')
+});
+
+export const socialLinks = sqliteTable('social_links', {
+	id: integer('id').primaryKey(),
+	name: text('name').notNull(),
 	url: text('url').notNull()
 });
 
@@ -44,3 +51,4 @@ export type Session = typeof session.$inferSelect;
 export type Profile = typeof profile.$inferSelect;
 export type Hero = typeof hero.$inferSelect;
 export type Project = typeof projects.$inferSelect;
+export type SocialLinks = typeof socialLinks.$inferSelect;
