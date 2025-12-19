@@ -13,11 +13,26 @@
 	<PageHeader back={() => goto('/dashboard/projects')}>Create Project</PageHeader>
 
 	<Card>
-		<form method="POST" class="space-y-4">
+		<form method="POST" enctype="multipart/form-data" class="space-y-4">
 			<Input label="Project Title" name="title" required />
 			<Input label="Subtitle" name="subtitle" required />
 			<Textarea label="Description" name="description" rows={6} required />
-			<Input label="Image URL" name="image" required />
+
+			<div class="space-y-1">
+				<label for="project" class="text-sm text-white/60">Project Image</label>
+				<input
+					id="project"
+					type="file"
+					name="image"
+					accept="image/*"
+					required
+					class="block w-full text-sm text-white file:mr-4 file:rounded-md
+					       file:border-0 file:bg-white/10 file:px-4 file:py-2
+					       file:text-white hover:file:bg-white/20"
+				/>
+				<p class="text-xs text-white/40">Used as project thumbnail / cover</p>
+			</div>
+
 			<Input label="Project URL" name="url" type="url" required />
 
 			<FormActions>
