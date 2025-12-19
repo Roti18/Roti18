@@ -4,21 +4,20 @@ import { user } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { redirect, fail } from '@sveltejs/kit';
 import { put, del } from '@vercel/blob';
+import sharp from 'sharp';
+
+function normalizeName(name: string) {
+	return name
+		.toLowerCase()
+		.trim()
+		.replace(/[^\w\s-]/g, '')
+		.replace(/\s+/g, '-');
+}
 
 export const load: PageServerLoad = async ({ params }) => {
-	const userId = params.id;
+	const result = await db.select().from(user).where(eq(user.id, params.id!)).limit(1);
 
-	const result = await db.select().from(user).where(eq(user.id, userId)).limit(1);
-
-	if (result.length === 0) {
-		return {
-			user: null
-		};
-	}
-
-	return {
-		user: result[0]
-	};
+	return { user: result[0] ?? null };
 };
 
 export const actions: Actions = {
@@ -33,30 +32,36 @@ export const actions: Actions = {
 			return fail(400, { message: 'Email is required' });
 		}
 
-		// ambil user lama
 		const existing = await db
 			.select({ image: user.image })
 			.from(user)
 			.where(eq(user.id, params.id!))
 			.limit(1);
 
-		if (existing.length === 0) {
+		if (!existing.length) {
 			return fail(404, { message: 'User not found' });
 		}
 
 		let imageUrl = existing[0].image;
 
-		// kalau upload avatar baru
-		if (imageFile instanceof File && imageFile.size > 0) {
-			const filename = `avatars/${crypto.randomUUID()}-${imageFile.name}`;
+		if (imageFile instanceof File && imageFile.size > 0 && name) {
+			const buffer = Buffer.from(await imageFile.arrayBuffer());
 
-			const blob = await put(filename, imageFile, {
-				access: 'public'
+			const webpBuffer = await sharp(buffer)
+				.resize(512, 512, { fit: 'cover' })
+				.webp({ quality: 80 })
+				.toBuffer();
+
+			const folder = normalizeName(name);
+			const path = `avatars/${folder}/avatar.webp`;
+
+			const blob = await put(path, webpBuffer, {
+				access: 'public',
+				contentType: 'image/webp'
 			});
 
 			imageUrl = blob.url;
 
-			// hapus avatar lama
 			if (existing[0].image) {
 				try {
 					await del(existing[0].image);
