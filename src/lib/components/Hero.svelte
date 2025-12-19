@@ -1,78 +1,142 @@
 <script lang="ts">
-	import type { Hero } from '$lib/server/db/schema';
-	import { ArrowDown } from '@lucide/svelte';
+	import type { Hero, SocialLinks } from '$lib/server/db/schema';
+	import { Github, Twitter, Linkedin, Instagram, Mail, Globe } from '@lucide/svelte';
 
-	export let isMobile: boolean = false;
 	export let hero: Hero;
+	export let socialLinks: SocialLinks[];
 
-	let scrollY = 0;
+	const iconMap = {
+		github: Github,
+		twitter: Twitter,
+		linkedin: Linkedin,
+		instagram: Instagram,
+		email: Mail,
+		website: Globe
+	} as const;
+
+	type IconName = keyof typeof iconMap;
+
+	function getIcon(name: string) {
+		return iconMap[name.toLowerCase() as IconName];
+	}
 </script>
 
-<svelte:window bind:scrollY />
+<section
+	class="
+		relative
+		flex
+		min-h-screen
+		items-center
+		justify-center
+		overflow-hidden
+		px-5
+		sm:px-6
+		md:px-8
+	"
+>
+	<!-- subtle background gradient -->
+	<div
+		class="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-red-950/5 to-transparent"
+	></div>
 
-{#if hero}
-	<section class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
-		<div class="z-10 w-full space-y-4 px-6 text-center">
-			<h1
-				class="animate-fade-in-up text-5xl leading-tight font-light tracking-[0.15em] text-amber-50 sm:text-6xl md:text-7xl lg:text-8xl"
-			>
-				{hero.name}
-			</h1>
+	<div
+		class="
+			relative
+			z-10
+			mx-auto
+			w-full
+			max-w-4xl
+			py-20
+			text-center
+			sm:py-24
+			md:py-32
+		"
+	>
+		<div class="section-divider mx-auto mb-8"></div>
 
-			<p
-				class="animate-fade-in-up-delay-1 text-xs font-normal tracking-[0.2em] text-neutral-300 uppercase sm:text-sm sm:tracking-[0.3em] md:text-base"
-			>
-				{hero.role}
-			</p>
+		<h1
+			class="
+				mb-6
+				text-4xl
+				font-bold
+				tracking-tight
+				sm:text-5xl
+				md:text-6xl
+			"
+			style="line-height: 1.05"
+		>
+			{hero.name}
+		</h1>
 
-			<p
-				class="animate-fade-in-up-delay-2 mt-6 text-lg font-light text-neutral-400 italic sm:mt-8 sm:text-xl md:text-2xl lg:text-3xl"
-			>
-				{hero.tagline}
-			</p>
-		</div>
+		<p
+			class="
+				mb-6
+				text-xs
+				tracking-[0.12em]
+				text-neutral-500
+				uppercase
+				sm:text-sm
+				md:text-base
+			"
+		>
+			{hero.role}
+		</p>
+
+		<p
+			class="
+				mx-auto
+				max-w-xl
+				text-base
+				font-light
+				text-neutral-400
+				sm:max-w-2xl
+				sm:text-lg
+				md:text-xl
+			"
+		>
+			{hero.tagline}
+		</p>
 
 		<div
-			class="absolute bottom-12 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-300"
-			style="opacity: {isMobile ? 0.4 : 1 - scrollY / 300}"
+			class="
+				mt-10
+				flex
+				flex-wrap
+				items-center
+				justify-center
+				gap-4
+				sm:gap-6
+				md:gap-8
+			"
 		>
-			<div class="h-15 w-px bg-linear-to-b from-transparent to-red-500/80"></div>
-			<ArrowDown class="animate-bounce-slow h-6 w-6 text-red-500" />
+			{#each socialLinks as link (link.id)}
+				{@const icon = getIcon(link.name)}
+				<a
+					href={link.name.toLowerCase() === 'email' ? `mailto:${link.url}` : link.url}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="
+						group
+						flex
+						items-center
+						gap-2
+						text-xs
+						text-neutral-400
+						transition
+						hover:text-white
+						sm:text-sm
+					"
+				>
+					{#if icon}
+						<svelte:component
+							this={icon}
+							size={18}
+							class="transition-transform group-hover:scale-110"
+						/>
+					{/if}
+					<span class="minimal-link">{link.name}</span>
+				</a>
+			{/each}
 		</div>
-	</section>
-{/if}
-
-<style>
-	@keyframes fade-in-up {
-		from {
-			opacity: 0;
-			transform: translateY(30px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.animate-fade-in-up {
-		animation: fade-in-up 1s ease-out;
-	}
-
-	.animate-fade-in-up-delay-1 {
-		animation: fade-in-up 1s ease-out 0.2s backwards;
-	}
-
-	.animate-fade-in-up-delay-2 {
-		animation: fade-in-up 1s ease-out 0.4s backwards;
-	}
-
-	@keyframes bounce-slow {
-		0%,
-		100% {
-			transform: translateY(0);
-		}
-		50% {
-			transform: translateY(10px);
-		}
-	}
-</style>
+	</div>
+</section>
