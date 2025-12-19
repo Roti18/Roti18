@@ -12,7 +12,7 @@
 		class="
 				relative
 				w-full
-				overflow-hidden rounded-sm border border-gray-600/20 bg-black
+				overflow-hidden rounded-lg border border-gray-600/20 bg-black
 			transition-all
 			duration-300 hover:border-red-400/40
 			lg:min-h-110
@@ -35,7 +35,7 @@
 			</h3>
 
 			<p
-				class={`mb-2 font-light tracking-[0.2em] text-red-500 uppercase ${isMobile ? 'text-[10px]' : 'text-[11px]'}`}
+				class={`mb-2 rounded-sm bg-black/50 font-light tracking-[0.2em] text-stone-200/70 uppercase ${isMobile ? 'text-[10px]' : 'text-[11px]'}`}
 			>
 				{subtitle}
 			</p>
