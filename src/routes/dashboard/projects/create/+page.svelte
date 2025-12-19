@@ -33,7 +33,8 @@
 				<p class="text-xs text-white/40">Used as project thumbnail / cover</p>
 			</div>
 
-			<Input label="Project URL" name="url" type="url" required />
+			<Input label="Repository URL" name="repoUrl" type="url" />
+			<Input label="Live Demo URL" name="liveUrl" type="url" />
 
 			<FormActions>
 				<Button type="submit">Create Project</Button>
