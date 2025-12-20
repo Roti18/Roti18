@@ -47,14 +47,9 @@
 				<Menu size={22} />
 			</button>
 
-			<h1
-				class="
-					text-sm font-bold tracking-wide
-					text-white/80
-				"
-			>
-				Dashboard
-			</h1>
+			<a href="/" class="text-sm font-bold tracking-wide text-white/80 transition hover:text-white">
+				Workspace
+			</a>
 		</div>
 
 		<div class="relative flex items-center">
@@ -99,11 +94,11 @@
 							<button
 								type="submit"
 								class="
-									flex w-full items-center gap-2
-									rounded-lg px-3 py-2
-									text-sm text-red-400
-									transition
-									hover:bg-white/5
+									flex w-full cursor-pointer items-center
+									gap-2 rounded-lg px-3
+									py-2 text-sm
+									text-red-400
+									transition hover:bg-white/5
 								"
 							>
 								<LogOut size={16} />
