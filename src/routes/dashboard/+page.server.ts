@@ -1,25 +1,20 @@
-import type { PageServerLoad } from './$types';
+import { redirect } from '@sveltejs/kit';
+import { getDashboardData } from '$lib/server/cache/dashboard';
 import { db } from '$lib/server/db';
-import { hero, profile, projects } from '$lib/server/db/schema';
-import { asc } from 'drizzle-orm';
+import { hero } from '$lib/server/db/schema';
 
-export const load: PageServerLoad = async () => {
-	const heroResult = await db.select().from(hero).limit(1);
-	const profileResult = await db.select().from(profile).limit(1);
+export const load = async ({ locals }) => {
+	if (!locals.user) {
+		throw redirect(302, '/login');
+	}
 
-	const projectsResult = await db
-		.select({
-			id: projects.id,
-			title: projects.title,
-			subtitle: projects.subtitle
-		})
-		.from(projects)
-		.orderBy(asc(projects.id))
-		.limit(6);
+	const dashboard = await getDashboardData(locals.user.id);
+
+	const [heroData] = await db.select().from(hero).limit(1);
 
 	return {
-		hero: heroResult[0] ?? null,
-		profile: profileResult[0] ?? null,
-		projects: projectsResult
+		hero: heroData ?? null,
+		profile: dashboard.profile,
+		projects: dashboard.projects
 	};
 };
