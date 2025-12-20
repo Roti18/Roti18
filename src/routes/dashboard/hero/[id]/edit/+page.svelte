@@ -10,6 +10,10 @@
 	const { hero } = data;
 </script>
 
+<svelte:head>
+	<title>Hero | Edit</title>
+</svelte:head>
+
 <div class="space-y-6">
 	<PageHeader back={() => goto('/dashboard/hero')}>Edit Hero</PageHeader>
 
