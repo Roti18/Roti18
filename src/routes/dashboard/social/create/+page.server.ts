@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail, redirect, error } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { db } from '$lib/server/db';
 import { socialLinks } from '$lib/server/db/schema';
@@ -14,10 +14,15 @@ export const actions: Actions = {
 			return fail(400, { message: 'Name and URL are required' });
 		}
 
-		await db.insert(socialLinks).values({
-			name,
-			url
-		});
+		try {
+			await db.insert(socialLinks).values({
+				name,
+				url
+			});
+		} catch (e) {
+			console.error('Failed to create social link:', e);
+			throw error(500, 'Failed to save social link due to a server error.');
+		}
 
 		throw redirect(303, '/dashboard/social');
 	}
