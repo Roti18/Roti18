@@ -11,6 +11,10 @@
 		<img
 			src={project.image}
 			alt={project.title}
+			loading="lazy"
+			decoding="async"
+			width="800"
+			height="450"
 			class="project-image h-full w-full object-cover opacity-80 transition-transform duration-500 ease-in-out"
 		/>
 	</div>
@@ -26,25 +30,33 @@
 		</p>
 
 		<div class="mt-auto flex gap-4 text-xs">
-            {#if project.repoUrl}
-                <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" class="minimal-link text-neutral-400 hover:text-white">
-                    Repository
-                </a>
-            {:else}
-                <span class="minimal-link text-neutral-400 cursor-not-allowed opacity-50">
-                    Repository
-                </span>
-            {/if}
-            
-            {#if project.liveUrl}
-                <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" class="minimal-link text-red-500 hover:text-red-400">
-                    Live Demo
-                </a>
-            {:else}
-                <span class="minimal-link text-neutral-400 cursor-not-allowed opacity-50">
-                    Live Demo
-                </span>
-            {/if}
+			{#if project.repoUrl}
+				<a
+					href={project.repoUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="minimal-link text-neutral-400 hover:text-white"
+				>
+					Repository
+				</a>
+			{:else}
+				<span class="minimal-link cursor-not-allowed text-neutral-400 opacity-50">
+					Repository
+				</span>
+			{/if}
+
+			{#if project.liveUrl}
+				<a
+					href={project.liveUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="minimal-link text-red-500 hover:text-red-400"
+				>
+					Live Demo
+				</a>
+			{:else}
+				<span class="minimal-link cursor-not-allowed text-neutral-400 opacity-50"> Live Demo </span>
+			{/if}
 		</div>
 	</div>
 </article>
