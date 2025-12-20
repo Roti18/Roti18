@@ -11,7 +11,7 @@
 		{ path: '/dashboard/profile', label: 'Profile', icon: User },
 		{ path: '/dashboard/hero', label: 'Hero', icon: Briefcase },
 		{ path: '/dashboard/projects', label: 'Projects', icon: Folder },
-        { path: '/dashboard/social', label: 'Social', icon: Link },
+		{ path: '/dashboard/social', label: 'Social', icon: Link },
 		{ path: '/dashboard/sessions', label: 'Sessions', icon: Clock }
 	];
 
@@ -44,7 +44,7 @@
 			<button
 				on:click={() => navigate(item.path)}
 				class="
-					group relative flex w-full items-center gap-3 rounded-lg
+					group relative flex w-full cursor-pointer items-center gap-3 rounded-lg
 					px-4 py-2.5 text-left
 					transition-all duration-200
 					{active ? 'bg-red-600/10 text-red-400' : 'text-white/60 hover:bg-white/5 hover:text-white'}
