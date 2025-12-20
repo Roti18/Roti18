@@ -27,12 +27,12 @@ export const actions = {
 		const [u] = await db.select().from(user).where(eq(user.email, email));
 
 		if (!u) {
-			return fail(401, { error: 'Invalid email or password' });
+			return fail(401, { emailError: 'Email not found.' });
 		}
 
 		const valid = await bcrypt.compare(password, u.passwordHash);
 		if (!valid) {
-			return fail(401, { error: 'Invalid email or password' });
+			return fail(401, { passwordError: 'Incorrect password.' });
 		}
 
 		const token = generateSessionToken();

@@ -1,44 +1,81 @@
-<script>
+<script lang="ts">
 	import { Eye, EyeOff, Mail, Lock } from '@lucide/svelte';
+	import Card from '$lib/ui/Card.svelte';
+	import Button from '$lib/ui/Button.svelte';
+	import { page } from '$app/stores'; // Import page store
 
 	let email = '';
 	let password = '';
 	let showPassword = false;
-	let rememberMe = false;
+	let emailError = '';
+	let passwordError = '';
+
+	function validateEmail(value: string) {
+		if (!value) {
+			emailError = 'Email is required';
+			return false;
+		}
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(value)) {
+			emailError = 'Please enter a valid email address';
+			return false;
+		}
+		emailError = '';
+		return true;
+	}
+
+	function validatePassword(value: string) {
+		if (!value) {
+			passwordError = 'Password is required';
+			return false;
+		}
+		if (value.length < 6) {
+			passwordError = 'Password must be at least 6 characters';
+			return false;
+		}
+		passwordError = '';
+		return true;
+	}
+
+	function handleEmailBlur() {
+		validateEmail(email);
+	}
+
+	function handlePasswordBlur() {
+		validatePassword(password);
+	}
+
+	function handleSubmit(e: Event) {
+		const isEmailValid = validateEmail(email);
+		const isPasswordValid = validatePassword(password);
+
+		if (!isEmailValid || !isPasswordValid) {
+			e.preventDefault();
+		}
+	}
 
 	function togglePassword() {
 		showPassword = !showPassword;
 	}
 </script>
 
-<form
-	method="POST"
-	action="?/login"
-	class="relative overflow-hidden rounded-xl border border-gray-800/50
-	       bg-linear-to-br from-black/40 via-black/30 to-red-950/10
-	       p-6 shadow-2xl backdrop-blur-sm sm:p-8"
->
-	<div
-		class="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-900/10 blur-3xl"
-	></div>
-	<div
-		class="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-red-900/5 blur-2xl"
-	></div>
+<Card hover={false}>
+	<form method="POST" action="?/login" on:submit={handleSubmit} class="space-y-6">
+		<div class="space-y-2">
+			<h2 class="text-3xl font-light tracking-wide text-white">Welcome Back</h2>
+			<p class="text-sm text-white/50">Log in to continue your creative journey</p>
+			<div class="h-0.5 w-16 bg-linear-to-r from-red-600 to-transparent"></div>
+		</div>
 
-	<div class="relative mb-6 sm:mb-8">
-		<h2 class="mb-2 text-2xl font-light tracking-wide text-white sm:text-3xl">Welcome Back</h2>
-		<p class="text-xs text-gray-400 sm:text-sm">Log In to continue your creative journey</p>
-		<div class="mt-4 h-0.5 w-16 bg-linear-to-r from-red-900 to-transparent"></div>
-	</div>
+		{#if $page.form?.error && !$page.form?.emailError && !$page.form?.passwordError}
+			<p class="text-red-400 text-sm">{$page.form.error}</p>
+		{/if}
 
-	<div class="relative space-y-4 sm:space-y-5">
-		<div>
-			<label for="email" class="mb-2 block text-xs tracking-wide text-gray-300 sm:text-sm">
-				Email Address
-			</label>
+		<div class="space-y-2">
+			<label for="email" class="block text-sm text-white/70"> Email Address </label>
 			<div class="relative">
-				<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 sm:pl-4">
-					<Mail size={16} class="text-gray-500 sm:h-4.5 sm:w-4.5" />
+				<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+					<Mail size={18} class="text-white/40" />
 				</div>
 				<input
 					id="email"
@@ -46,22 +83,26 @@
 					type="email"
 					required
 					bind:value={email}
-					class="w-full rounded-lg border border-gray-700/50 bg-black/50
-					       py-2.5 pr-3 pl-9 text-sm text-white placeholder-gray-500
-					       transition-colors focus:border-red-900/60 focus:outline-none
-					       sm:py-3 sm:pr-4 sm:pl-11"
+					on:blur={handleEmailBlur}
 					placeholder="your@email.com"
+					class="w-full rounded-lg border bg-white/5
+						       py-2.5 pr-4 pl-11 text-white transition
+						       placeholder:text-white/30 focus:outline-none
+						       {emailError ? 'border-red-500' : 'border-white/10 focus:border-red-600/50'}"
 				/>
 			</div>
+			{#if $page.form?.emailError}
+				<p class="text-xs text-red-400">{$page.form.emailError}</p>
+			{:else if emailError}
+				<p class="text-xs text-red-400">{emailError}</p>
+			{/if}
 		</div>
 
-		<div>
-			<label for="password" class="mb-2 block text-xs tracking-wide text-gray-300 sm:text-sm">
-				Password
-			</label>
+		<div class="space-y-2">
+			<label for="password" class="block text-sm text-white/70"> Password </label>
 			<div class="relative">
-				<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 sm:pl-4">
-					<Lock size={16} class="text-gray-500 sm:h-4.5 sm:w-4.5" />
+				<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+					<Lock size={18} class="text-white/40" />
 				</div>
 				<input
 					id="password"
@@ -69,41 +110,33 @@
 					type={showPassword ? 'text' : 'password'}
 					required
 					bind:value={password}
-					class="w-full rounded-lg border border-gray-700/50 bg-black/50
-					       py-2.5 pr-10 pl-9 text-sm text-white placeholder-gray-500
-					       transition-colors focus:border-red-900/60 focus:outline-none
-					       sm:py-3 sm:pr-12 sm:pl-11"
+					on:blur={handlePasswordBlur}
 					placeholder="••••••••"
+					class="w-full rounded-lg border bg-white/5
+						       py-2.5 pr-11 pl-11 text-white transition
+						       placeholder:text-white/30 focus:outline-none
+						       {passwordError ? 'border-red-500' : 'border-white/10 focus:border-red-600/50'}"
 				/>
 				<button
 					type="button"
 					on:click={togglePassword}
-					class="absolute inset-y-0 right-0 flex items-center pr-2.5
-					       text-gray-400 transition-colors hover:text-white sm:pr-3"
+					class="absolute inset-y-0 right-0 flex items-center pr-4
+						       text-white/40 transition hover:text-white/70"
 				>
 					{#if showPassword}
-						<EyeOff size={18} class="sm:h-5 sm:w-5" />
+						<EyeOff size={18} />
 					{:else}
-						<Eye size={18} class="sm:h-5 sm:w-5" />
+						<Eye size={18} />
 					{/if}
 				</button>
 			</div>
+			{#if $page.form?.passwordError}
+				<p class="text-xs text-red-400">{$page.form.passwordError}</p>
+			{:else if passwordError}
+				<p class="text-xs text-red-400">{passwordError}</p>
+			{/if}
 		</div>
 
-		<button
-			type="submit"
-			class="group relative w-full overflow-hidden rounded-lg
-			       bg-linear-to-r from-red-900 to-red-800
-			       py-3 font-light tracking-wider text-white uppercase
-			       shadow-lg transition-all hover:from-red-800 hover:to-red-700
-			       sm:py-3.5"
-		>
-			<span class="relative z-10">Log In</span>
-			<div
-				class="absolute inset-0 -translate-x-full
-				       bg-linear-to-r from-transparent via-white/10 to-transparent
-				       transition-transform duration-700 group-hover:translate-x-full"
-			></div>
-		</button>
-	</div>
-</form>
+		<Button type="submit" variant="default" class="w-full">Log In</Button>
+	</form>
+</Card>
