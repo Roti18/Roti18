@@ -20,6 +20,10 @@
 	let liveUrl = project.liveUrl ?? '';
 </script>
 
+<svelte:head>
+	<title>Projects | Edit</title>
+</svelte:head>
+
 <div class="mx-auto w-full space-y-8">
 	<PageHeader back={() => goto('/dashboard/projects')}>Edit Project</PageHeader>
 
