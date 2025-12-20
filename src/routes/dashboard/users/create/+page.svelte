@@ -8,6 +8,10 @@
 	import PageHeader from '$lib/ui/PageHeader.svelte';
 </script>
 
+<svelte:head>
+	<title>Users | Create</title>
+</svelte:head>
+
 <div class="w-full">
 	<PageHeader back={() => goto('/dashboard/users')}>Create user</PageHeader>
 
