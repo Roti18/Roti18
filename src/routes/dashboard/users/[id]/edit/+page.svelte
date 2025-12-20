@@ -19,6 +19,10 @@
 	let image = user?.image ?? '';
 </script>
 
+<svelte:head>
+	<title>Users | Edit</title>
+</svelte:head>
+
 {#if !user}
 	<EmptyState title="User not found" description="This user does not exist" />
 {:else}
