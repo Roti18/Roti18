@@ -18,6 +18,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Users | Change Password</title>
+</svelte:head>
+
 <PageHeader back={() => goto('/dashboard/users')}>Change password</PageHeader>
 
 <Card>
