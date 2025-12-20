@@ -1,21 +1,19 @@
 <script lang="ts">
-  import ProjectCard from './ProjectCard.svelte';
-  import type { Project as ProjectType } from '$lib/server/db/schema';
+	import ProjectCard from './ProjectCard.svelte';
+	import type { Project as ProjectType } from '$lib/server/db/schema';
 
-  export let projects: ProjectType[];
+	export let projects: ProjectType[];
 </script>
 
-<section class="py-32 px-6">
-    <div class="max-w-6xl mx-auto">
-        <div class="section-divider"></div>
-        <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-white mb-8">
-            Selected Work
-        </h2>
-        
-        <div class="projects-masonry" id="projects-grid">
-            {#each projects as project (project.id)}
-                <ProjectCard {project} />
-            {/each}
-        </div>
-    </div>
+<section class="px-6 py-32">
+	<div class="mx-auto max-w-6xl">
+		<div class="section-divider"></div>
+		<h2 class="mb-8 text-2xl font-bold tracking-tight text-white md:text-3xl">Projects</h2>
+
+		<div class="projects-masonry" id="projects-grid">
+			{#each projects as project (project.id)}
+				<ProjectCard {project} />
+			{/each}
+		</div>
+	</div>
 </section>
