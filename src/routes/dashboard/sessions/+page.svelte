@@ -35,6 +35,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Sessions</title>
+</svelte:head>
+
 <!-- ROOT WRAPPER (ANTI OVERFLOW) -->
 <div class="w-full space-y-4 overflow-x-hidden sm:space-y-6">
 	<CrudHeader hint="View Active Sessions">
