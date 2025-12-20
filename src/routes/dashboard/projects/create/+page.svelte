@@ -9,6 +9,10 @@
 	import Button from '$lib/ui/Button.svelte';
 </script>
 
+<svelte:head>
+	<title>Projects | Create</title>
+</svelte:head>
+
 <div class=" space-y-6">
 	<PageHeader back={() => goto('/dashboard/projects')}>Create Project</PageHeader>
 
