@@ -4,7 +4,7 @@
 
 <div class="mb-6 flex items-center gap-4">
 	{#if back}
-		<button on:click={back} class="text-white/60 transition hover:text-white" aria-label="Back">
+		<button on:click={back} class="text-white/60 transition hover:text-white cursor-pointer" aria-label="Back">
 			←
 		</button>
 	{/if}
