@@ -14,6 +14,10 @@
 	let url = socialLink.url ?? '';
 </script>
 
+<svelte:head>
+	<title>Social Links | Edit</title>
+</svelte:head>
+
 <div class="mx-auto w-full space-y-8">
 	<PageHeader back={() => goto('/dashboard/social')}>Edit Social Link</PageHeader>
 
