@@ -46,7 +46,7 @@
 	<CrudHeader hint="Manage projects">
 		<button
 			on:click={() => goto('/dashboard/projects/create')}
-			class="text-red-400 transition hover:text-red-300"
+			class="cursor-pointer text-red-400 transition hover:text-red-300"
 		>
 			Create
 		</button>

@@ -7,13 +7,13 @@
 
 <div class="flex gap-2">
 	{#if onEdit}
-		<button class="rounded p-2 hover:bg-white/10" on:click={onEdit}>
+		<button class="cursor-pointer rounded p-2 hover:bg-white/10" on:click={onEdit}>
 			<Edit size={16} />
 		</button>
 	{/if}
 
 	{#if onDelete}
-		<button class="rounded p-2 text-red-400 hover:bg-red-500/20" on:click={onDelete}>
+		<button class="cursor-pointer rounded p-2 text-red-400 hover:bg-red-500/20" on:click={onDelete}>
 			<Trash size={16} />
 		</button>
 	{/if}

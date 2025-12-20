@@ -15,7 +15,6 @@
 	let subtitle = project.subtitle;
 	let description = project.description;
 	let image = project.image;
-	// Make sure project.repoUrl and project.liveUrl are not null
 	let repoUrl = project.repoUrl ?? '';
 	let liveUrl = project.liveUrl ?? '';
 </script>
@@ -59,9 +58,9 @@
 							type="file"
 							name="image"
 							accept="image/*"
-							class="block w-full text-sm text-white file:mr-4 file:rounded-md
-								file:border-0 file:bg-white/10 file:px-4 file:py-2
-								file:text-white hover:file:bg-white/20"
+							class="block w-full cursor-pointer text-sm text-white file:mr-4
+								file:rounded-md file:border-0 file:bg-white/10 file:px-4
+								file:py-2 file:text-white hover:file:bg-white/20"
 						/>
 						<p class="text-xs text-white/40">
 							Optional. Upload new image to replace the current one.

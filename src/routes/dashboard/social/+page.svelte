@@ -46,7 +46,7 @@
 	<CrudHeader hint="Manage social links">
 		<button
 			on:click={() => goto('/dashboard/social/create')}
-			class="text-red-400 transition hover:text-red-300"
+			class="cursor-pointer text-red-400 transition hover:text-red-300"
 		>
 			Create
 		</button>
@@ -60,23 +60,23 @@
 			description="Try adjusting your search or create a new social link."
 		/>
 	{:else}
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {#each filteredSocialLinks as socialLink (socialLink.id)}
-                <Card>
-                    <h3 class="mb-1 font-semibold text-white">
-                        {socialLink.name}
-                    </h3>
+		<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+			{#each filteredSocialLinks as socialLink (socialLink.id)}
+				<Card>
+					<h3 class="mb-1 font-semibold text-white">
+						{socialLink.name}
+					</h3>
 
-                    <p class="mb-4 line-clamp-2 text-sm text-white/60">
-                        {socialLink.url}
-                    </p>
+					<p class="mb-4 line-clamp-2 text-sm text-white/60">
+						{socialLink.url}
+					</p>
 
-                    <CrudActions
-                        onEdit={() => goto(`/dashboard/social/${socialLink.id}/edit`)}
-                        onDelete={() => deleteSocialLink(socialLink.id)}
-                    />
-                </Card>
-            {/each}
-        </div>
+					<CrudActions
+						onEdit={() => goto(`/dashboard/social/${socialLink.id}/edit`)}
+						onDelete={() => deleteSocialLink(socialLink.id)}
+					/>
+				</Card>
+			{/each}
+		</div>
 	{/if}
 </div>
