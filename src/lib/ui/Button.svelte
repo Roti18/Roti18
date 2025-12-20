@@ -14,7 +14,7 @@
 		inline-flex items-center justify-center gap-2
 		rounded-lg font-medium transition
 		disabled:pointer-events-none disabled:opacity-50
-
+		cursor-pointer
 		{variant === 'default' && 'bg-red-600 text-white hover:bg-red-700'}
 		{variant === 'ghost' && 'bg-transparent text-white/70 hover:bg-white/10'}
 		{variant === 'danger' && 'bg-red-600/10 text-red-400 hover:bg-red-600/20'}
