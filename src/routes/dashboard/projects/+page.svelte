@@ -38,6 +38,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Projects</title>
+</svelte:head>
+
 <div class="space-y-6">
 	<CrudHeader hint="Manage projects">
 		<button
