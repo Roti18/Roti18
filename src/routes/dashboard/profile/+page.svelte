@@ -16,6 +16,10 @@
 	let profiless = data.profiles;
 </script>
 
+<svelte:head>
+	<title>Profile</title>
+</svelte:head>
+
 <div class="w-full space-y-6 overflow-x-hidden">
 	<CrudHeader hint="Manage profile" />
 
