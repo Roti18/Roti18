@@ -19,7 +19,7 @@
 </script>
 
 <svelte:head>
-	<title>M. Zamroni Fahreza - Portfolio</title>
+	<title>{data.hero.name}</title>
 </svelte:head>
 
 <div class="min-h-screen">
