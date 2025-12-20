@@ -11,6 +11,10 @@
 	export let data: { heroes: Hero[] };
 </script>
 
+<svelte:head>
+	<title>Hero</title>
+</svelte:head>
+
 <div class="space-y-6">
 	<CrudHeader hint="Manage hero section"></CrudHeader>
 
