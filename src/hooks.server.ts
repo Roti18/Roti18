@@ -1,30 +1,20 @@
+import { getCachedSession } from '$lib/server/cache/auth';
 import type { Handle } from '@sveltejs/kit';
 import * as auth from '$lib/server/auth';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const sessionToken = event.cookies.get(auth.sessionCookieName);
+	const token = event.cookies.get(auth.sessionCookieName);
 
-	if (sessionToken) {
-		const { session, user } = await auth.validateSessionToken(sessionToken);
-
-		if (session) {
-			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-		} else {
-			auth.deleteSessionTokenCookie(event.cookies);
-		}
-
-		event.locals.user = user;
-		event.locals.session = session;
-	} else {
+	if (!token) {
 		event.locals.user = null;
 		event.locals.session = null;
+		return resolve(event);
 	}
 
-	if (event.url.pathname.startsWith('/dashboard')) {
-		if (!event.locals.user) {
-			return Response.redirect(new URL('/login', event.url), 302);
-		}
-	}
+	const { user, session } = await getCachedSession(token);
+
+	event.locals.user = user;
+	event.locals.session = session;
 
 	return resolve(event);
 };
