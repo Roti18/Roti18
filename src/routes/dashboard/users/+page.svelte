@@ -36,6 +36,10 @@
 	);
 </script>
 
+<svelte:head>
+	<title>Users</title>
+</svelte:head>
+
 <div class="space-y-6">
 	<CrudHeader hint="Manage account">
 		<button
