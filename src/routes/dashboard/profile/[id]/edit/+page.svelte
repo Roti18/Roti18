@@ -19,6 +19,10 @@
 	let rightContent = profile?.rightText ?? '';
 </script>
 
+<svelte:head>
+	<title>Profile | Edit</title>
+</svelte:head>
+
 {#if !profile}
 	<EmptyState title="Profile not found" description="Profile ini tidak ditemukan" />
 {:else}
