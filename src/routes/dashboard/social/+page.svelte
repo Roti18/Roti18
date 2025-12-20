@@ -38,6 +38,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Social Links</title>
+</svelte:head>
+
 <div class="space-y-6">
 	<CrudHeader hint="Manage social links">
 		<button
