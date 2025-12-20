@@ -1,9 +1,9 @@
-type CacheEntry<T> = {
+type Entry<T> = {
 	value: T;
 	expiresAt: number;
 };
 
-const store = new Map<string, CacheEntry<unknown>>();
+const store = new Map<string, Entry<unknown>>();
 
 export function getCache<T>(key: string): T | null {
 	const entry = store.get(key);
