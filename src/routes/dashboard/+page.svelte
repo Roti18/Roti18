@@ -10,6 +10,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Dashboard</title>
+</svelte:head>
+
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:space-y-8 sm:py-8">
 	<div class="grid gap-4 sm:gap-6 lg:grid-cols-3">
 		<div class="lg:col-span-2">
