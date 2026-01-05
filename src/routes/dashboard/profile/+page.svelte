@@ -10,10 +10,10 @@
 	import TableCell from '$lib/ui/TableCell.svelte';
 	import TableHeaderCell from '$lib/ui/TableHeaderCell.svelte';
 	import CrudActions from '$lib/ui/CrudActions.svelte';
-	import { openAlert } from '$lib/stores/alert';
+	import { toastService } from '$lib/stores/toast.svelte';
 
-	export let data;
-	let profiless = data.profiles;
+	let { data } = $props();
+	let profiless = $derived(data.profiles);
 </script>
 
 <svelte:head>
@@ -24,7 +24,6 @@
 	<CrudHeader hint="Manage profile" />
 
 	{#if profiless.length > 0}
-		<!-- ================= DESKTOP TABLE ================= -->
 		<div class="hidden md:block">
 			<Table>
 				<TableHead>
@@ -45,12 +44,7 @@
 							<TableCell align="center">
 								<CrudActions
 									onEdit={() => goto(`/dashboard/profile/${profile.id}/edit`)}
-									onDelete={() =>
-										openAlert({
-											type: 'error',
-											title: 'Denied',
-											message: "Can't delete profile"
-										})}
+									onDelete={() => toastService.error("Can't delete profile")}
 								/>
 							</TableCell>
 						</TableRow>
@@ -59,7 +53,6 @@
 			</Table>
 		</div>
 
-		<!-- ================= MOBILE CARDS ================= -->
 		<div class="grid gap-4 md:hidden">
 			{#each profiless as profile}
 				<div class="space-y-3 rounded-xl bg-white/5 p-4">
@@ -87,12 +80,7 @@
 					<div class="pt-2">
 						<CrudActions
 							onEdit={() => goto(`/dashboard/profile/${profile.id}/edit`)}
-							onDelete={() =>
-								openAlert({
-									type: 'error',
-									title: 'Denied',
-									message: "Can't delete profile"
-								})}
+							onDelete={() => toastService.error("Can't delete profile")}
 						/>
 					</div>
 				</div>

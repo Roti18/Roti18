@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { Hero } from '$lib/server/db/schema';
-	import { openAlert } from '$lib/stores/alert';
+	import { toastService } from '$lib/stores/toast.svelte';
 
 	import Card from '$lib/ui/Card.svelte';
 	import CrudActions from '$lib/ui/CrudActions.svelte';
 	import CrudHeader from '$lib/ui/CrudHeader.svelte';
 	import EmptyState from '$lib/ui/EmptyState.svelte';
 
-	export let data: { heroes: Hero[] };
+	let { data } = $props();
 </script>
 
 <svelte:head>
@@ -44,12 +44,7 @@
 
 						<CrudActions
 							onEdit={() => goto(`/dashboard/hero/${hero.id}/edit`)}
-							onDelete={() =>
-								openAlert({
-									type: 'error',
-									title: 'Denied',
-									message: "Can't delete Hero"
-								})}
+							onDelete={() => toastService.error("Can't delete Hero")}
 						/>
 					</div>
 				</Card>
