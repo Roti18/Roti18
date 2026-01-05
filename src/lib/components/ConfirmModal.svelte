@@ -1,52 +1,53 @@
 <script lang="ts">
 	import Button from '$lib/ui/Button.svelte';
-	import { confirmStore, closeConfirm } from '$lib/stores/confirm';
+	import { confirmService } from '$lib/stores/confirm.svelte';
+	import { fade, scale } from 'svelte/transition';
 
 	async function handleConfirm() {
 		try {
-			await $confirmStore.onConfirm?.();
+			await confirmService.state.onConfirm?.();
 		} finally {
-			closeConfirm();
+			confirmService.close();
 		}
 	}
 </script>
 
-{#if $confirmStore.open}
-	<button
-		type="button"
-		class="fixed inset-0 z-40 bg-black/60"
-		aria-label="Close confirmation"
-		on:click={closeConfirm}
-	></button>
+{#if confirmService.state.open}
+	<div
+		class="fixed inset-0 z-[9998] flex items-center justify-center p-4"
+		in:fade={{ duration: 200 }}
+		out:fade={{ duration: 150 }}
+	>
+		<button
+			type="button"
+			class="absolute inset-0 bg-black/80 backdrop-blur-sm"
+			aria-label="Close confirmation"
+			onclick={() => confirmService.close()}
+		></button>
 
-	<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
 		<div
-			class="w-full max-w-md rounded-xl
-			       border border-white/10
-			       bg-zinc-900 p-6 shadow-xl"
+			class="relative w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl"
 			role="dialog"
 			aria-modal="true"
-			tabindex="0"
-			on:click|stopPropagation
-			on:keydown|stopPropagation
+			in:scale={{ duration: 300, start: 0.95 }}
 		>
-			<h2 class="text-lg font-semibold text-white">
-				{$confirmStore.title}
+			<h2 class="text-xl font-bold text-white">
+				{confirmService.state.title}
 			</h2>
 
-			{#if $confirmStore.description}
-				<p class="mt-2 text-sm text-white/60">
-					{$confirmStore.description}
+			{#if confirmService.state.description}
+				<p class="mt-3 text-sm leading-relaxed text-white/60">
+					{confirmService.state.description}
 				</p>
 			{/if}
 
-			<div class="mt-6 flex justify-end gap-3">
-				<Button type="button" variant="ghost" on:click={closeConfirm}>
-					{$confirmStore.cancelText ?? 'Cancel'}
+			<div class="mt-8 flex justify-end gap-3">
+				<Button type="button" variant="ghost" onclick={() => confirmService.close()}>
+					{confirmService.state.cancelText ?? 'Cancel'}
 				</Button>
 
-				<Button type="button" on:click={handleConfirm}>
-					{$confirmStore.confirmText ?? 'Confirm'}
+				<Button type="button" onclick={handleConfirm}>
+					{confirmService.state.confirmText ?? 'Confirm'}
 				</Button>
 			</div>
 		</div>
