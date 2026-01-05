@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { SocialLinks } from '$lib/server/db/schema';
-	import { openConfirm } from '$lib/stores/confirm';
+	import { confirmService } from '$lib/stores/confirm.svelte';
+	import { toastService } from '$lib/stores/toast.svelte';
 
 	import Card from '$lib/ui/Card.svelte';
 	import CrudHeader from '$lib/ui/CrudHeader.svelte';
@@ -9,29 +10,37 @@
 	import SearchInput from '$lib/ui/SearchInput.svelte';
 	import EmptyState from '$lib/ui/EmptyState.svelte';
 
-	export let data: { socialLinks: SocialLinks[] };
+	let { data } = $props();
 
-	let searchTerm = '';
+	let searchTerm = $state('');
 
-	$: filteredSocialLinks =
+	let filteredSocialLinks = $derived(
 		data.socialLinks?.filter(
-			(p) =>
+			(p: SocialLinks) =>
 				p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 				p.url.toLowerCase().includes(searchTerm.toLowerCase())
-		) ?? [];
+		) ?? []
+	);
 
-	async function deleteSocialLink(id: number) {
-		openConfirm({
+	async function deleteSocialLink(id: number, name: string) {
+		confirmService.open({
 			title: 'Delete Social Link?',
-			description: 'This action cannot be undone.',
-			confirmText: 'Delete',
+			description: `Are you sure you want to delete ${name}? This action cannot be undone.`,
+			confirmText: 'Delete Link',
 			onConfirm: async () => {
-				const res = await fetch(`/dashboard/social/${id}/delete`, {
-					method: 'POST'
-				});
+				try {
+					const res = await fetch(`/dashboard/social/${id}/delete`, {
+						method: 'POST'
+					});
 
-				if (res.ok) {
-					location.href = '/dashboard/social';
+					if (res.ok) {
+						toastService.success('Social link deleted successfully');
+						location.href = '/dashboard/social';
+					} else {
+						toastService.error('Failed to delete social link');
+					}
+				} catch (err) {
+					toastService.error('Network error. Please try again.');
 				}
 			}
 		});
@@ -45,14 +54,14 @@
 <div class="space-y-6">
 	<CrudHeader hint="Manage social links">
 		<button
-			on:click={() => goto('/dashboard/social/create')}
-			class="cursor-pointer text-red-400 transition hover:text-red-300"
+			onclick={() => goto('/dashboard/social/create')}
+			class="cursor-pointer font-medium text-red-500 transition hover:text-red-400"
 		>
-			Create
+			+ Create New Social Link
 		</button>
 	</CrudHeader>
 
-	<SearchInput placeholder="Search social links..." bind:value={searchTerm} />
+	<SearchInput placeholder="Search social links by name or URL..." bind:value={searchTerm} />
 
 	{#if filteredSocialLinks.length === 0}
 		<EmptyState
@@ -63,17 +72,17 @@
 		<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 			{#each filteredSocialLinks as socialLink (socialLink.id)}
 				<Card>
-					<h3 class="mb-1 font-semibold text-white">
+					<h3 class="mb-1 text-lg font-bold text-white">
 						{socialLink.name}
 					</h3>
 
-					<p class="mb-4 line-clamp-2 text-sm text-white/60">
+					<p class="mb-4 line-clamp-2 text-sm tracking-tight text-white/50">
 						{socialLink.url}
 					</p>
 
 					<CrudActions
 						onEdit={() => goto(`/dashboard/social/${socialLink.id}/edit`)}
-						onDelete={() => deleteSocialLink(socialLink.id)}
+						onDelete={() => deleteSocialLink(socialLink.id, socialLink.name)}
 					/>
 				</Card>
 			{/each}

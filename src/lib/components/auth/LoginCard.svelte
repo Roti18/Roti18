@@ -2,13 +2,15 @@
 	import { Eye, EyeOff, Mail, Lock } from '@lucide/svelte';
 	import Card from '$lib/ui/Card.svelte';
 	import Button from '$lib/ui/Button.svelte';
-	import { page } from '$app/stores'; // Import page store
+	import { enhance } from '$app/forms';
+	import { page } from '$app/state';
+	import { toastService } from '$lib/stores/toast.svelte';
 
-	let email = '';
-	let password = '';
-	let showPassword = false;
-	let emailError = '';
-	let passwordError = '';
+	let email = $state('');
+	let password = $state('');
+	let showPassword = $state(false);
+	let emailError = $state('');
+	let passwordError = $state('');
 
 	function validateEmail(value: string) {
 		if (!value) {
@@ -45,30 +47,46 @@
 		validatePassword(password);
 	}
 
-	function handleSubmit(e: Event) {
-		const isEmailValid = validateEmail(email);
-		const isPasswordValid = validatePassword(password);
-
-		if (!isEmailValid || !isPasswordValid) {
-			e.preventDefault();
-		}
-	}
-
 	function togglePassword() {
 		showPassword = !showPassword;
 	}
 </script>
 
 <Card hover={false}>
-	<form method="POST" action="?/login" on:submit={handleSubmit} class="space-y-6">
+	<form
+		method="POST"
+		action="?/login"
+		use:enhance={({ cancel }) => {
+			const isEmailValid = validateEmail(email);
+			const isPasswordValid = validatePassword(password);
+
+			if (!isEmailValid || !isPasswordValid) {
+				toastService.warning('Please fix the errors in the form');
+				cancel();
+				return;
+			}
+
+			return async ({ result }) => {
+				if (result.type === 'failure') {
+					const message = (result.data as { message?: string })?.message || 'Login failed';
+					toastService.error(message);
+				} else if (result.type === 'error') {
+					toastService.error('An unexpected error occurred');
+				} else if (result.type === 'success' || result.type === 'redirect') {
+					toastService.success('Welcome back!');
+				}
+			};
+		}}
+		class="space-y-6"
+	>
 		<div class="space-y-2">
 			<h2 class="text-3xl font-light tracking-wide text-white">Welcome Back</h2>
 			<p class="text-sm text-white/50">Log in to continue your creative journey</p>
 			<div class="h-0.5 w-16 bg-linear-to-r from-red-600 to-transparent"></div>
 		</div>
 
-		{#if $page.form?.error && !$page.form?.emailError && !$page.form?.passwordError}
-			<p class="text-red-400 text-sm">{$page.form.error}</p>
+		{#if page.form?.error && !page.form?.emailError && !page.form?.passwordError}
+			<p class="text-sm text-red-400">{page.form.error}</p>
 		{/if}
 
 		<div class="space-y-2">
@@ -83,7 +101,7 @@
 					type="email"
 					required
 					bind:value={email}
-					on:blur={handleEmailBlur}
+					onblur={handleEmailBlur}
 					placeholder="your@email.com"
 					class="w-full rounded-lg border bg-white/5
 						       py-2.5 pr-4 pl-11 text-white transition
@@ -91,8 +109,8 @@
 						       {emailError ? 'border-red-500' : 'border-white/10 focus:border-red-600/50'}"
 				/>
 			</div>
-			{#if $page.form?.emailError}
-				<p class="text-xs text-red-400">{$page.form.emailError}</p>
+			{#if page.form?.emailError}
+				<p class="text-xs text-red-400">{page.form.emailError}</p>
 			{:else if emailError}
 				<p class="text-xs text-red-400">{emailError}</p>
 			{/if}
@@ -110,7 +128,7 @@
 					type={showPassword ? 'text' : 'password'}
 					required
 					bind:value={password}
-					on:blur={handlePasswordBlur}
+					onblur={handlePasswordBlur}
 					placeholder="••••••••"
 					class="w-full rounded-lg border bg-white/5
 						       py-2.5 pr-11 pl-11 text-white transition
@@ -119,7 +137,7 @@
 				/>
 				<button
 					type="button"
-					on:click={togglePassword}
+					onclick={togglePassword}
 					class="absolute inset-y-0 right-0 flex items-center pr-4
 						       text-white/40 transition hover:text-white/70"
 				>
@@ -130,8 +148,8 @@
 					{/if}
 				</button>
 			</div>
-			{#if $page.form?.passwordError}
-				<p class="text-xs text-red-400">{$page.form.passwordError}</p>
+			{#if page.form?.passwordError}
+				<p class="text-xs text-red-400">{page.form.passwordError}</p>
 			{:else if passwordError}
 				<p class="text-xs text-red-400">{passwordError}</p>
 			{/if}

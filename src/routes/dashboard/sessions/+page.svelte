@@ -1,34 +1,43 @@
 <script lang="ts">
-	import { openConfirm } from '$lib/stores/confirm';
+	import { confirmService } from '$lib/stores/confirm.svelte';
+	import { toastService } from '$lib/stores/toast.svelte';
 	import SearchInput from '$lib/ui/SearchInput.svelte';
 	import Card from '$lib/ui/Card.svelte';
 	import CrudHeader from '$lib/ui/CrudHeader.svelte';
 	import EmptyState from '$lib/ui/EmptyState.svelte';
 	import Button from '$lib/ui/Button.svelte';
 
-	export let data;
+	let { data } = $props();
 
-	let searchTerm = '';
+	let searchTerm = $state('');
 
-	$: filtered =
+	let filtered = $derived(
 		data.sessions?.filter(
-			(s) =>
+			(s: any) =>
 				(s.id && s.id.toLowerCase().includes(searchTerm.toLowerCase())) ||
 				(s.userEmail && s.userEmail.toLowerCase().includes(searchTerm.toLowerCase())) ||
 				(s.userName && s.userName.toLowerCase().includes(searchTerm.toLowerCase()))
-		) ?? [];
+		) ?? []
+	);
 
 	async function deleteSession(id: string) {
-		openConfirm({
+		confirmService.open({
 			title: 'Delete Session?',
 			description: 'This will log the user out. This action cannot be undone.',
-			confirmText: 'Delete',
+			confirmText: 'Terminate Session',
 			onConfirm: async () => {
-				const res = await fetch(`/dashboard/sessions/${id}/delete`, {
-					method: 'POST'
-				});
-				if (res.ok) {
-					location.href = '/dashboard/sessions';
+				try {
+					const res = await fetch(`/dashboard/sessions/${id}/delete`, {
+						method: 'POST'
+					});
+					if (res.ok) {
+						toastService.success('Session terminated successfully');
+						location.href = '/dashboard/sessions';
+					} else {
+						toastService.error('Failed to terminate session');
+					}
+				} catch (err) {
+					toastService.error('Network error. Please try again.');
 				}
 			}
 		});
@@ -98,9 +107,9 @@
 							<Button
 								variant="danger"
 								class="w-full sm:w-auto"
-								on:click={() => deleteSession(session.id)}
+								onclick={() => deleteSession(session.id)}
 							>
-								Delete
+								Terminate
 							</Button>
 						</div>
 					</div>

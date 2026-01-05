@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { User } from '$lib/server/db/schema';
-	import { openConfirm } from '$lib/stores/confirm';
+	import { confirmService } from '$lib/stores/confirm.svelte';
+	import { toastService } from '$lib/stores/toast.svelte';
 
 	import Card from '$lib/ui/Card.svelte';
 	import Avatar from '$lib/ui/Avatar.svelte';
@@ -9,9 +10,9 @@
 	import CrudHeader from '$lib/ui/CrudHeader.svelte';
 	import CrudActions from '$lib/ui/CrudActions.svelte';
 	import EmptyState from '$lib/ui/EmptyState.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
-	let isMobile = false;
+	let isMobile = $state(false);
 
 	const updateIsMobile = () => {
 		isMobile = window.innerWidth < 768;
@@ -20,19 +21,23 @@
 	onMount(() => {
 		updateIsMobile();
 		window.addEventListener('resize', updateIsMobile);
-
-		return () => {
-			window.removeEventListener('resize', updateIsMobile);
-		};
 	});
 
-	export let data: { users: User[] };
-	let searchTerm = '';
+	onDestroy(() => {
+		if (typeof window !== 'undefined') {
+			window.removeEventListener('resize', updateIsMobile);
+		}
+	});
 
-	$: filteredUsers = data.users.filter(
-		(u) =>
-			u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			u.name?.toLowerCase().includes(searchTerm.toLowerCase())
+	let { data } = $props();
+	let searchTerm = $state('');
+
+	let filteredUsers = $derived(
+		data.users.filter(
+			(u: User) =>
+				u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				u.name?.toLowerCase().includes(searchTerm.toLowerCase())
+		)
 	);
 </script>
 
@@ -43,10 +48,10 @@
 <div class="space-y-6">
 	<CrudHeader hint="Manage account">
 		<button
-			on:click={() => goto('/dashboard/users/create')}
-			class="cursor-pointer text-red-400 transition hover:text-red-300"
+			onclick={() => goto('/dashboard/users/create')}
+			class="cursor-pointer font-medium text-red-500 transition hover:text-red-400"
 		>
-			Create
+			+ Create New User
 		</button>
 	</CrudHeader>
 
@@ -65,10 +70,10 @@
 							{/if}
 
 							<div>
-								<p class="truncate font-medium text-white">
+								<p class="truncate font-bold text-white">
 									{user.name || 'Unnamed User'}
 								</p>
-								<p class="truncate text-sm text-white/60">
+								<p class="truncate text-sm tracking-tight text-white/50">
 									{user.email}
 								</p>
 							</div>
@@ -77,18 +82,24 @@
 						<CrudActions
 							onEdit={() => goto(`/dashboard/users/${user.id}/edit`)}
 							onDelete={() =>
-								openConfirm({
+								confirmService.open({
 									title: 'Delete user?',
-									description: 'This action cannot be undone.',
-									confirmText: 'Delete',
-									cancelText: 'Cancel',
+									description: `Are you sure you want to delete ${user.name || user.email}? This action cannot be undone.`,
+									confirmText: 'Delete User',
 									onConfirm: async () => {
-										const res = await fetch(`/dashboard/users/${user.id}/delete`, {
-											method: 'POST'
-										});
+										try {
+											const res = await fetch(`/dashboard/users/${user.id}/delete`, {
+												method: 'POST'
+											});
 
-										if (res.ok) {
-											location.href = '/dashboard/users';
+											if (res.ok) {
+												toastService.success('User deleted successfully');
+												location.href = '/dashboard/users';
+											} else {
+												toastService.error('Failed to delete user');
+											}
+										} catch (err) {
+											toastService.error('Network error. Please try again.');
 										}
 									}
 								})}
