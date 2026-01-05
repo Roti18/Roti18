@@ -1,22 +1,29 @@
 <script lang="ts">
 	import type { Project as ProjectType } from '$lib/server/db/schema';
 
-	export let project: ProjectType;
+	let { project, onImageClick }: { project: ProjectType; onImageClick: (src: string) => void } =
+		$props();
 </script>
 
 <article
 	class="project-item fade-in flex h-full flex-col overflow-hidden rounded-lg border border-[#1A1A1A] bg-[#0F0F0F]"
 >
 	<div class="relative aspect-video overflow-hidden bg-black">
-		<img
-			src={project.image}
-			alt={project.title}
-			loading="lazy"
-			decoding="async"
-			width="800"
-			height="450"
-			class="project-image h-full w-full object-cover opacity-80 transition-transform duration-500 ease-in-out"
-		/>
+		<button
+			onclick={() => onImageClick(project.image)}
+			class="h-full w-full cursor-zoom-in overflow-hidden"
+			aria-label="Preview image"
+		>
+			<img
+				src={project.image}
+				alt={project.title}
+				loading="lazy"
+				decoding="async"
+				width="800"
+				height="450"
+				class="project-image h-full w-full object-cover opacity-80 transition-all duration-500 ease-in-out hover:scale-105 hover:opacity-100"
+			/>
+		</button>
 	</div>
 
 	<div class="flex grow flex-col p-4">
