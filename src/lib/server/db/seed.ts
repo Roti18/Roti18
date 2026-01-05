@@ -41,7 +41,7 @@ async function seed() {
 				description:
 					'A holistic re-imagination a wellness platform, emotive navigation and calming visuals.',
 				image: '/images/aurora.jpg',
-				url: '/projects/aurora'
+				liveUrl: '/projects/aurora'
 			},
 			{
 				id: 2,
@@ -49,7 +49,7 @@ async function seed() {
 				subtitle: 'INTERACTIVE ART INSTALLATION',
 				description: 'Immersive digital experience blending light and motion.',
 				image: '/images/solstice.jpg',
-				url: '/projects/solstice'
+				liveUrl: '/projects/solstice'
 			},
 			{
 				id: 3,
@@ -57,7 +57,7 @@ async function seed() {
 				subtitle: 'LUXURY PACKAGING SUITE',
 				description: 'Sophisticated brand materials for high-end products.',
 				image: '/images/echo.jpg',
-				url: '/projects/echo'
+				liveUrl: '/projects/echo'
 			}
 		])
 		.onConflictDoNothing();

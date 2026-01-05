@@ -3,11 +3,10 @@
 </script>
 
 <svelte:head>
-	<title>{$page.status}</title>
+	<title>M. Zamroni Fahreza | {$page.status}</title>
 </svelte:head>
 
 <div class="relative min-h-screen overflow-hidden bg-black text-white">
-	<!-- DESKTOP LEFT RAIL -->
 	<div class="absolute top-0 left-16 hidden h-full w-px bg-red-600 lg:block"></div>
 
 	<div
