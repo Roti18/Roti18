@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { profile } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { redirect, fail, error } from '@sveltejs/kit';
+import { invalidatePublicLanding } from '$lib/server/cache/public';
 
 export const load: PageServerLoad = async ({ params }) => {
 	try {
@@ -67,6 +68,7 @@ export const actions: Actions = {
 			throw error(500, 'Failed to update profile due to a server error.');
 		}
 
+		invalidatePublicLanding();
 		throw redirect(303, '/dashboard/profile');
 	}
 };

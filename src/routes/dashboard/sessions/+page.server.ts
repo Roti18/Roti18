@@ -4,7 +4,9 @@ import { session, user } from '$lib/server/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ depends }) => {
+	depends('app:sessions');
+
 	try {
 		const sessionList = await db
 			.select({

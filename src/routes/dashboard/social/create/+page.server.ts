@@ -2,6 +2,7 @@ import { fail, redirect, error } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { db } from '$lib/server/db';
 import { socialLinks } from '$lib/server/db/schema';
+import { invalidatePublicLanding } from '$lib/server/cache/public';
 
 export const actions: Actions = {
 	default: async ({ request }) => {
@@ -19,6 +20,8 @@ export const actions: Actions = {
 				name,
 				url
 			});
+
+			invalidatePublicLanding();
 		} catch (e) {
 			console.error('Failed to create social link:', e);
 			throw error(500, 'Failed to save social link due to a server error.');

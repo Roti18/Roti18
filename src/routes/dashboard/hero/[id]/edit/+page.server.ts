@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { hero } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { redirect, fail, error } from '@sveltejs/kit';
+import { invalidatePublicLanding } from '$lib/server/cache/public';
 
 export const load: PageServerLoad = async ({ params }) => {
 	try {
@@ -54,6 +55,8 @@ export const actions: Actions = {
 					tagline
 				})
 				.where(eq(hero.id, id));
+
+			invalidatePublicLanding();
 		} catch (e) {
 			console.error('Failed to update hero section:', e);
 			throw error(500, 'Failed to update hero data due to a server error.');

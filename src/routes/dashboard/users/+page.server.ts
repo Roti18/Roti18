@@ -4,7 +4,9 @@ import { user } from '$lib/server/db/schema';
 import { desc } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ depends }) => {
+	depends('app:users');
+
 	try {
 		const users = await db.select().from(user).orderBy(desc(user.id));
 		return { users };

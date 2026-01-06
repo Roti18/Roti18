@@ -4,7 +4,9 @@ import { socialLinks } from '$lib/server/db/schema';
 import { desc } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ depends }) => {
+	depends('app:social');
+
 	try {
 		const allSocialLinks = await db.select().from(socialLinks).orderBy(desc(socialLinks.id));
 

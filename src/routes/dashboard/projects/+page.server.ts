@@ -4,7 +4,9 @@ import { projects } from '$lib/server/db/schema';
 import { desc } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ depends }) => {
+	depends('app:projects');
+
 	try {
 		const allProjects = await db.select().from(projects).orderBy(desc(projects.id));
 

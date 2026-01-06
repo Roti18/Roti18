@@ -1,7 +1,6 @@
 import { getCache, setCache } from './memory';
 import { db } from '$lib/server/db';
 import { profile, projects } from '$lib/server/db/schema';
-// import { eq } from 'drizzle-orm';
 
 type DashboardData = {
 	profile: typeof profile.$inferSelect | null;

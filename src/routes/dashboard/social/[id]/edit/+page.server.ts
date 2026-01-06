@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { socialLinks } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { redirect, fail, error } from '@sveltejs/kit';
+import { invalidatePublicLanding } from '$lib/server/cache/public';
 
 export const load: PageServerLoad = async ({ params }) => {
 	try {
@@ -52,10 +53,10 @@ export const actions: Actions = {
 			if (e instanceof Error && 'status' in e && typeof e.status === 'number') {
 				throw e; // Re-throw SvelteKit's own errors
 			}
-			console.error('Failed to update social link:', e);
 			throw error(500, 'Failed to update social link due to a server error.');
 		}
 
+		invalidatePublicLanding();
 		throw redirect(303, '/dashboard/social');
 	}
 };

@@ -27,3 +27,15 @@ export function setCache<T>(key: string, value: T, ttlMs: number) {
 export function deleteCache(key: string) {
 	store.delete(key);
 }
+
+export function invalidatePattern(pattern: string) {
+	for (const key of store.keys()) {
+		if (key.startsWith(pattern)) {
+			store.delete(key);
+		}
+	}
+}
+
+export function clearAllCache() {
+	store.clear();
+}

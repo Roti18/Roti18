@@ -3,7 +3,9 @@ import { db } from '$lib/server/db';
 import { profile } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ depends }) => {
+	depends('app:profile');
+
 	try {
 		const profiles = await db.select().from(profile);
 		return { profiles };

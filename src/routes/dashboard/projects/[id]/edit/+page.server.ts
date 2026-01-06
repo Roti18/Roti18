@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { redirect, fail, error } from '@sveltejs/kit';
 import { put, del } from '@vercel/blob';
 import sharp from 'sharp';
+import { invalidatePublicLanding } from '$lib/server/cache/public';
 
 function normalizeTitle(title: string) {
 	return title
@@ -109,6 +110,7 @@ export const actions: Actions = {
 			throw error(500, 'Failed to update project due to a server error.');
 		}
 
+		invalidatePublicLanding();
 		throw redirect(303, '/dashboard/projects');
 	}
 };

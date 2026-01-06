@@ -4,6 +4,7 @@ import { db } from '$lib/server/db';
 import { projects } from '$lib/server/db/schema';
 import { put } from '@vercel/blob';
 import sharp from 'sharp';
+import { invalidatePublicLanding } from '$lib/server/cache/public';
 
 function normalizeTitle(title: string) {
 	return title
@@ -57,6 +58,8 @@ export const actions: Actions = {
 				repoUrl,
 				liveUrl
 			});
+
+			invalidatePublicLanding();
 		} catch (e) {
 			console.error('Failed to create project:', e);
 			throw error(500, 'Failed to create new project due to a server error.');

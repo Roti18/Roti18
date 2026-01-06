@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { del } from '@vercel/blob';
+import { invalidatePublicLanding } from '$lib/server/cache/public';
 
 export const POST: RequestHandler = async ({ params, locals }) => {
 	if (!locals.user) {
@@ -37,6 +38,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 		await db.delete(projects).where(eq(projects.id, id));
 
+		invalidatePublicLanding();
 		return json({ success: true });
 	} catch (e) {
 		if (e instanceof Error && 'status' in e && typeof e.status === 'number') {

@@ -3,7 +3,9 @@ import { db } from '$lib/server/db';
 import { hero } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ depends }) => {
+	depends('app:hero');
+
 	try {
 		const heroes = await db.select().from(hero);
 		return {
