@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julian Aris — Software Engineer</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --text: #ffffff;
+            --text-dim: #888888;
+            --accent: #ffffff;
+            --border: #222222;
+            --font-main: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+            --font-mono: "SF Mono", "Fira Code", monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-main);
+            line-height: 1.25;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* --- NAV --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 40px;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .nav-logo {
+            font-weight: 900;
+            text-decoration: none;
+            color: white;
+            font-size: 1.5rem;
+            letter-spacing: -0.05em;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: right;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        /* --- HERO --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(4rem, 15vw, 12rem);
+            font-weight: 900;
+            letter-spacing: -0.06em;
+            line-height: 0.8;
+            margin-left: -0.05em;
+            margin-bottom: 40px;
+        }
+
+        .hero-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: flex-end;
+        }
+
+        .hero h2 {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+        }
+
+        .hero .positioning {
+            font-size: 2.5rem;
+            max-width: 800px;
+            font-weight: 400;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .hero .positioning b {
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        /* --- SECTIONS --- */
+        section {
+            padding: 160px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .section-header {
+            margin-bottom: 100px;
+        }
+
+        .big-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            color: var(--text-dim);
+            display: block;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            line-height: 0.9;
+        }
+
+        /* --- EXPERTISE --- */
+        .expertise-typo {
+            display: flex;
+            flex-direction: column;
+            gap: 80px;
+        }
+
+        .expertise-item {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            align-items: baseline;
+            gap: 40px;
+        }
+
+        .expertise-num {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--text-dim);
+        }
+
+        .expertise-content p {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            max-width: 500px;
+        }
+
+        /* --- PROJECTS PREVIEW --- */
+        .projects-preview {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-card {
+            display: grid;
+            grid-template-columns: 100px 1fr 1fr;
+            gap: 40px;
+            text-decoration: none;
+            color: inherit;
+            padding: 60px 0;
+            border-top: 1px solid var(--border);
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .project-card:hover {
+            background: #080808;
+        }
+
+        .project-num {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--text-dim);
+        }
+
+        .preview-box {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #111;
+            overflow: hidden;
+            filter: grayscale(1);
+            opacity: 0.3;
+            transition: all 0.5s ease;
+        }
+
+        .project-card:hover .preview-box {
+            opacity: 1;
+            filter: grayscale(0);
+            transform: scale(0.98);
+        }
+
+        .preview-visual {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .vis-1 {
+            background: linear-gradient(135deg, #1e1e1e, #000);
+        }
+
+        .vis-2 {
+            background: radial-gradient(circle, #222, #000);
+        }
+
+        .project-name {
+            font-size: clamp(2rem, 4vw, 4rem);
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            line-height: 0.9;
+        }
+
+        .view-all-link {
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: white;
+            display: inline-block;
+            margin-top: 60px;
+            border-bottom: 4px solid white;
+            transition: transform 0.3s ease;
+        }
+
+        .view-all-link:hover {
+            transform: translateX(10px);
+        }
+
+        /* --- STACK --- */
+        .stack-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px 60px;
+        }
+
+        .stack-item {
+            font-size: clamp(1.5rem, 4vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            color: var(--border);
+            transition: color 0.3s ease;
+            cursor: default;
+        }
+
+        .stack-item:hover {
+            color: white;
+        }
+
+        /* --- ABOUT --- */
+        .about-typo {
+            font-size: 2.5rem;
+            font-weight: 400;
+            line-height: 1.1;
+            max-width: 900px;
+            letter-spacing: -0.02em;
+        }
+
+        .about-typo span {
+            color: var(--text-dim);
+        }
+
+        .about-typo b {
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        /* --- CONTACT --- */
+        .contact-typo {
+            padding: 200px 0;
+            text-align: center;
+        }
+
+        .contact-typo h2 {
+            font-size: clamp(3rem, 12vw, 10rem);
+            margin-bottom: 40px;
+        }
+
+        .contact-email {
+            font-size: 2rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            padding: 20px 0;
+            display: inline-block;
+            border-bottom: 10px solid white;
+            transition: transform 0.3s ease;
+        }
+
+        .contact-email:hover {
+            transform: skewX(-10deg);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 24px;
+            }
+
+            .hero h1 {
+                font-size: 5rem;
+            }
+
+            .hero-meta {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .hero .positioning {
+                font-size: 1.5rem;
+            }
+
+            .expertise-item {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .expertise-content h3 {
+                font-size: 2rem;
+            }
+
+            .about-typo {
+                font-size: 1.5rem;
+            }
+
+            nav {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">JA.</a>
+            <div class="nav-links">
+                <a href="#expertise">Expertise</a>
+                <a href="#stack">Stack</a>
+                <a href="projects.html">Projects</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- Hero -->
+        <main class="hero fade-in">
+            <h1>JULIAN<br>ARIS</h1>
+            <div class="hero-meta">
+                <h2>Software & Systems Engineer</h2>
+                <p class="positioning">Developing <b>resilient</b> infrastructure and <b>high-performance</b> tooling
+                    for distributed environments.</p>
+            </div>
+        </main>
+
+        <!-- Expertise -->
+        <section id="expertise" class="fade-in">
+            <span class="big-label">01 // Expertise</span>
+            <div class="expertise-typo">
+                <div class="expertise-item">
+                    <span class="expertise-num">A.</span>
+                    <div class="expertise-content">
+                        <h3>ARCHITECTURE</h3>
+                        <p>Designing modular systems that scale without accumulating technical debt.</p>
+                    </div>
+                </div>
+                <div class="expertise-item">
+                    <span class="expertise-num">B.</span>
+                    <div class="expertise-content">
+                        <h3>PERFORMANCE</h3>
+                        <p>Optimizing critical paths to reduce latency and infrastructure costs.</p>
+                    </div>
+                </div>
+                <div class="expertise-item">
+                    <span class="expertise-num">C.</span>
+                    <div class="expertise-content">
+                        <h3>INTERFACES</h3>
+                        <p>Developing robust component architectures for data-heavy applications.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Selected Systems -->
+        <section id="selected-systems" class="fade-in">
+            <span class="big-label">02 // Systems</span>
+            <h2>SELECTED SYSTEMS</h2>
+
+            <div class="projects-preview">
+                <a href="projects.html" class="project-card">
+                    <span class="project-num">01.</span>
+                    <h2 class="project-name">Nexus<br>Engine</h2>
+                    <div class="preview-box">
+                        <div class="preview-visual vis-1"></div>
+                    </div>
+                </a>
+                <a href="projects.html" class="project-card">
+                    <span class="project-num">02.</span>
+                    <h2 class="project-name">Aether<br>Core</h2>
+                    <div class="preview-box">
+                        <div class="preview-visual vis-2"></div>
+                    </div>
+                </a>
+            </div>
+
+            <a href="projects.html" class="view-all-link">→ VIEW ALL PROJECTS</a>
+        </section>
+
+        <!-- Stack -->
+        <section id="stack" class="fade-in">
+            <span class="big-label">03 // Stack</span>
+            <div class="stack-cloud">
+                <div class="stack-item">TYPESCRIPT</div>
+                <div class="stack-item">RUST</div>
+                <div class="stack-item">GO</div>
+                <div class="stack-item">REACT</div>
+                <div class="stack-item">WASM</div>
+                <div class="stack-item">AWS</div>
+                <div class="stack-item">DOCKER</div>
+                <div class="stack-item">POSTGRES</div>
+                <div class="stack-item">K8S</div>
+            </div>
+        </section>
+
+        <!-- About -->
+        <section id="about" class="fade-in">
+            <span class="big-label">04 // Mindset</span>
+            <div class="about-typo">
+                Engineering rooted in <b>clarity</b> and <b>predictability</b>. <span>I prioritize stable, long-term
+                    solutions over fleeting trends.</span>
+                Bridging the gap between <b>complex backend logic</b> and <b>intuitive systems</b>.
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact" class="contact-typo fade-in">
+            <span class="big-label">05 // Connect</span>
+            <h2>LET'S BUILD.</h2>
+            <a href="mailto:engineering@julianaris.com" class="contact-email">ENGINEERING@JULIANARIS.COM</a>
+        </section>
+
+    </div>
+
+</body>
+
+</html>
