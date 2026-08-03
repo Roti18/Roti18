@@ -369,7 +369,7 @@ function onSongPlay(song) {
 	<input type="hidden" name="coverUrl" value={coverUrl} />
 
 	<!-- Dedicated Music Cover Uploader (WebP R2) -->
-	<HeroCoverUploader bind:coverUrl articleSlug="music" />
+	<HeroCoverUploader bind:coverUrl folder="music" />
 	<FormInput id="track-spotify" name="spotifyUrl" type="url" label="Spotify Link (Optional)" value={editingTrack?.spotifyUrl || ''} placeholder="https://open.spotify.com/track/..." />
 </FormModal>
 
