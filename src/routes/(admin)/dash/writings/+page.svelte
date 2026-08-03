@@ -234,8 +234,6 @@
 		placeholder="my-custom-url-slug"
 	/>
 
-	<!-- Dedicated Hero Cover Uploader -->
-	<HeroCoverUploader bind:coverUrl {content} articleSlug={editingItem?.slug || 'new-article'} />
 
 	<FormInput
 		id="writing-excerpt"
