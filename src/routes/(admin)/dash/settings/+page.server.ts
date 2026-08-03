@@ -6,7 +6,6 @@ import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const adminEmails = (env.ADMIN_EMAILS || process.env.ADMIN_EMAILS || '').split(',').map((e) => e.trim());
-	const webhookSecret = env.MUSIC_WEBHOOK_SECRET || process.env.MUSIC_WEBHOOK_SECRET || 'brian_music_secret_123';
 
 	const [setting] = await db.select().from(appSettings).where(eq(appSettings.key, 'maintenance_mode')).limit(1);
 	const maintenanceMode = setting ? setting.value === 'true' : false;
@@ -14,7 +13,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	return {
 		user: locals.user,
 		adminEmails,
-		webhookSecret,
 		maintenanceMode
 	};
 };
