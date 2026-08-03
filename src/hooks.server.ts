@@ -1,13 +1,13 @@
 import type { Handle } from '@sveltejs/kit';
 import { redirect, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { user, session, appSettings } from '$lib/server/db/schema';
+import { appSettings } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { env } from '$env/dynamic/private';
 import { auth } from '$lib/server/auth';
 
 /**
- * Returns array of admin emails configured in ADMIN_EMAILS (.env).
+ * Returns array of admin emails configured in ADMIN_EMAILS (.env / Vercel env).
  * Supports comma-separated emails for multiple admin accounts.
  */
 function getAdminEmails(): string[] {
@@ -18,22 +18,17 @@ function getAdminEmails(): string[] {
 		.filter(Boolean);
 }
 
-// Maintenance mode is read on every non-admin request; cache the DB result briefly.
-let cachedMaintenance: { value: boolean; at: number } | null = null;
-const MAINTENANCE_CACHE_TTL = 30_000; // 30 seconds
-
+/**
+ * Check if maintenance mode is enabled in DB (fresh lookup per request).
+ */
 async function isMaintenanceMode(): Promise<boolean> {
-	if (cachedMaintenance && Date.now() - cachedMaintenance.at < MAINTENANCE_CACHE_TTL) {
-		return cachedMaintenance.value;
-	}
 	try {
 		const [setting] = await db.select().from(appSettings).where(eq(appSettings.key, 'maintenance_mode')).limit(1);
-		cachedMaintenance = { value: setting?.value === 'true', at: Date.now() };
+		return setting?.value === 'true';
 	} catch (err) {
-		console.error('[hooks] Failed to read maintenance_mode:', err);
-		cachedMaintenance = { value: false, at: Date.now() };
+		console.error('[hooks] Failed to read maintenance_mode from DB:', err);
+		return false;
 	}
-	return cachedMaintenance.value;
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -85,9 +80,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	// 3. Maintenance Mode Check (with short cache)
+	// 3. Maintenance Mode Check
+	let activeMaintenance = false;
 	if (!currentUser?.isAdmin && !pathname.startsWith('/api') && !pathname.startsWith('/auth')) {
-		if (await isMaintenanceMode()) {
+		activeMaintenance = await isMaintenanceMode();
+		if (activeMaintenance) {
 			throw error(503, {
 				message: 'System Under Maintenance: We are currently performing scheduled upgrades. Please check back shortly.'
 			});
@@ -96,10 +93,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const response = await resolve(event);
 
-	// 4. CDN + browser caching for logged-out visitors on public pages.
-	// Logged-in responses are never cached (session/private data).
-	if (currentUser === null && !pathname.startsWith('/api') && !pathname.startsWith('/auth')) {
-		response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+	// 4. Cache-Control: Only cache public pages when NOT in maintenance mode
+	if (!activeMaintenance && currentUser === null && !pathname.startsWith('/api') && !pathname.startsWith('/auth') && !pathname.startsWith('/dash')) {
+		response.headers.set('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
+	} else {
+		response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 	}
 
 	return response;
