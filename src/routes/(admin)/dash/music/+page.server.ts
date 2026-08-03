@@ -3,7 +3,6 @@ import { db } from '$lib/server/db';
 import { music } from '$lib/server/db/schema';
 import { eq, desc, asc, sql } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async () => {
 	const tracks = await db
@@ -11,11 +10,8 @@ export const load: PageServerLoad = async () => {
 		.from(music)
 		.orderBy(desc(music.playedAt), asc(music.sortOrder));
 
-	const webhookSecret = env.MUSIC_WEBHOOK_SECRET || process.env.MUSIC_WEBHOOK_SECRET || 'brian_music_secret_123';
-
 	return {
-		tracks,
-		webhookSecret
+		tracks
 	};
 };
 
