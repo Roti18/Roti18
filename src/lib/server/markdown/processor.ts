@@ -1,7 +1,8 @@
-import { marked } from 'marked';
-import { createHighlighter } from 'shiki';
+import { Marked } from 'marked';
+import { createHighlighter, type Highlighter } from 'shiki';
+import sanitizeHtml from 'sanitize-html';
 
-let highlighterPromise: ReturnType<typeof createHighlighter> | null = null;
+let highlighterPromise: Promise<Highlighter> | null = null;
 
 function getHighlighter() {
 	if (!highlighterPromise) {
@@ -26,6 +27,58 @@ export interface ProcessedMarkdown {
 	toc: TocItem[];
 }
 
+const sanitizeOptions: sanitizeHtml.IOptions = {
+	allowedTags: [
+		'p', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+		'a', 'img', 'figure', 'figcaption', 'hr',
+		'strong', 'em', 'del', 'code', 'pre',
+		'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
+		'ul', 'ol', 'li', 'span', 'div'
+	],
+	allowedAttributes: {
+		a: ['href', 'title', 'target', 'rel'],
+		img: ['src', 'alt', 'title', 'loading', 'decoding', 'width', 'height', 'data-pswp-src'],
+		th: ['class'],
+		td: ['class'],
+		code: ['class'],
+		pre: ['class'],
+		span: ['class'],
+		div: ['class'],
+		p: ['class'],
+		figure: ['class'],
+		figcaption: ['class'],
+		h1: ['class', 'id'],
+		h2: ['class', 'id'],
+		h3: ['class', 'id'],
+		h4: ['class', 'id'],
+		h5: ['class', 'id'],
+		h6: ['class', 'id'],
+		blockquote: ['class'],
+		table: ['class'],
+		hr: ['class']
+	},
+	allowedSchemes: ['http', 'https', 'mailto'],
+	allowedSchemesByTag: {
+		img: ['http', 'https', 'data']
+	},
+	allowProtocolRelative: false
+};
+
+function slugify(text: string): string {
+	return text
+		.toLowerCase()
+		.trim()
+		.replace(/[^\w\s-]/g, '')
+		.replace(/\s+/g, '-')
+		.replace(/-+/g, '-')
+		.replace(/^-|-$/g, '') || `heading-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+/**
+ * Renders untrusted markdown to sanitized HTML with heading ids + TOC.
+ * Creates a fresh Marked instance per call; marked's renderer is global state
+ * and mutating it would race between concurrent requests.
+ */
 export async function processMarkdown(markdownText: string): Promise<ProcessedMarkdown> {
 	if (!markdownText) {
 		return { html: '', wordCount: 0, readingTimeMinutes: 0, toc: [] };
@@ -37,74 +90,86 @@ export async function processMarkdown(markdownText: string): Promise<ProcessedMa
 	const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
 
 	const toc: TocItem[] = [];
+	const seenIds = new Set<string>();
 
-	// Configure marked renderer for custom heading IDs & syntax highlighting
-	const renderer = new marked.Renderer();
+	const marked = new Marked();
 
-	renderer.heading = (item: any) => {
-		const text = item.text || '';
-		const level = item.depth || item.level || 2;
-		const id = text
-			.toLowerCase()
-			.replace(/[^\w\s-]/g, '')
-			.replace(/\s+/g, '-');
+	const renderer = {
+		heading({ text, depth }: { text: string; depth: number }) {
+			let id = slugify(text);
+			while (seenIds.has(id)) {
+				id = `${id}-${seenIds.size + 1}`;
+			}
+			seenIds.add(id);
 
-		if (level <= 3) {
-			toc.push({ id, text, level });
-		}
+			if (depth <= 3) {
+				toc.push({ id, text, level: depth });
+			}
 
-		return `<h${level} id="${id}" class="group relative font-bold text-white font-['Space_Grotesk'] mt-8 mb-4 tracking-tight">
-			<a href="#${id}" class="no-underline text-white hover:text-red-400">
+			return `<h${depth} id="${id}" class="group relative font-bold text-white font-['Space_Grotesk'] mt-8 mb-4 tracking-tight">
+				<a href="#${id}" class="no-underline text-white hover:text-red-400">
+					${text}
+				</a>
+			</h${depth}>`;
+		},
+
+		image({ href, title, text }: { href: string; title: string | null; text: string }) {
+			const alt = title || text || '';
+			const isWebp = href.endsWith('.webp') || href.includes('opt_');
+
+			return `<figure class="my-6 rounded-2xl overflow-hidden border border-[#222222] bg-[#121212]">
+				<img
+					src="${href}"
+					alt="${alt}"
+					loading="lazy"
+					decoding="async"
+					class="w-full h-auto object-cover rounded-2xl cursor-zoom-in transition-transform hover:scale-[1.01]"
+					data-pswp-src="${href}"
+				/>
+				${alt ? `<figcaption class="p-2 text-center text-xs font-mono text-[#777777] border-t border-[#1a1a1a]">${alt}</figcaption>` : ''}
+			</figure>`;
+		},
+
+		blockquote({ text }: { text: string }) {
+			return `<blockquote class="my-6 border-l-4 border-red-500/80 bg-red-500/5 p-4 rounded-r-xl text-xs font-mono text-[#ededed] italic space-y-2">
 				${text}
-			</a>
-		</h${level}>`;
-	};
+			</blockquote>`;
+		},
 
-	renderer.image = (item) => {
-		const href = item.href || '';
-		const title = item.title || item.text || '';
-		const isWebp = href.endsWith('.webp') || href.includes('opt_');
+		table(token: any) {
+			const header = token.header
+				.map((cell: any) => `<th class="px-4 py-3 text-left">${cell.text}</th>`)
+				.join('');
+			const rows = token.rows
+				.map((row: any) => `<tr class="border-b border-[#1e1e1e]">${row.map((cell: any) => `<td class="px-4 py-3">${cell.text}</td>`).join('')}</tr>`)
+				.join('');
 
-		return `<figure class="my-6 rounded-2xl overflow-hidden border border-[#222222] bg-[#121212]">
-			<img
-				src="${href}"
-				alt="${title}"
-				loading="lazy"
-				decoding="async"
-				class="w-full h-auto object-cover rounded-2xl cursor-zoom-in transition-transform hover:scale-[1.01]"
-				data-pswp-src="${href}"
-			/>
-			${title ? `<figcaption class="p-2 text-center text-xs font-mono text-[#777777] border-t border-[#1a1a1a]">${title}</figcaption>` : ''}
-		</figure>`;
-	};
-
-	renderer.blockquote = (item) => {
-		return `<blockquote class="my-6 border-l-4 border-red-500/80 bg-red-500/5 p-4 rounded-r-xl text-xs font-mono text-[#ededed] italic space-y-2">
-			${item.text}
-		</blockquote>`;
-	};
-
-	renderer.table = (item) => {
-		return `<div class="my-6 overflow-x-auto rounded-2xl border border-[#222222] bg-[#121212]">
-			<table class="w-full text-left text-xs text-[#ededed]">
-				<thead class="bg-[#181818] font-mono text-[#888888] uppercase border-b border-[#222222]">
-					${item.header}
-				</thead>
-				<tbody class="divide-y divide-[#1e1e1e]">
-					${item.rows}
-				</tbody>
-			</table>
-		</div>`;
+			return `<div class="my-6 overflow-x-auto rounded-2xl border border-[#222222] bg-[#121212]">
+				<table class="w-full text-left text-xs text-[#ededed]">
+					<thead class="bg-[#181818] font-mono text-[#888888] uppercase border-b border-[#222222]">
+						<tr>${header}</tr>
+					</thead>
+					<tbody class="divide-y divide-[#1e1e1e]">
+						${rows}
+					</tbody>
+				</table>
+			</div>`;
+		}
 	};
 
 	marked.use({ renderer });
 
-	let rawHtml = await marked.parse(markdownText);
+	const rawHtml = await marked.parse(markdownText);
+
+	// Sanitize before handing HTML to the client; strips scripts, on* handlers,
+	// javascript: URLs, and anything else not on the whitelist.
+	const sanitized = sanitizeHtml(rawHtml, sanitizeOptions);
 
 	// Add Shiki Syntax Highlighting & Copy Code Button to code blocks
+	let finalHtml = sanitized;
 	try {
 		const hl = await getHighlighter();
-		rawHtml = rawHtml.replace(/<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g, (_, lang, code) => {
+		finalHtml = sanitized.replace(/<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g, (_, lang, code) => {
 			const decodedCode = code.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"');
 			let highlighted = decodedCode;
 			try {
@@ -133,7 +198,7 @@ export async function processMarkdown(markdownText: string): Promise<ProcessedMa
 	}
 
 	return {
-		html: rawHtml,
+		html: finalHtml,
 		wordCount,
 		readingTimeMinutes,
 		toc
