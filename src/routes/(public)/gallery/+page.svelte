@@ -101,10 +101,10 @@
 </svelte:head>
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-8">
-	<div class="grid grid-cols-2 md:grid-cols-3 gap-5" bind:this={gridEl} id="gallery-grid">
+	<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" bind:this={gridEl} id="gallery-grid">
 		{#each data.photos as photo}
 			<button
-				class="gallery-item group relative aspect-3/2 overflow-hidden rounded-xl bg-[#141414] cursor-pointer text-left border border-[#1f1f1f] shadow-lg"
+				class="gallery-item group relative aspect-4/3 overflow-hidden rounded-2xl bg-[#141414] cursor-pointer text-left border border-[#1f1f1f] shadow-lg flex items-center justify-center"
 				onclick={() => openPhoto(photo)}
 				id="gallery-{photo.slug}"
 			>
@@ -116,14 +116,14 @@
 					class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
 				/>
 				<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-					<span class="text-sm font-medium text-white">{photo.title}</span>
+					<span class="text-sm font-medium text-white font-['Space_Grotesk']">{photo.title}</span>
 				</div>
 			</button>
 		{/each}
 	</div>
 </div>
 
-<!-- Shallow Routing Modal (Left-Aligned Photo Details) -->
+<!-- Shallow Routing Modal (Centered Photo Details) -->
 {#if selectedPhoto}
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
@@ -135,19 +135,19 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<div
-			class="relative max-w-4xl max-h-[90vh] w-full flex flex-col items-start cursor-default"
+			class="relative max-w-4xl max-h-[90vh] w-full flex flex-col items-center justify-center cursor-default mx-auto text-center"
 			onclick={(e) => e.stopPropagation()}
 			bind:this={modalImageEl}
 		>
 			<img
 				src={selectedPhoto.imageUrl}
 				alt={selectedPhoto.title}
-				class="max-h-[78vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-[#2a2a2a]"
+				class="max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-[#2a2a2a] mx-auto"
 			/>
-			<div class="mt-3 w-full text-left space-y-1">
-				<h2 class="text-base font-semibold text-[#ededed]">{selectedPhoto.title}</h2>
+			<div class="mt-4 w-full text-center space-y-1">
+				<h2 class="text-base font-semibold text-[#ededed] font-['Space_Grotesk']">{selectedPhoto.title}</h2>
 				{#if selectedPhoto.shortDesc}
-					<p class="text-sm text-[#a1a1a1]">{selectedPhoto.shortDesc}</p>
+					<p class="text-sm text-[#a1a1a1] max-w-[60ch] mx-auto">{selectedPhoto.shortDesc}</p>
 				{/if}
 				{#if selectedPhoto.cameraDesc}
 					<p class="text-xs text-[#666666] font-mono">{selectedPhoto.cameraDesc}</p>
