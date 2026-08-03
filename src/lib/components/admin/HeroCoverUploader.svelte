@@ -2,7 +2,7 @@
 	import { Upload, ImageIcon, Trash2, RefreshCw, Sparkles, FileImage, Check } from "lucide-svelte";
 	import AssetManager from "./AssetManager.svelte";
 
-	let { coverUrl = $bindable(""), content = "", articleSlug = "new-article" } = $props();
+	let { coverUrl = $bindable(""), content = "", articleSlug = "new-article", folder = "" } = $props();
 
 	let uploading = $state(false);
 	let uploadError = $state<string | null>(null);
@@ -15,8 +15,9 @@
 		uploadError = null;
 
 		try {
+			const targetFolder = folder ? folder : `writing/${articleSlug}`;
 			const formData = new FormData();
-			formData.append("folder", `writing/${articleSlug}`);
+			formData.append("folder", targetFolder);
 			formData.append("file", files[0]);
 
 			const res = await fetch("/api/upload", { method: "POST", body: formData });
@@ -65,7 +66,7 @@
 
 <div class="space-y-2">
 	<div class="flex items-center justify-between">
-		<span class="text-[#a1a1a1] font-medium text-xs">Hero Cover Image (WebP)</span>
+		<span class="text-[#a1a1a1] font-medium text-xs">Image / Cover Upload (WebP)</span>
 		<div class="flex items-center gap-2">
 			{#if !coverUrl && content}
 				<button
@@ -98,11 +99,11 @@
 		<!-- Cover Image Preview Card with Quick Actions -->
 		<div class="relative rounded-2xl border border-[#222222] bg-[#121212] p-3 flex items-center justify-between gap-4 shadow-xl">
 			<div class="flex items-center gap-3 overflow-hidden">
-				<img src={coverUrl} alt="Hero Cover" class="w-20 h-14 rounded-xl object-cover border border-[#2a2a2a] shrink-0" />
+				<img src={coverUrl} alt="Cover Preview" class="w-20 h-14 rounded-xl object-cover border border-[#2a2a2a] shrink-0" />
 				<div class="space-y-1 overflow-hidden">
 					<div class="text-xs font-bold text-white font-['Space_Grotesk'] flex items-center gap-1.5">
 						<Check class="w-3.5 h-3.5 text-emerald-400" />
-						<span>Hero Cover Active</span>
+						<span>Image Active</span>
 					</div>
 					<div class="text-[10px] font-mono text-[#777777] truncate">{coverUrl}</div>
 				</div>
@@ -141,7 +142,7 @@
 					<Upload class="w-4 h-4" />
 				</div>
 				<div class="text-xs font-semibold text-white">
-					{uploading ? 'Uploading Cover & Converting WebP...' : 'Drag & Drop Cover Image, or Click to Browse'}
+					{uploading ? 'Uploading Image & Converting WebP...' : 'Drag & Drop Image, or Click to Browse'}
 				</div>
 				<p class="text-[10px] font-mono text-[#666666]">
 					PNG, JPG, WEBP, GIF up to 15MB. Converts to WebP automatically.
