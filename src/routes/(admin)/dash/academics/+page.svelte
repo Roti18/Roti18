@@ -440,8 +440,11 @@
 										const res = await fetch('/api/upload', { method: 'POST', body: formData });
 										const json = await res.json();
 										if (json.success && json.files?.[0]) {
-											attName = file.name;
-											attUrl = json.files[0].optimizedUrl || json.files[0].originalUrl;
+											const uploadedUrl = json.files[0].optimizedUrl || json.files[0].originalUrl;
+											const uploadedName = file.name;
+											attachmentList = [...attachmentList, { name: uploadedName, url: uploadedUrl }];
+											attName = '';
+											attUrl = '';
 										}
 									} catch (err) {
 										console.error('Upload failed:', err);
@@ -449,7 +452,7 @@
 								}}
 							/>
 						</label>
-						<button type="button" onclick={addAttachment} class="px-2.5 py-1 rounded-lg bg-amber-500 text-white font-semibold">+ Add</button>
+						<button type="button" onclick={addAttachment} class="px-2.5 py-1 rounded-lg bg-amber-500 text-white font-semibold">+ Add Link</button>
 					</div>
 
 					<div class="space-y-1 pt-1">
