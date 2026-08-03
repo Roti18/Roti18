@@ -1,3 +1,10 @@
 # allow crawling everything by default
 User-agent: *
 Disallow:
+
+# private sections
+Disallow: /dash
+Disallow: /admin
+Disallow: /api
+
+Sitemap: https://rynds.my.id/sitemap.xml
