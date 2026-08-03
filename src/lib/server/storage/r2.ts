@@ -12,7 +12,12 @@ export class R2StorageProvider implements StorageProvider {
 		const accessKeyId = env.R2_ACCESS_KEY_ID || process.env.R2_ACCESS_KEY_ID || '';
 		const secretAccessKey = env.R2_SECRET_ACCESS_KEY || process.env.R2_SECRET_ACCESS_KEY || '';
 		this.bucket = env.R2_BUCKET_NAME || process.env.R2_BUCKET_NAME || 'portfolio-assets';
-		this.publicDomain = env.R2_PUBLIC_DOMAIN || process.env.R2_PUBLIC_DOMAIN || '';
+		
+		let rawDomain = (env.R2_PUBLIC_DOMAIN || process.env.R2_PUBLIC_DOMAIN || '').trim();
+		if (rawDomain && !rawDomain.startsWith('http://') && !rawDomain.startsWith('https://')) {
+			rawDomain = `https://${rawDomain}`;
+		}
+		this.publicDomain = rawDomain;
 
 		if (accountId && accessKeyId && secretAccessKey) {
 			this.client = new S3Client({
