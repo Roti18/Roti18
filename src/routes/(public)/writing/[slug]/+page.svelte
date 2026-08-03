@@ -16,12 +16,37 @@
 		if (liked) return;
 		liked = true;
 		likes += 1;
+
+		try {
+			const res = await fetch(`/writing/${data.post.slug}`, { method: 'POST' });
+			if (res.ok) {
+				const body = await res.json();
+				likes = body.likes ?? likes;
+			}
+		} catch (err) {
+			console.error('Failed to register like:', err);
+		}
 	}
 </script>
 
 <svelte:head>
 	<title>{data.post.title} - M. Roni</title>
 	<meta name="description" content={data.post.excerpt || data.post.title} />
+	{#if data.post.coverUrl}
+		<meta property="og:image" content={data.post.coverUrl} />
+	{/if}
+	<script type="application/ld+json">
+		{JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": "Article",
+			"headline": data.post.title,
+			"description": data.post.excerpt || data.post.title,
+			"datePublished": data.post.createdAt,
+			"dateModified": data.post.updatedAt,
+			"author": { "@type": "Person", "name": "M. Roni" },
+			"mainEntityOfPage": `https://rynds.my.id/writing/${data.post.slug}`
+		})}
+	</script>
 </svelte:head>
 
 <!-- Lightbox PhotoSwipe Integration -->
