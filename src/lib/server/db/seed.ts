@@ -34,19 +34,42 @@ if (!process.env.DATABASE_URL) {
 	}
 }
 
-const url = process.env.DATABASE_URL;
+const rawUrl = process.env.DATABASE_URL;
 const authToken = process.env.DATABASE_AUTH_TOKEN;
 
-if (!url) {
+if (!rawUrl) {
 	console.error('DATABASE_URL is missing in .env');
 	process.exit(1);
 }
+
+// Convert libsql:// to https:// for HTTP REST protocol
+const url = rawUrl.replace(/^libsql:\/\//, 'https://');
 
 const client = createClient({ url, authToken });
 const db = drizzle(client, { schema });
 
 async function seed() {
 	console.log('🌱 Starting database seed to Turso...');
+
+	const isReset = process.argv.includes('--reset') || process.argv.includes('--wipe');
+
+	if (isReset) {
+		console.log('🧹 Wiping all existing tables...');
+		try {
+			await db.delete(schema.writing);
+			await db.delete(schema.project);
+			await db.delete(schema.music);
+			await db.delete(schema.galleryPhoto);
+			await db.delete(schema.academicMaterial);
+			await db.delete(schema.academicCourse);
+			await db.delete(schema.academicSemester);
+			await db.delete(schema.appSettings);
+			await db.delete(schema.aboutInfo);
+			console.log('  - All tables wiped clean!');
+		} catch (err) {
+			console.warn('  - Note during wipe:', err);
+		}
+	}
 
 	try {
 		// 1. Seed Writings
