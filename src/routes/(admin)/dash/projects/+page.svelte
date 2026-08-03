@@ -229,7 +229,7 @@
 	<input type="hidden" name="thumbnailUrl" value={thumbnailUrl} />
 
 	<!-- Dedicated Project Thumbnail Uploader (WebP R2) -->
-	<HeroCoverUploader bind:coverUrl={thumbnailUrl} articleSlug="projects" />
+	<HeroCoverUploader bind:coverUrl={thumbnailUrl} folder="projects" />
 
 	<FormTextarea
 		id="project-content"
