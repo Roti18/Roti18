@@ -154,28 +154,14 @@
 		<input type="hidden" name="id" value={editingItem.id} />
 	{/if}
 
-	<div class="grid grid-cols-3 gap-3">
-		<div class="col-span-2">
-			<FormInput
-				id="photo-title"
-				name="title"
-				label="Photo Title"
-				required={true}
-				value={editingItem?.title || ''}
-				placeholder="e.g. Sunset in Surabaya"
-			/>
-		</div>
-		<div>
-			<FormInput
-				id="photo-sort"
-				name="sortOrder"
-				type="number"
-				label="Sort Order"
-				mono={true}
-				value={editingItem?.sortOrder ?? 0}
-			/>
-		</div>
-	</div>
+	<FormInput
+		id="photo-title"
+		name="title"
+		label="Photo Title"
+		required={true}
+		value={editingItem?.title || ''}
+		placeholder="e.g. Sunset in Surabaya"
+	/>
 
 	<input type="hidden" name="imageUrl" value={imageUrl} />
 
