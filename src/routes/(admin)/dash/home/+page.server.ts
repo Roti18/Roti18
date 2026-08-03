@@ -1,6 +1,6 @@
 import type { PageServerLoad, Actions } from './$types';
 import { db } from '$lib/server/db';
-import { appSettings } from '$lib/server/db/schema';
+import { appSettings, aboutInfo } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { getDynamicSiteConfig } from '$lib/server/db/siteConfig';
 
@@ -32,13 +32,15 @@ export const actions: Actions = {
 		}
 
 		const currentSite = await getDynamicSiteConfig();
+		const finalAvatarUrl = avatarUrl || currentSite.avatarUrl;
+
 		const updatedConfig = {
 			...currentSite,
 			fullName: fullName || currentSite.fullName,
 			name: name || currentSite.name,
 			title: title || currentSite.title,
 			description: description || currentSite.description,
-			avatarUrl: avatarUrl || currentSite.avatarUrl,
+			avatarUrl: finalAvatarUrl,
 			socialLinks
 		};
 
@@ -57,6 +59,17 @@ export const actions: Actions = {
 				}
 			});
 
-		return { success: true, message: 'Home Profile & Hero section updated successfully!' };
+		// Also sync about_info table if avatarUrl is present
+		if (finalAvatarUrl) {
+			const [existingAbout] = await db.select().from(aboutInfo).where(eq(aboutInfo.id, 'default')).limit(1);
+			if (existingAbout) {
+				await db
+					.update(aboutInfo)
+					.set({ updatedAt: new Date() })
+					.where(eq(aboutInfo.id, 'default'));
+			}
+		}
+
+		return { success: true, message: 'Home Profile & Shared Avatar updated successfully!' };
 	}
 };
