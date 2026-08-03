@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { writing } from '$lib/server/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
+import { processMarkdown } from '$lib/server/markdown/processor';
 
 function extractFirstImage(content: string): string | null {
 	const match = content.match(/!\[.*?\]\((https?:\/\/[^\s)]+|\/uploads\/[^\s)]+)\)/);
@@ -40,10 +41,7 @@ export const actions: Actions = {
 		}
 
 		const year = parseInt(yearStr, 10);
-		const contentHtml = content
-			.split('\n\n')
-			.map((p) => `<p>${p.replace(/\n/g, '<br/>')}</p>`)
-			.join('');
+		const rendered = await processMarkdown(content);
 
 		await db.insert(writing).values({
 			id: crypto.randomUUID(),
@@ -51,7 +49,7 @@ export const actions: Actions = {
 			title,
 			excerpt,
 			content,
-			contentHtml,
+			contentHtml: rendered.html,
 			coverUrl,
 			year,
 			likes: 0,
@@ -83,10 +81,7 @@ export const actions: Actions = {
 		}
 
 		const year = parseInt(yearStr, 10);
-		const contentHtml = content
-			.split('\n\n')
-			.map((p) => `<p>${p.replace(/\n/g, '<br/>')}</p>`)
-			.join('');
+		const rendered = await processMarkdown(content);
 
 		await db
 			.update(writing)
@@ -95,7 +90,7 @@ export const actions: Actions = {
 				slug: slug || undefined,
 				excerpt,
 				content,
-				contentHtml,
+				contentHtml: rendered.html,
 				coverUrl,
 				year,
 				published,
