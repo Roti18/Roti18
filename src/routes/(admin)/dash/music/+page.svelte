@@ -14,7 +14,9 @@
 		Sparkles,
 		X,
 		Play,
-		RefreshCw
+		RefreshCw,
+		Eye,
+		EyeOff
 	} from "lucide-svelte";
 	import PageHeader from "$lib/components/admin/PageHeader.svelte";
 	import FormModal from "$lib/components/admin/FormModal.svelte";
@@ -24,7 +26,6 @@
 
 	let { data, form } = $props();
 	const tracks = $derived(data.tracks);
-	const secret = $derived(data.webhookSecret);
 
 	let searchQuery = $state("");
 	let showModal = $state(false);
@@ -35,6 +36,27 @@
 	let copiedSnippet = $state(false);
 	let testingWebhook = $state(false);
 	let testResult = $state<string | null>(null);
+
+	// Secret is fetched on demand (admin-only endpoint), never part of page data.
+	let secret = $state<string | null>(null);
+	let secretVisible = $state(false);
+	let secretError = $state<string | null>(null);
+
+	async function loadSecret() {
+		if (secret !== null) return;
+		secretError = null;
+		try {
+			const res = await fetch("/api/music/secret");
+			const json = await res.json();
+			if (json.success) {
+				secret = json.secret;
+			} else {
+				secretError = json.message || "Failed to load secret";
+			}
+		} catch (err: any) {
+			secretError = err.message || "Failed to load secret";
+		}
+	}
 
 	const filteredTracks = $derived(
 		tracks.filter(
@@ -58,32 +80,28 @@
 	}
 
 	function copySecret() {
+		if (secret === null) return;
 		navigator.clipboard.writeText(secret);
 		copiedSecret = true;
 		setTimeout(() => (copiedSecret = false), 2000);
 	}
 
-	const jsSnippet = $derived(`// 1. Save secret key when Brian opens Lament via URL ?listen_key=${secret}
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('listen_key')) {
-  localStorage.setItem('brian_listen_key', urlParams.get('listen_key'));
-}
+	// Static snippet for the Lament app: no secret embedded, no listen_key URL param.
+	const jsSnippet = `// 1. In Lament, keep your webhook secret in an env var / secure config (NOT exposed to clients).
+const WEBHOOK_SECRET = 'SET_ME_IN_LAMENT_ENV';
 
-// 2. When Brian plays a track, send lightweight signal to portfolio:
+// 2. When a track plays, send a lightweight signal to the portfolio:
 function onSongPlay(song) {
-  const listenKey = localStorage.getItem('brian_listen_key');
-  if (!listenKey) return; // Ignore general visitors!
-
-  fetch('/api/music/now-playing', {
+  fetch('https://YOUR_PORTFOLIO_DOMAIN/api/music/now-playing', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      secret: listenKey,
+      secret: WEBHOOK_SECRET,
       title: song.title,
       artist: song.artist
     })
   }).catch(() => {});
-}`);
+}`;
 
 	function copySnippet() {
 		navigator.clipboard.writeText(jsSnippet);
@@ -92,6 +110,7 @@ function onSongPlay(song) {
 	}
 
 	async function triggerTestWebhook() {
+		if (secret === null) return;
 		testingWebhook = true;
 		testResult = null;
 		try {
@@ -168,28 +187,52 @@ function onSongPlay(song) {
 
 	<!-- Secret Key & Code Snippet Box for Lament App Integration -->
 	<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-		<!-- Secret Key Box -->
 		<div class="rounded-2xl border border-[#222222] bg-[#121212] p-5 space-y-3 shadow-xl">
 			<div class="flex items-center justify-between">
 				<div class="text-xs font-bold text-white font-['Space_Grotesk']">Webhook Secret Key</div>
 				<span class="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">PRIVATE</span>
 			</div>
-			<p class="text-[11px] text-[#777777]">Used by Lament app to authenticate Brian's play signal</p>
+			<p class="text-[11px] text-[#777777]">Used by Lament app to authenticate Brian's play signal. Only shown on demand.</p>
 
-			<div class="flex items-center gap-2 rounded-xl bg-[#181818] border border-[#262626] p-2 font-mono text-xs text-red-400 overflow-hidden">
-				<span class="truncate flex-1">{secret}</span>
+			{#if secret === null}
 				<button
-					onclick={copySecret}
-					class="p-1.5 rounded-lg bg-[#222222] text-[#ededed] hover:text-white hover:bg-[#2a2a2a] transition-colors"
-					title="Copy Secret Key"
+					onclick={loadSecret}
+					class="w-full flex items-center justify-center gap-2 rounded-xl bg-[#181818] border border-[#262626] p-2.5 text-xs font-mono text-[#ededed] hover:bg-[#222222] hover:text-white transition-colors cursor-pointer"
 				>
-					{#if copiedSecret}
-						<Check class="w-3.5 h-3.5 text-emerald-400" />
-					{:else}
-						<Copy class="w-3.5 h-3.5" />
-					{/if}
+					<Eye class="w-3.5 h-3.5" />
+					<span>Show Secret Key</span>
 				</button>
-			</div>
+			{:else}
+				<div class="flex items-center gap-2 rounded-xl bg-[#181818] border border-[#262626] p-2 font-mono text-xs text-red-400 overflow-hidden">
+					<span class="truncate flex-1">{secretVisible ? secret : '•'.repeat(12)}</span>
+					<button
+						onclick={() => (secretVisible = !secretVisible)}
+						class="p-1.5 rounded-lg bg-[#222222] text-[#ededed] hover:text-white hover:bg-[#2a2a2a] transition-colors"
+						title={secretVisible ? 'Hide Secret Key' : 'Show Secret Key'}
+					>
+						{#if secretVisible}
+							<EyeOff class="w-3.5 h-3.5" />
+						{:else}
+							<Eye class="w-3.5 h-3.5" />
+						{/if}
+					</button>
+					<button
+						onclick={copySecret}
+						class="p-1.5 rounded-lg bg-[#222222] text-[#ededed] hover:text-white hover:bg-[#2a2a2a] transition-colors"
+						title="Copy Secret Key"
+					>
+						{#if copiedSecret}
+							<Check class="w-3.5 h-3.5 text-emerald-400" />
+						{:else}
+							<Copy class="w-3.5 h-3.5" />
+						{/if}
+					</button>
+				</div>
+			{/if}
+
+			{#if secretError}
+				<p class="text-[11px] font-mono text-red-400">⚠ {secretError}</p>
+			{/if}
 		</div>
 
 		<!-- JS Snippet Helper Box (2 Cols) -->
@@ -213,7 +256,7 @@ function onSongPlay(song) {
 				</button>
 			</div>
 
-			<pre class="rounded-xl bg-[#090909] p-3 text-[11px] font-mono text-[#888888] overflow-x-auto max-h-28 border border-[#1f1f1f]">{jsSnippet}</pre>
+			<pre class="rounded-xl bg-[#090909] p-3 text-[11px] font-mono text-[#888888] overflow-x-auto max-h-40 border border-[#1f1f1f]">{jsSnippet}</pre>
 		</div>
 	</div>
 
