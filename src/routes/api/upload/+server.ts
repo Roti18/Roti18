@@ -44,7 +44,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const arrayBuffer = await file.arrayBuffer();
 			const buffer = Buffer.from(arrayBuffer);
 
-			const uuid = crypto.randomUUID().slice(0, 8);
+			const isAvatar = folderParam === 'avatar';
+			const uuid = isAvatar ? '' : `-${crypto.randomUUID().slice(0, 8)}`;
 			const baseName = path.parse(file.name).name.toLowerCase().replace(/[^\w-]/g, '-').slice(0, 60) || 'image';
 			const ext = path.extname(file.name).toLowerCase() || '.png';
 
@@ -55,12 +56,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 			if (file.type === 'image/gif') {
 				// GIFs are animated; re-encoding kills the animation. Keep the original.
-				originalObj = await storage.upload(buffer, `${baseName}-${uuid}${ext}`, file.type, folderParam);
+				const gifFilename = isAvatar ? `avatar.gif` : `${baseName}${uuid}${ext}`;
+				originalObj = await storage.upload(buffer, gifFilename, file.type, folderParam);
 				optimizedObj = originalObj;
 			} else {
 				// Raster images: compress to WebP (~82% quality) + keep the original.
-				const rawFilename = `${baseName}-${uuid}-original${ext}`;
-				const webpFilename = `${baseName}-${uuid}.webp`;
+				const rawFilename = isAvatar ? `avatar-original${ext}` : `${baseName}${uuid}-original${ext}`;
+				const webpFilename = isAvatar ? `avatar.webp` : `${baseName}${uuid}.webp`;
 
 				try {
 					const image = sharp(buffer);
@@ -74,7 +76,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					optimizedObj = await storage.upload(webpBuffer, webpFilename, 'image/webp', folderParam);
 				} catch (e) {
 					console.warn('[Sharp] Image processing error, storing original instead:', e);
-					originalObj = await storage.upload(buffer, `${baseName}-${uuid}${ext}`, file.type, folderParam);
+					const fallbackFilename = isAvatar ? `avatar${ext}` : `${baseName}${uuid}${ext}`;
+					originalObj = await storage.upload(buffer, fallbackFilename, file.type, folderParam);
 					optimizedObj = originalObj;
 				}
 			}
@@ -97,7 +100,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 	} catch (err) {
 		console.error('[Upload API] Server Error:', err);
-		// Never leak internal error details (paths, keys, storage config) to the client.
 		return json({ success: false, message: 'Upload failed. Please try again.' }, { status: 500 });
 	}
 };
