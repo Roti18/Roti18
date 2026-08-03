@@ -1,11 +1,16 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getStorageProvider } from '$lib/server/storage';
+import { getStorageProvider } from '$lib/server/db/../storage';
 import sharp from 'sharp';
 import path from 'node:path';
 
-const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
-const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15 MB
+const ALLOWED_MIMES = [
+	'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif', 'image/svg+xml',
+	'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+	'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+	'text/plain', 'text/markdown', 'application/zip', 'application/x-zip-compressed'
+];
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
 const MAX_FILES_PER_REQUEST = 10;
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -34,10 +39,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			if (typeof file === 'string' || !file.name) continue;
 
 			if (file.size > MAX_FILE_SIZE) {
-				return json({ success: false, message: `File ${file.name} exceeds max size limit of 15MB` }, { status: 400 });
+				return json({ success: false, message: `File ${file.name} exceeds max size limit of 25MB` }, { status: 400 });
 			}
 
-			if (!ALLOWED_MIMES.includes(file.type)) {
+			// Flexible MIME validation
+			const isAllowedMime = ALLOWED_MIMES.includes(file.type) || file.type.startsWith('image/') || file.type.startsWith('text/');
+			if (!isAllowedMime) {
 				return json({ success: false, message: `Invalid MIME type ${file.type}` }, { status: 400 });
 			}
 
@@ -46,18 +53,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 			const isAvatar = folderParam === 'avatar';
 			const uuid = isAvatar ? '' : `-${crypto.randomUUID().slice(0, 8)}`;
-			const baseName = path.parse(file.name).name.toLowerCase().replace(/[^\w-]/g, '-').slice(0, 60) || 'image';
-			const ext = path.extname(file.name).toLowerCase() || '.png';
+			const baseName = path.parse(file.name).name.toLowerCase().replace(/[^\w-]/g, '-').slice(0, 60) || 'file';
+			const ext = path.extname(file.name).toLowerCase() || (file.type.startsWith('image/') ? '.png' : '.bin');
 
 			let width = 0;
 			let height = 0;
 			let originalObj;
 			let optimizedObj;
 
-			if (file.type === 'image/gif') {
-				// GIFs are animated; re-encoding kills the animation. Keep the original.
-				const gifFilename = isAvatar ? `avatar.gif` : `${baseName}${uuid}${ext}`;
-				originalObj = await storage.upload(buffer, gifFilename, file.type, folderParam);
+			const isRasterImage = file.type.startsWith('image/') && file.type !== 'image/gif' && file.type !== 'image/svg+xml';
+
+			if (!isRasterImage) {
+				// Non-raster files (PDFs, DOCX, ZIPs, GIFs, SVGs): Upload directly without Sharp processing
+				const docFilename = isAvatar ? `avatar${ext}` : `${baseName}${uuid}${ext}`;
+				originalObj = await storage.upload(buffer, docFilename, file.type || 'application/octet-stream', folderParam);
 				optimizedObj = originalObj;
 			} else {
 				// Raster images: compress to WebP (~82% quality) + keep the original.
@@ -95,7 +104,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return json({
 			success: true,
-			message: `${results.length} image(s) uploaded${results.length > 0 && results[0].mime !== 'image/gif' ? ' & optimized to WebP' : ''}`,
+			message: `${results.length} file(s) uploaded successfully`,
 			files: results
 		});
 	} catch (err) {
