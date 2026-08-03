@@ -18,6 +18,24 @@ function getAdminEmails(): string[] {
 		.filter(Boolean);
 }
 
+// Maintenance mode is read on every non-admin request; cache the DB result briefly.
+let cachedMaintenance: { value: boolean; at: number } | null = null;
+const MAINTENANCE_CACHE_TTL = 30_000; // 30 seconds
+
+async function isMaintenanceMode(): Promise<boolean> {
+	if (cachedMaintenance && Date.now() - cachedMaintenance.at < MAINTENANCE_CACHE_TTL) {
+		return cachedMaintenance.value;
+	}
+	try {
+		const [setting] = await db.select().from(appSettings).where(eq(appSettings.key, 'maintenance_mode')).limit(1);
+		cachedMaintenance = { value: setting?.value === 'true', at: Date.now() };
+	} catch (err) {
+		console.error('[hooks] Failed to read maintenance_mode:', err);
+		cachedMaintenance = { value: false, at: Date.now() };
+	}
+	return cachedMaintenance.value;
+}
+
 export const handle: Handle = async ({ event, resolve }) => {
 	// 1. Session Resolution using Better Auth API
 	let currentUser = null;
@@ -67,19 +85,22 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	// 3. Maintenance Mode Check
+	// 3. Maintenance Mode Check (with short cache)
 	if (!currentUser?.isAdmin && !pathname.startsWith('/api') && !pathname.startsWith('/auth')) {
-		try {
-			const [setting] = await db.select().from(appSettings).where(eq(appSettings.key, 'maintenance_mode')).limit(1);
-			if (setting && setting.value === 'true') {
-				throw error(503, {
-					message: 'System Under Maintenance: We are currently performing scheduled upgrades. Please check back shortly.'
-				});
-			}
-		} catch (e: any) {
-			if (e?.status === 503) throw e;
+		if (await isMaintenanceMode()) {
+			throw error(503, {
+				message: 'System Under Maintenance: We are currently performing scheduled upgrades. Please check back shortly.'
+			});
 		}
 	}
 
-	return resolve(event);
+	const response = await resolve(event);
+
+	// 4. CDN + browser caching for logged-out visitors on public pages.
+	// Logged-in responses are never cached (session/private data).
+	if (currentUser === null && !pathname.startsWith('/api') && !pathname.startsWith('/auth')) {
+		response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+	}
+
+	return response;
 };
