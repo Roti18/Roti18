@@ -18,5 +18,8 @@ export default defineConfig({
 				}
 			}
 		})
-	]
+	],
+	ssr: {
+		noExternal: ['sanitize-html', 'htmlparser2']
+	}
 });
