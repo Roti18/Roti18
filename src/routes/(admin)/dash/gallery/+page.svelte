@@ -180,7 +180,7 @@
 	<input type="hidden" name="imageUrl" value={imageUrl} />
 
 	<!-- Dedicated Gallery Photo Uploader (WebP R2) -->
-	<HeroCoverUploader bind:coverUrl={imageUrl} articleSlug="gallery" />
+	<HeroCoverUploader bind:coverUrl={imageUrl} folder="gallery" />
 
 	<FormInput
 		id="photo-slug"
