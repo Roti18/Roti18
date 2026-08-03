@@ -1,20 +1,14 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getStorageProvider } from '$lib/server/db/../storage';
+import { getStorageProvider } from '$lib/server/storage';
 import sharp from 'sharp';
 import path from 'node:path';
 
-const ALLOWED_MIMES = [
-	'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif', 'image/svg+xml',
-	'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-	'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-	'text/plain', 'text/markdown', 'application/zip', 'application/x-zip-compressed'
-];
-const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
 const MAX_FILES_PER_REQUEST = 10;
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// Admin-only: prevent any logged-in user from writing to your storage.
+	// Admin-only: prevent unauthorized writes
 	if (!locals.user?.isAdmin) {
 		return json({ success: false, message: 'Unauthorized access' }, { status: 401 });
 	}
@@ -39,13 +33,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			if (typeof file === 'string' || !file.name) continue;
 
 			if (file.size > MAX_FILE_SIZE) {
-				return json({ success: false, message: `File ${file.name} exceeds max size limit of 25MB` }, { status: 400 });
-			}
-
-			// Flexible MIME validation
-			const isAllowedMime = ALLOWED_MIMES.includes(file.type) || file.type.startsWith('image/') || file.type.startsWith('text/');
-			if (!isAllowedMime) {
-				return json({ success: false, message: `Invalid MIME type ${file.type}` }, { status: 400 });
+				return json({ success: false, message: `File ${file.name} exceeds max size limit of 50MB` }, { status: 400 });
 			}
 
 			const arrayBuffer = await file.arrayBuffer();
@@ -54,19 +42,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const isAvatar = folderParam === 'avatar';
 			const uuid = isAvatar ? '' : `-${crypto.randomUUID().slice(0, 8)}`;
 			const baseName = path.parse(file.name).name.toLowerCase().replace(/[^\w-]/g, '-').slice(0, 60) || 'file';
-			const ext = path.extname(file.name).toLowerCase() || (file.type.startsWith('image/') ? '.png' : '.bin');
+			const ext = path.extname(file.name).toLowerCase() || (file.type?.startsWith('image/') ? '.png' : '.bin');
+			const mimeType = file.type || 'application/octet-stream';
 
 			let width = 0;
 			let height = 0;
 			let originalObj;
 			let optimizedObj;
 
-			const isRasterImage = file.type.startsWith('image/') && file.type !== 'image/gif' && file.type !== 'image/svg+xml';
+			const isRasterImage = mimeType.startsWith('image/') && mimeType !== 'image/gif' && mimeType !== 'image/svg+xml';
 
 			if (!isRasterImage) {
-				// Non-raster files (PDFs, DOCX, ZIPs, GIFs, SVGs): Upload directly without Sharp processing
+				// Non-raster files (PDFs, DOCX, ZIPs, RARs, GIFs, SVGs): Upload directly without Sharp processing
 				const docFilename = isAvatar ? `avatar${ext}` : `${baseName}${uuid}${ext}`;
-				originalObj = await storage.upload(buffer, docFilename, file.type || 'application/octet-stream', folderParam);
+				originalObj = await storage.upload(buffer, docFilename, mimeType, folderParam);
 				optimizedObj = originalObj;
 			} else {
 				// Raster images: compress to WebP (~82% quality) + keep the original.
@@ -81,12 +70,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 					const webpBuffer = await image.webp({ quality: 82 }).toBuffer();
 
-					originalObj = await storage.upload(buffer, rawFilename, file.type, folderParam);
+					originalObj = await storage.upload(buffer, rawFilename, mimeType, folderParam);
 					optimizedObj = await storage.upload(webpBuffer, webpFilename, 'image/webp', folderParam);
 				} catch (e) {
 					console.warn('[Sharp] Image processing error, storing original instead:', e);
 					const fallbackFilename = isAvatar ? `avatar${ext}` : `${baseName}${uuid}${ext}`;
-					originalObj = await storage.upload(buffer, fallbackFilename, file.type, folderParam);
+					originalObj = await storage.upload(buffer, fallbackFilename, mimeType, folderParam);
 					optimizedObj = originalObj;
 				}
 			}
@@ -96,7 +85,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				optimizedUrl: optimizedObj.url,
 				width,
 				height,
-				mime: file.type,
+				mime: mimeType,
 				size: optimizedObj.size,
 				filename: optimizedObj.url.split('/').pop()
 			});
