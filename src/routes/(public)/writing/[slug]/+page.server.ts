@@ -3,7 +3,6 @@ import { error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { writing } from '$lib/server/db/schema';
 import { eq, ne, and, desc } from 'drizzle-orm';
-import { processMarkdown } from '$lib/server/markdown/processor';
 
 export const load: PageServerLoad = async ({ params }) => {
 	try {
@@ -13,8 +12,8 @@ export const load: PageServerLoad = async ({ params }) => {
 
 		if (!post) throw error(404, 'Writing not found');
 
-		const markdownResult = await processMarkdown(post.content || post.contentHtml || '');
-
+		// contentHtml is rendered + sanitized once at save time (admin).
+		// Render that stored HTML here; no per-request markdown processing.
 		const readNext = await db.query.writing.findMany({
 			where: and(ne(writing.slug, params.slug), eq(writing.published, true)),
 			orderBy: [desc(writing.createdAt)],
@@ -24,11 +23,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		return {
 			post: {
 				...post,
-				processedHtml: markdownResult.html
+				processedHtml: post.contentHtml
 			},
-			wordCount: markdownResult.wordCount,
-			readingTimeMinutes: markdownResult.readingTimeMinutes,
-			toc: markdownResult.toc,
 			readNext
 		};
 	} catch (err: any) {
