@@ -12,7 +12,12 @@
 <div class="max-w-5xl mx-auto px-6 py-16 space-y-8">
 	<article class="blur-fade-in space-y-6">
 		<div class="rounded-xl overflow-hidden bg-[#141414] border border-[#1f1f1f]">
-			<img src={data.photo.imageUrl} alt={data.photo.title} class="w-full h-auto block" />
+			<img
+				src={data.photo.imageUrl}
+				alt={data.photo.title}
+				class="w-full h-auto block"
+				{...data.photo.width && data.photo.height ? { width: data.photo.width, height: data.photo.height } : {}}
+			/>
 		</div>
 
 		<div class="space-y-2">
