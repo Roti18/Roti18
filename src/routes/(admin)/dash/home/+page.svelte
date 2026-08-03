@@ -4,15 +4,20 @@
 	import PageHeader from "$lib/components/admin/PageHeader.svelte";
 	import FormInput from "$lib/components/admin/FormInput.svelte";
 	import FormTextarea from "$lib/components/admin/FormTextarea.svelte";
+	import HeroCoverUploader from "$lib/components/admin/HeroCoverUploader.svelte";
 
 	let { data, form } = $props();
 	const site = $derived(data.site);
 
+	let avatarUrl = $state('');
 	let socialList = $state<{ platform: string; url: string; icon: string }[]>([]);
 	let newPlatform = $state('GitHub');
 	let newUrl = $state('');
 
 	$effect(() => {
+		if (site.avatarUrl) {
+			avatarUrl = site.avatarUrl;
+		}
 		if (site.socialLinks) {
 			socialList = site.socialLinks;
 		}
@@ -52,7 +57,7 @@
 	<PageHeader
 		badgeLabel="Landing Page Manager"
 		title="Home Hero & Profile Settings"
-		description="Edit full name, short bio description, avatar, and dynamic social media links"
+		description="Edit full name, short bio description, profile avatar, and dynamic social media links"
 		icon={Home}
 	/>
 
@@ -66,6 +71,7 @@
 	<!-- Form: Home Hero & Profile Information -->
 	<form method="POST" action="?/updateHomeProfile" use:enhance class="space-y-6">
 		<input type="hidden" name="socialLinks" value={JSON.stringify(socialList)} />
+		<input type="hidden" name="avatarUrl" value={avatarUrl} />
 
 		<div class="rounded-2xl border border-[#222222] bg-[#121212] p-6 space-y-4 shadow-xl">
 			<div class="flex items-center justify-between border-b border-[#222222] pb-3">
@@ -101,24 +107,19 @@
 				/>
 			</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<FormInput
-					id="home-title"
-					name="title"
-					label="Professional Title / Role"
-					required={true}
-					value={site.title}
-					placeholder="e.g. Software Engineer"
-				/>
-				<FormInput
-					id="home-avatar"
-					name="avatarUrl"
-					type="url"
-					label="Avatar Picture URL"
-					mono={true}
-					value={site.avatarUrl}
-					placeholder="https://..."
-				/>
+			<FormInput
+				id="home-title"
+				name="title"
+				label="Professional Title / Role"
+				required={true}
+				value={site.title}
+				placeholder="e.g. Software Engineer"
+			/>
+
+			<!-- Profile Avatar Direct WebP Uploader (Shared with About) -->
+			<div class="space-y-1">
+				<label class="text-[#a1a1a1] text-xs font-medium">Profile Avatar Picture (Shared across Home & About)</label>
+				<HeroCoverUploader bind:coverUrl={avatarUrl} folder="avatar" />
 			</div>
 
 			<FormTextarea
