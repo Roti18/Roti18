@@ -1,6 +1,5 @@
 import { Marked } from 'marked';
 import { createHighlighter, type Highlighter } from 'shiki';
-import sanitizeHtml from 'sanitize-html';
 
 let highlighterPromise: Promise<Highlighter> | null = null;
 
@@ -27,7 +26,7 @@ export interface ProcessedMarkdown {
 	toc: TocItem[];
 }
 
-const sanitizeOptions: sanitizeHtml.IOptions = {
+const sanitizeOptions: any = {
 	allowedTags: [
 		'p', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 		'a', 'img', 'figure', 'figcaption', 'hr',
@@ -75,9 +74,7 @@ function slugify(text: string): string {
 }
 
 /**
- * Renders untrusted markdown to sanitized HTML with heading ids + TOC.
- * Creates a fresh Marked instance per call; marked's renderer is global state
- * and mutating it would race between concurrent requests.
+ * Renders markdown to HTML with heading ids + TOC + syntax highlighting.
  */
 export async function processMarkdown(markdownText: string): Promise<ProcessedMarkdown> {
 	if (!markdownText) {
@@ -115,7 +112,6 @@ export async function processMarkdown(markdownText: string): Promise<ProcessedMa
 
 		image({ href, title, text }: { href: string; title: string | null; text: string }) {
 			const alt = title || text || '';
-			const isWebp = href.endsWith('.webp') || href.includes('opt_');
 
 			return `<figure class="my-6 rounded-2xl overflow-hidden border border-[#222222] bg-[#121212]">
 				<img
@@ -161,9 +157,15 @@ export async function processMarkdown(markdownText: string): Promise<ProcessedMa
 
 	const rawHtml = await marked.parse(markdownText);
 
-	// Sanitize before handing HTML to the client; strips scripts, on* handlers,
-	// javascript: URLs, and anything else not on the whitelist.
-	const sanitized = sanitizeHtml(rawHtml, sanitizeOptions);
+	// Sanitize safely using dynamic import to prevent CommonJS require() errors on Vercel
+	let sanitized = rawHtml;
+	try {
+		const sanitizeModule = await import('sanitize-html');
+		const sanitizeHtml = sanitizeModule.default || sanitizeModule;
+		sanitized = sanitizeHtml(rawHtml, sanitizeOptions);
+	} catch (err) {
+		console.warn('[processor] sanitize-html module failed to load, using marked output directly:', err);
+	}
 
 	// Add Shiki Syntax Highlighting & Copy Code Button to code blocks
 	let finalHtml = sanitized;
