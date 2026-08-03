@@ -5,7 +5,6 @@
 	let { data, form } = $props();
 	const user = $derived(data.user);
 	const adminEmails = $derived(data.adminEmails);
-	const webhookSecret = $derived(data.webhookSecret);
 	const maintenanceMode = $derived(data.maintenanceMode);
 </script>
 
