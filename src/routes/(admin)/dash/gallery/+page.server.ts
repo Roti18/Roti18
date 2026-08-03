@@ -1,17 +1,17 @@
 import type { PageServerLoad, Actions } from './$types';
 import { db } from '$lib/server/db';
 import { galleryPhoto } from '$lib/server/db/schema';
-import { eq, asc, desc } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async () => {
-	const photos = await db
+	const photosList = await db
 		.select()
 		.from(galleryPhoto)
-		.orderBy(asc(galleryPhoto.sortOrder), desc(galleryPhoto.createdAt));
+		.orderBy(desc(galleryPhoto.createdAt));
 
 	return {
-		photos
+		photos: photosList
 	};
 };
 
@@ -23,8 +23,6 @@ export const actions: Actions = {
 		const imageUrl = formData.get('imageUrl')?.toString().trim();
 		const shortDesc = formData.get('shortDesc')?.toString().trim() || null;
 		const cameraDesc = formData.get('cameraDesc')?.toString().trim() || null;
-		const sortOrderStr = formData.get('sortOrder')?.toString().trim();
-		const sortOrder = sortOrderStr ? parseInt(sortOrderStr, 10) : 0;
 
 		if (!title || !imageUrl) {
 			return fail(400, { error: 'Title and Image URL are required' });
@@ -37,11 +35,10 @@ export const actions: Actions = {
 			imageUrl,
 			shortDesc,
 			cameraDesc,
-			sortOrder,
 			createdAt: new Date()
 		});
 
-		return { success: true, message: 'Photo created successfully' };
+		return { success: true, message: 'Gallery photo added successfully' };
 	},
 
 	updatePhoto: async ({ request }) => {
@@ -52,8 +49,6 @@ export const actions: Actions = {
 		const imageUrl = formData.get('imageUrl')?.toString().trim();
 		const shortDesc = formData.get('shortDesc')?.toString().trim() || null;
 		const cameraDesc = formData.get('cameraDesc')?.toString().trim() || null;
-		const sortOrderStr = formData.get('sortOrder')?.toString().trim();
-		const sortOrder = sortOrderStr ? parseInt(sortOrderStr, 10) : 0;
 
 		if (!id || !title || !imageUrl) {
 			return fail(400, { error: 'ID, Title and Image URL are required' });
@@ -66,12 +61,11 @@ export const actions: Actions = {
 				slug: slug || undefined,
 				imageUrl,
 				shortDesc,
-				cameraDesc,
-				sortOrder
+				cameraDesc
 			})
 			.where(eq(galleryPhoto.id, id));
 
-		return { success: true, message: 'Photo updated successfully' };
+		return { success: true, message: 'Gallery photo updated successfully' };
 	},
 
 	deletePhoto: async ({ request }) => {
@@ -84,6 +78,6 @@ export const actions: Actions = {
 
 		await db.delete(galleryPhoto).where(eq(galleryPhoto.id, id));
 
-		return { success: true, message: 'Photo deleted successfully' };
+		return { success: true, message: 'Gallery photo deleted successfully' };
 	}
 };
