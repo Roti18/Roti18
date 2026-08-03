@@ -1,7 +1,15 @@
 <script lang="ts">
+	import SocialIcon from '$lib/components/public/SocialIcon.svelte';
+
 	const { data } = $props();
 
-	const bioText = $derived(data.site.longDescription.split('\n\n'));
+	const aboutData = $derived((data as any).about);
+
+	const bioParagraphs = $derived(
+		(aboutData?.bio || data.site.longDescription || '')
+			.split('\n\n')
+			.filter(Boolean)
+	);
 </script>
 
 <svelte:head>
@@ -10,22 +18,31 @@
 </svelte:head>
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-12">
-	<div class="blur-fade-in mb-6">
-		<img
-			src={data.site.avatarUrl}
-			alt={data.site.fullName}
-			class="w-20 h-20 rounded-full object-cover bg-[#181818]"
-			width="80"
-			height="80"
-		/>
+	<!-- Hero Section -->
+	<div class="blur-fade-in flex items-center gap-6">
+		{#if data.site.avatarUrl}
+			<img
+				src={data.site.avatarUrl}
+				alt={data.site.fullName}
+				class="w-20 h-20 rounded-full object-cover bg-[#181818] border border-[#2a2a2a] shrink-0"
+				width="80"
+				height="80"
+			/>
+		{/if}
+		<div>
+			<h1 class="text-3xl font-semibold text-[#ededed] tracking-tight">{data.site.fullName}</h1>
+			<p class="text-sm font-mono text-[#777777] mt-1">{data.site.title}</p>
+		</div>
 	</div>
 
+	<!-- Bio Paragraphs -->
 	<div class="blur-fade-in space-y-6 max-w-[70ch]">
-		{#each bioText as paragraph}
+		{#each bioParagraphs as paragraph}
 			<p class="text-base leading-relaxed text-[#ededed] font-normal">{paragraph}</p>
 		{/each}
 	</div>
 
+	<!-- Social Links -->
 	<div class="blur-fade-in flex items-center gap-5 pt-2">
 		{#each data.site.socialLinks as link}
 			<a
@@ -33,54 +50,51 @@
 				target="_blank"
 				rel="noopener noreferrer"
 				class="text-[#a1a1a1] hover:text-[#ededed] transition-colors"
+				aria-label={link.platform}
 			>
-				{#if link.icon === 'github'}
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-				{:else if link.icon === 'x'}
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-				{:else if link.icon === 'youtube'}
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-				{/if}
+				<SocialIcon icon={link.icon || link.platform} size={20} />
 			</a>
 		{/each}
 	</div>
 
-	<!-- Stack -->
-	<section class="blur-fade-in space-y-4 pt-4 border-t border-[#1f1f1f]">
-		<h2 class="text-xs font-semibold text-[#888888] uppercase tracking-wider">Stack</h2>
-		<div class="flex flex-wrap gap-2.5">
-			{#each data.site.techStack as tech}
-				<span class="px-3 py-1.5 text-xs text-[#ededed] bg-[#141414] border border-[#222222] rounded-md font-medium">
-					{tech}
-				</span>
-			{/each}
+	<!-- Skills / Tech Stack Section -->
+	{#if aboutData?.skills && aboutData.skills.length > 0}
+		<div class="blur-fade-in space-y-4 pt-6 border-t border-[#1f1f1f]">
+			<div class="w-6 h-0.5 bg-[#f87171] rounded-full"></div>
+			<h2 class="text-xs font-semibold text-[#888888] uppercase tracking-wider">
+				Skills & Technologies
+			</h2>
+			<div class="flex flex-wrap gap-2">
+				{#each aboutData.skills as skill}
+					<span class="px-3 py-1 rounded-full bg-[#181818] border border-[#2a2a2a] text-xs font-mono text-[#ededed]">
+						{skill}
+					</span>
+				{/each}
+			</div>
 		</div>
-	</section>
+	{/if}
 
-	<!-- Explore Links -->
-	<section class="blur-fade-in space-y-4 pt-4 border-t border-[#1f1f1f]">
-		<h2 class="text-xs font-semibold text-[#888888] uppercase tracking-wider">Explore</h2>
-		<div class="flex flex-col gap-3">
-			<a href="/writing" class="group flex items-baseline gap-4 py-1">
-				<span class="text-base text-[#ededed] group-hover:underline underline-offset-4 font-medium">Writing</span>
-				<span class="text-sm text-[#a1a1a1]">Thoughts and articles</span>
-			</a>
-			<a href="/project" class="group flex items-baseline gap-4 py-1">
-				<span class="text-base text-[#ededed] group-hover:underline underline-offset-4 font-medium">Projects</span>
-				<span class="text-sm text-[#a1a1a1]">Things I've built</span>
-			</a>
-			<a href="/gallery" class="group flex items-baseline gap-4 py-1">
-				<span class="text-base text-[#ededed] group-hover:underline underline-offset-4 font-medium">Gallery</span>
-				<span class="text-sm text-[#a1a1a1]">Photography</span>
-			</a>
-			<a href="/music" class="group flex items-baseline gap-4 py-1">
-				<span class="text-base text-[#ededed] group-hover:underline underline-offset-4 font-medium">Music</span>
-				<span class="text-sm text-[#a1a1a1]">What I'm listening to</span>
-			</a>
-			<a href="/academics" class="group flex items-baseline gap-4 py-1">
-				<span class="text-base text-[#ededed] group-hover:underline underline-offset-4 font-medium">Academics</span>
-				<span class="text-sm text-[#a1a1a1]">University archive</span>
-			</a>
+	<!-- Experience Section -->
+	{#if aboutData?.experience && aboutData.experience.length > 0}
+		<div class="blur-fade-in space-y-6 pt-6 border-t border-[#1f1f1f]">
+			<div class="w-6 h-0.5 bg-[#f87171] rounded-full"></div>
+			<h2 class="text-xs font-semibold text-[#888888] uppercase tracking-wider">
+				Experience
+			</h2>
+			<div class="space-y-6">
+				{#each aboutData.experience as exp}
+					<div class="space-y-1">
+						<div class="flex items-baseline justify-between gap-4">
+							<h3 class="text-base font-medium text-[#ededed]">{exp.role}</h3>
+							<span class="text-xs font-mono text-[#777777] shrink-0">{exp.period}</span>
+						</div>
+						<p class="text-xs font-mono text-[#a1a1a1]">{exp.company}</p>
+						{#if exp.desc}
+							<p class="text-sm text-[#888888] leading-relaxed pt-1">{exp.desc}</p>
+						{/if}
+					</div>
+				{/each}
+			</div>
 		</div>
-	</section>
+	{/if}
 </div>
