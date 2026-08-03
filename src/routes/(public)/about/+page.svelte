@@ -3,13 +3,7 @@
 
 	const { data } = $props();
 
-	const aboutData = $derived((data as any).about);
-
-	const bioParagraphs = $derived(
-		(aboutData?.bio || data.site.longDescription || '')
-			.split('\n\n')
-			.filter(Boolean)
-	);
+	const bioText = $derived((data.site.longDescription || data.site.description || '').split('\n\n').filter(Boolean));
 </script>
 
 <svelte:head>
@@ -18,31 +12,24 @@
 </svelte:head>
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-12">
-	<!-- Hero Section -->
-	<div class="blur-fade-in flex items-center gap-6">
-		{#if data.site.avatarUrl}
+	{#if data.site.avatarUrl}
+		<div class="blur-fade-in mb-6">
 			<img
 				src={data.site.avatarUrl}
 				alt={data.site.fullName}
-				class="w-20 h-20 rounded-full object-cover bg-[#181818] border border-[#2a2a2a] shrink-0"
+				class="w-20 h-20 rounded-full object-cover bg-[#181818]"
 				width="80"
 				height="80"
 			/>
-		{/if}
-		<div>
-			<h1 class="text-3xl font-semibold text-[#ededed] tracking-tight">{data.site.fullName}</h1>
-			<p class="text-sm font-mono text-[#777777] mt-1">{data.site.title}</p>
 		</div>
-	</div>
+	{/if}
 
-	<!-- Bio Paragraphs -->
 	<div class="blur-fade-in space-y-6 max-w-[70ch]">
-		{#each bioParagraphs as paragraph}
+		{#each bioText as paragraph}
 			<p class="text-base leading-relaxed text-[#ededed] font-normal">{paragraph}</p>
 		{/each}
 	</div>
 
-	<!-- Social Links -->
 	<div class="blur-fade-in flex items-center gap-5 pt-2">
 		{#each data.site.socialLinks as link}
 			<a
@@ -57,44 +44,44 @@
 		{/each}
 	</div>
 
-	<!-- Skills / Tech Stack Section -->
-	{#if aboutData?.skills && aboutData.skills.length > 0}
-		<div class="blur-fade-in space-y-4 pt-6 border-t border-[#1f1f1f]">
-			<div class="w-6 h-0.5 bg-[#f87171] rounded-full"></div>
-			<h2 class="text-xs font-semibold text-[#888888] uppercase tracking-wider">
-				Skills & Technologies
-			</h2>
-			<div class="flex flex-wrap gap-2">
-				{#each aboutData.skills as skill}
-					<span class="px-3 py-1 rounded-full bg-[#181818] border border-[#2a2a2a] text-xs font-mono text-[#ededed]">
-						{skill}
+	<!-- Stack Section -->
+	{#if data.site.techStack && data.site.techStack.length > 0}
+		<section class="blur-fade-in space-y-4 pt-4 border-t border-[#1f1f1f]">
+			<h2 class="text-xs font-semibold text-[#888888] uppercase tracking-wider">Stack</h2>
+			<div class="flex flex-wrap gap-2.5">
+				{#each data.site.techStack as tech}
+					<span class="px-3 py-1.5 text-xs text-[#ededed] bg-[#141414] border border-[#222222] rounded-md font-medium">
+						{tech}
 					</span>
 				{/each}
 			</div>
-		</div>
+		</section>
 	{/if}
 
-	<!-- Experience Section -->
-	{#if aboutData?.experience && aboutData.experience.length > 0}
-		<div class="blur-fade-in space-y-6 pt-6 border-t border-[#1f1f1f]">
-			<div class="w-6 h-0.5 bg-[#f87171] rounded-full"></div>
-			<h2 class="text-xs font-semibold text-[#888888] uppercase tracking-wider">
-				Experience
-			</h2>
-			<div class="space-y-6">
-				{#each aboutData.experience as exp}
-					<div class="space-y-1">
-						<div class="flex items-baseline justify-between gap-4">
-							<h3 class="text-base font-medium text-[#ededed]">{exp.role}</h3>
-							<span class="text-xs font-mono text-[#777777] shrink-0">{exp.period}</span>
-						</div>
-						<p class="text-xs font-mono text-[#a1a1a1]">{exp.company}</p>
-						{#if exp.desc}
-							<p class="text-sm text-[#888888] leading-relaxed pt-1">{exp.desc}</p>
-						{/if}
-					</div>
-				{/each}
-			</div>
+	<!-- Explore Links Section -->
+	<section class="blur-fade-in space-y-4 pt-4 border-t border-[#1f1f1f]">
+		<h2 class="text-xs font-semibold text-[#888888] uppercase tracking-wider">Explore</h2>
+		<div class="flex flex-col gap-3">
+			<a href="/writing" class="group flex items-baseline gap-4 py-1">
+				<span class="text-base text-[#ededed] group-hover:underline underline-offset-4 font-medium">Writing</span>
+				<span class="text-sm text-[#a1a1a1]">Thoughts and articles</span>
+			</a>
+			<a href="/project" class="group flex items-baseline gap-4 py-1">
+				<span class="text-base text-[#ededed] group-hover:underline underline-offset-4 font-medium">Projects</span>
+				<span class="text-sm text-[#a1a1a1]">Things I've built</span>
+			</a>
+			<a href="/gallery" class="group flex items-baseline gap-4 py-1">
+				<span class="text-base text-[#ededed] group-hover:underline underline-offset-4 font-medium">Gallery</span>
+				<span class="text-sm text-[#a1a1a1]">Photography</span>
+			</a>
+			<a href="/music" class="group flex items-baseline gap-4 py-1">
+				<span class="text-base text-[#ededed] group-hover:underline underline-offset-4 font-medium">Music</span>
+				<span class="text-sm text-[#a1a1a1]">What I'm listening to</span>
+			</a>
+			<a href="/academics" class="group flex items-baseline gap-4 py-1">
+				<span class="text-base text-[#ededed] group-hover:underline underline-offset-4 font-medium">Academics</span>
+				<span class="text-sm text-[#a1a1a1]">University archive</span>
+			</a>
 		</div>
-	{/if}
+	</section>
 </div>
