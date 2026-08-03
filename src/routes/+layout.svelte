@@ -4,9 +4,16 @@
 	import { fade, fly } from "svelte/transition";
 	import { browser } from "$app/environment";
 	import { onMount } from "svelte";
-	import { PanelRightClose, PanelRightOpen, LogOut, ChevronDown, ShieldCheck } from "lucide-svelte";
+	import {
+		PanelRightClose,
+		PanelRightOpen,
+		LogOut,
+		ChevronDown,
+		ShieldCheck,
+	} from "lucide-svelte";
 	import { gsap } from "gsap";
 	import { canUseBlur } from "$lib/utils/perf";
+	import { base } from "$app/paths";
 
 	import { signInWithGoogle, signOut } from "$lib/auth-client";
 	import AuthModal from "$lib/components/AuthModal.svelte";
@@ -34,7 +41,9 @@
 	];
 
 	const currentPath = $derived(page.url.pathname);
-	const isAdminRoute = $derived(currentPath.startsWith('/dash') || currentPath.startsWith('/admin'));
+	const isAdminRoute = $derived(
+		currentPath.startsWith("/dash") || currentPath.startsWith("/admin"),
+	);
 	const currentSection = $derived(() => {
 		const path = currentPath;
 		if (path === "/") return null;
@@ -68,10 +77,14 @@
 
 			const handleMouseOver = (e: MouseEvent) => {
 				if (window.innerWidth < 1024) return;
-				const target = (e.target as HTMLElement)?.closest("[title], [data-tooltip]") as HTMLElement;
+				const target = (e.target as HTMLElement)?.closest(
+					"[title], [data-tooltip]",
+				) as HTMLElement;
 				if (!target || target === activeTarget) return;
 
-				const titleAttr = target.getAttribute("title") || target.getAttribute("data-tooltip");
+				const titleAttr =
+					target.getAttribute("title") ||
+					target.getAttribute("data-tooltip");
 				if (!titleAttr) return;
 
 				activeTarget = target;
@@ -91,13 +104,13 @@
 						x: e.clientX + 10,
 						y: e.clientY + 14,
 						opacity: 0,
-						scale: 0.92
+						scale: 0.92,
 					});
 					gsap.to(customTooltipEl, {
 						opacity: 1,
 						scale: 1,
 						duration: 0.18,
-						ease: "power2.out"
+						ease: "power2.out",
 					});
 				}
 			};
@@ -108,7 +121,7 @@
 						x: e.clientX + 10,
 						y: e.clientY + 14,
 						duration: 0.08,
-						ease: "power1.out"
+						ease: "power1.out",
 					});
 				}
 			};
@@ -128,7 +141,7 @@
 						opacity: 0,
 						scale: 0.92,
 						duration: 0.12,
-						ease: "power2.in"
+						ease: "power2.in",
 					});
 				}
 
@@ -338,6 +351,15 @@
 
 <svelte:head>
 	<title>Portfolio</title>
+	<link rel="canonical" href={`https://rynds.my.id${base}${page.url.pathname}`} />
+	<script type="application/ld+json">
+		{JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": "WebSite",
+			"name": "M. Roni",
+			"url": "https://rynds.my.id"
+		})}
+	</script>
 </svelte:head>
 
 {#if !isAdminRoute}
@@ -345,7 +367,9 @@
 	<nav
 		class="sticky top-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-xl transition-all duration-300"
 	>
-		<div class="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+		<div
+			class="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between"
+		>
 			<!-- Left: Brand / Title -->
 			<div class="flex items-center gap-3">
 				<!-- Mobile Morphing Hamburger / X Toggle Button -->
@@ -426,7 +450,9 @@
 						class="p-2 rounded-full border border-[#222222] bg-[#141414]/80 text-[#a1a1a1] hover:text-white hover:border-[#333333] hover:bg-[#1a1a1a] transition-colors cursor-pointer select-none flex items-center justify-center shadow-sm shrink-0 active:scale-95"
 						onclick={toggleDesktopNav}
 						aria-label="Toggle desktop navigation"
-						title={desktopNavOpen ? "Hide Navigation" : "Show Navigation"}
+						title={desktopNavOpen
+							? "Hide Navigation"
+							: "Show Navigation"}
 					>
 						{#if desktopNavOpen}
 							<PanelRightClose
@@ -449,7 +475,8 @@
 					<div class="relative pl-2.5 border-l border-[#222222]">
 						<!-- Trigger Avatar Button -->
 						<button
-							onclick={() => (userDropdownOpen = !userDropdownOpen)}
+							onclick={() =>
+								(userDropdownOpen = !userDropdownOpen)}
 							class="flex items-center gap-1.5 rounded-full p-0.5 hover:opacity-80 transition-opacity cursor-pointer select-none"
 							title={user.name || user.email}
 						>
@@ -463,7 +490,9 @@
 								<div
 									class="flex h-6 w-6 items-center justify-center rounded-full bg-[#222222] text-[10px] font-semibold text-[#ededed]"
 								>
-									{user.name ? user.name[0].toUpperCase() : "U"}
+									{user.name
+										? user.name[0].toUpperCase()
+										: "U"}
 								</div>
 							{/if}
 						</button>
@@ -481,15 +510,21 @@
 								class="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl border border-[#222222] bg-[#121212] p-1.5 shadow-xl text-left"
 							>
 								<div class="px-2.5 py-2">
-									<div class="text-xs font-medium text-[#ededed] truncate">
-										{user.name || 'User'}
+									<div
+										class="text-xs font-medium text-[#ededed] truncate"
+									>
+										{user.name || "User"}
 									</div>
-									<div class="text-[11px] text-[#666666] truncate font-normal">
+									<div
+										class="text-[11px] text-[#666666] truncate font-normal"
+									>
 										{user.email}
 									</div>
 								</div>
 
-								<div class="border-t border-[#1f1f1f] my-1"></div>
+								<div
+									class="border-t border-[#1f1f1f] my-1"
+								></div>
 
 								<button
 									onclick={() => {
@@ -579,7 +614,7 @@
 {#if showAuthModal}
 	<AuthModal
 		open={true}
-		title="Login ke Portfolio"
+		title="Login to Portfolio"
 		description="Masuk dengan akun Google Anda untuk mengakses fitur dan halaman khusus."
 		requireTrunojoyo={false}
 		onClose={() => (showAuthModal = false)}
