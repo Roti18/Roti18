@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { academicSemester, academicCourse, academicMaterial } from '$lib/server/db/schema';
 import { eq, asc, desc } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
+import { processMarkdown } from '$lib/server/markdown/processor';
 
 export const load: PageServerLoad = async () => {
 	const semesters = await db
@@ -113,7 +114,7 @@ export const actions: Actions = {
 
 		const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') || `mat-${Date.now()}`;
 		const fullSlug = `${targetSemester.slug}/${targetCourse.slug}/${slug}`;
-		const contentHtml = content.split('\n\n').map((p) => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('');
+		const contentHtml = (await processMarkdown(content)).html;
 
 		let attachments: { name: string; url: string }[] = [];
 		if (attachmentsRaw) {
@@ -154,7 +155,7 @@ export const actions: Actions = {
 			return fail(400, { error: 'ID, Title, Type, and Content are required' });
 		}
 
-		const contentHtml = content.split('\n\n').map((p) => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('');
+		const contentHtml = (await processMarkdown(content)).html;
 
 		let attachments: { name: string; url: string }[] = [];
 		if (attachmentsRaw) {
