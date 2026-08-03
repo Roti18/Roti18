@@ -4,11 +4,13 @@ import { getStorageProvider } from '$lib/server/storage';
 import sharp from 'sharp';
 import path from 'node:path';
 
-const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif'];
+const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
 const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15 MB
+const MAX_FILES_PER_REQUEST = 10;
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	if (!locals.user) {
+	// Admin-only: prevent any logged-in user from writing to your storage.
+	if (!locals.user?.isAdmin) {
 		return json({ success: false, message: 'Unauthorized access' }, { status: 401 });
 	}
 
@@ -19,6 +21,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (!files || files.length === 0) {
 			return json({ success: false, message: 'No files uploaded' }, { status: 400 });
+		}
+
+		if (files.length > MAX_FILES_PER_REQUEST) {
+			return json({ success: false, message: `Too many files (max ${MAX_FILES_PER_REQUEST} per request)` }, { status: 400 });
 		}
 
 		const storage = getStorageProvider();
@@ -39,35 +45,39 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const buffer = Buffer.from(arrayBuffer);
 
 			const uuid = crypto.randomUUID().slice(0, 8);
-			const baseName = path.parse(file.name).name.toLowerCase().replace(/[^\w-]/g, '-');
-			const ext = path.extname(file.name) || '.png';
-
-			const rawFilename = `${baseName}-${uuid}-original${ext}`;
-			const webpFilename = `${baseName}-${uuid}.webp`;
+			const baseName = path.parse(file.name).name.toLowerCase().replace(/[^\w-]/g, '-').slice(0, 60) || 'image';
+			const ext = path.extname(file.name).toLowerCase() || '.png';
 
 			let width = 0;
 			let height = 0;
-			let webpBuffer: Buffer = buffer;
+			let originalObj;
+			let optimizedObj;
 
-			if (file.type !== 'image/svg+xml') {
+			if (file.type === 'image/gif') {
+				// GIFs are animated; re-encoding kills the animation. Keep the original.
+				originalObj = await storage.upload(buffer, `${baseName}-${uuid}${ext}`, file.type, folderParam);
+				optimizedObj = originalObj;
+			} else {
+				// Raster images: compress to WebP (~82% quality) + keep the original.
+				const rawFilename = `${baseName}-${uuid}-original${ext}`;
+				const webpFilename = `${baseName}-${uuid}.webp`;
+
 				try {
 					const image = sharp(buffer);
 					const metadata = await image.metadata();
 					width = metadata.width || 0;
 					height = metadata.height || 0;
 
-					// Compress to WebP ~82% quality
-					webpBuffer = await image.webp({ quality: 82 }).toBuffer();
+					const webpBuffer = await image.webp({ quality: 82 }).toBuffer();
+
+					originalObj = await storage.upload(buffer, rawFilename, file.type, folderParam);
+					optimizedObj = await storage.upload(webpBuffer, webpFilename, 'image/webp', folderParam);
 				} catch (e) {
-					console.warn('[Sharp] Image metadata processing error:', e);
+					console.warn('[Sharp] Image processing error, storing original instead:', e);
+					originalObj = await storage.upload(buffer, `${baseName}-${uuid}${ext}`, file.type, folderParam);
+					optimizedObj = originalObj;
 				}
 			}
-
-			// Upload Original File
-			const originalObj = await storage.upload(buffer, rawFilename, file.type, folderParam);
-
-			// Upload Optimized WebP File
-			const optimizedObj = await storage.upload(webpBuffer, webpFilename, 'image/webp', folderParam);
 
 			results.push({
 				originalUrl: originalObj.url,
@@ -76,17 +86,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				height,
 				mime: file.type,
 				size: optimizedObj.size,
-				filename: webpFilename
+				filename: optimizedObj.url.split('/').pop()
 			});
 		}
 
 		return json({
 			success: true,
-			message: `${results.length} image(s) uploaded & optimized to WebP`,
+			message: `${results.length} image(s) uploaded${results.length > 0 && results[0].mime !== 'image/gif' ? ' & optimized to WebP' : ''}`,
 			files: results
 		});
-	} catch (err: any) {
+	} catch (err) {
 		console.error('[Upload API] Server Error:', err);
-		return json({ success: false, message: err?.message || 'Server error processing file upload' }, { status: 500 });
+		// Never leak internal error details (paths, keys, storage config) to the client.
+		return json({ success: false, message: 'Upload failed. Please try again.' }, { status: 500 });
 	}
 };
