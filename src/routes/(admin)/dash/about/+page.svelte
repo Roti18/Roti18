@@ -110,7 +110,7 @@
 			</div>
 
 			<!-- Dedicated Profile Avatar Picture Uploader (WebP R2) -->
-			<HeroCoverUploader bind:coverUrl={avatarUrl} articleSlug="avatar" />
+			<HeroCoverUploader bind:coverUrl={avatarUrl} folder="avatar" />
 
 			<FormTextarea
 				id="about-bio"
