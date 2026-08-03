@@ -5,6 +5,7 @@
 	import FormInput from "$lib/components/admin/FormInput.svelte";
 	import FormTextarea from "$lib/components/admin/FormTextarea.svelte";
 	import HeroCoverUploader from "$lib/components/admin/HeroCoverUploader.svelte";
+	import SocialIcon from "$lib/components/public/SocialIcon.svelte";
 
 	let { data, form } = $props();
 	const site = $derived(data.site);
@@ -26,13 +27,14 @@
 	const platformOptions = [
 		{ label: 'GitHub', icon: 'github' },
 		{ label: 'X (Twitter)', icon: 'x' },
+		{ label: 'Telegram', icon: 'telegram' },
+		{ label: 'Email', icon: 'email' },
 		{ label: 'YouTube', icon: 'youtube' },
 		{ label: 'LinkedIn', icon: 'linkedin' },
 		{ label: 'Instagram', icon: 'instagram' },
 		{ label: 'TikTok', icon: 'tiktok' },
 		{ label: 'Discord', icon: 'discord' },
-		{ label: 'Personal Website', icon: 'website' },
-		{ label: 'Email', icon: 'email' }
+		{ label: 'Personal Website', icon: 'website' }
 	];
 
 	function addSocialLink() {
@@ -118,8 +120,10 @@
 
 			<!-- Profile Avatar Direct WebP Uploader (Shared with About) -->
 			<div class="space-y-1">
-				<label class="text-[#a1a1a1] text-xs font-medium">Profile Avatar Picture (Shared across Home & About)</label>
-				<HeroCoverUploader bind:coverUrl={avatarUrl} folder="avatar" />
+				<label for="avatar-uploader" class="text-[#a1a1a1] text-xs font-medium">Profile Avatar Picture (Shared across Home & About)</label>
+				<div id="avatar-uploader">
+					<HeroCoverUploader bind:coverUrl={avatarUrl} folder="avatar" />
+				</div>
 			</div>
 
 			<FormTextarea
@@ -188,8 +192,9 @@
 				{#each socialList as link, idx}
 					<div class="rounded-xl border border-[#222222] bg-[#161616] p-3 flex items-center justify-between gap-3 text-xs font-mono">
 						<div class="flex items-center gap-3 overflow-hidden">
-							<span class="px-2.5 py-1 rounded-lg bg-[#222222] text-blue-400 font-bold text-[11px] border border-[#2e2e2e]">
-								{link.platform}
+							<span class="px-2.5 py-1 rounded-lg bg-[#222222] text-blue-400 font-bold text-[11px] border border-[#2e2e2e] flex items-center gap-1.5">
+								<SocialIcon icon={link.icon || link.platform} size={14} />
+								<span>{link.platform}</span>
 							</span>
 							<span class="text-[#ededed] truncate">{link.url}</span>
 						</div>
