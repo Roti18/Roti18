@@ -16,25 +16,12 @@
 		if (liked) return;
 		liked = true;
 		likes += 1;
-
-		try {
-			const res = await fetch(`/writing/${data.post.slug}`, { method: 'POST' });
-			if (res.ok) {
-				const body = await res.json();
-				likes = body.likes ?? likes;
-			}
-		} catch (err) {
-			console.error('Failed to register like:', err);
-		}
 	}
 </script>
 
 <svelte:head>
 	<title>{data.post.title} - M. Roni</title>
 	<meta name="description" content={data.post.excerpt || data.post.title} />
-	{#if data.post.coverUrl}
-		<meta property="og:image" content={data.post.coverUrl} />
-	{/if}
 	<script type="application/ld+json">
 		{JSON.stringify({
 			"@context": "https://schema.org",
@@ -54,26 +41,23 @@
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-12">
 	<article class="blur-fade-in space-y-8">
-		<!-- Cover Hero Image (Always WebP) -->
-		{#if data.post.coverUrl}
-			<div class="rounded-2xl overflow-hidden border border-[#222222] bg-[#121212] aspect-video">
-				<img src={data.post.coverUrl} alt={data.post.title} class="w-full h-full object-cover" />
-			</div>
-		{/if}
-
-		<header class="space-y-3 mb-10 pb-6 border-b border-[#1f1f1f] flex items-center justify-between">
+		<header class="space-y-4 mb-10 pb-6 border-b border-[#1f1f1f]">
 			<h1 class="text-3xl font-semibold text-[#ededed] leading-tight tracking-tight">
 				{data.post.title}
 			</h1>
-			<button
-				class="select-none inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#2a2a2a] text-xs text-[#ededed] hover:border-[#444444] transition-colors cursor-pointer {liked ? 'text-red-400 border-red-900 bg-red-950/30' : ''}"
-				onclick={handleLike}
-				aria-label="Like this post"
-				id="like-button"
-			>
-				<Heart size={14} fill={liked ? 'currentColor' : 'none'} />
-				<span class="tabular-nums">{likes}</span>
-			</button>
+
+			<!-- Like Button on the LEFT -->
+			<div class="flex items-center gap-3">
+				<button
+					class="select-none inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#2a2a2a] text-xs text-[#ededed] hover:border-[#444444] transition-colors cursor-pointer {liked ? 'text-red-400 border-red-900 bg-red-950/30' : ''}"
+					onclick={handleLike}
+					aria-label="Like this post"
+					id="like-button"
+				>
+					<Heart size={14} fill={liked ? 'currentColor' : 'none'} />
+					<span class="tabular-nums">{likes}</span>
+				</button>
+			</div>
 		</header>
 
 		<!-- Article Body Content with PhotoSwipe WebP Lightbox -->
