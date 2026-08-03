@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { project } from '$lib/server/db/schema';
 import { eq, asc, desc } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
+import { processMarkdown } from '$lib/server/markdown/processor';
 
 export const load: PageServerLoad = async () => {
 	const projectsList = await db
@@ -33,9 +34,7 @@ export const actions: Actions = {
 			return fail(400, { error: 'Title and Short Description are required' });
 		}
 
-		const contentHtml = content
-			? content.split('\n\n').map((p) => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('')
-			: null;
+		const contentHtml = content ? (await processMarkdown(content)).html : null;
 
 		await db.insert(project).values({
 			id: crypto.randomUUID(),
@@ -76,9 +75,7 @@ export const actions: Actions = {
 			return fail(400, { error: 'ID, Title and Short Description are required' });
 		}
 
-		const contentHtml = content
-			? content.split('\n\n').map((p) => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('')
-			: null;
+		const contentHtml = content ? (await processMarkdown(content)).html : null;
 
 		await db
 			.update(project)
