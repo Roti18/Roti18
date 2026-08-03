@@ -10,12 +10,44 @@
 
 	onMount(() => {
 		likes = data.post.likes;
+		try {
+			const likedPosts = JSON.parse(localStorage.getItem('liked_posts') || '[]');
+			if (likedPosts.includes(data.post.id)) {
+				liked = true;
+			}
+		} catch (e) {
+			console.warn('Could not read liked_posts from localStorage:', e);
+		}
 	});
 
 	async function handleLike() {
 		if (liked) return;
 		liked = true;
 		likes += 1;
+
+		try {
+			const likedPosts = JSON.parse(localStorage.getItem('liked_posts') || '[]');
+			if (!likedPosts.includes(data.post.id)) {
+				likedPosts.push(data.post.id);
+				localStorage.setItem('liked_posts', JSON.stringify(likedPosts));
+			}
+		} catch (e) {
+			console.warn('Could not update localStorage:', e);
+		}
+
+		try {
+			const formData = new FormData();
+			const res = await fetch('?/like', {
+				method: 'POST',
+				body: formData
+			});
+			const result = await res.json();
+			if (result?.type === 'success' && result?.data?.likes !== undefined) {
+				likes = result.data.likes;
+			}
+		} catch (e) {
+			console.error('Failed to increment likes on server:', e);
+		}
 	}
 </script>
 
