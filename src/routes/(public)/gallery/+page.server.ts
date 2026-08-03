@@ -1,17 +1,15 @@
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { galleryPhoto } from '$lib/server/db/schema';
-import { asc } from 'drizzle-orm';
+import { desc } from 'drizzle-orm';
 
 export const load: PageServerLoad = async () => {
-	try {
-		const photos = await db.query.galleryPhoto.findMany({
-			orderBy: [asc(galleryPhoto.sortOrder)]
-		});
+	const photos = await db
+		.select()
+		.from(galleryPhoto)
+		.orderBy(desc(galleryPhoto.createdAt));
 
-		return { photos };
-	} catch (err) {
-		console.error('Failed to load gallery photos from DB:', err);
-		return { photos: [] };
-	}
+	return {
+		photos
+	};
 };
