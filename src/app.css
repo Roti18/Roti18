@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+@layer base {
+	:root {
+		--bg-main: #0a0a0a;
+		--text-main: #ededed;
+		--text-muted: #a1a1a1;
+		--text-subtle: #666666;
+		--border-subtle: #1f1f1f;
+		--accent-red: #f87171;
+	}
+
+	::selection {
+		background-color: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
+
+	::-moz-selection {
+		background-color: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
+
+	/* Ultra-Minimal Custom Dark Mode Scrollbar */
+	::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: #0a0a0a;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: #262626;
+		border-radius: 9999px;
+		transition: background-color 0.2s ease;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: #404040;
+	}
+
+	::-webkit-scrollbar-thumb:active {
+		background: #f87171;
+	}
+
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: #262626 #0a0a0a;
+	}
+
+	html {
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-rendering: optimizeLegibility;
+		background-color: var(--bg-main);
+		color: var(--text-main);
+		font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		overflow-y: scroll;
+		scrollbar-gutter: stable;
+	}
+
+	html.lenis, html.lenis body {
+		height: auto;
+	}
+
+	.lenis.lenis-smooth {
+		scroll-behavior: auto !important;
+	}
+
+	.lenis.lenis-smooth [data-lenis-prevent] {
+		overscroll-behavior: contain;
+	}
+
+	.lenis.lenis-stopped {
+		overflow: hidden;
+	}
+
+	body {
+		min-height: 100vh;
+		line-height: 1.65;
+		color: #ededed;
+	}
+
+	p {
+		color: #ededed;
+	}
+
+	h1, h2, h3, h4, h5, h6 {
+		color: #ededed;
+		font-family: 'Space Grotesk', 'Inter', sans-serif;
+		letter-spacing: -0.02em;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: none;
+	}
+
+	/* Ultra-Smooth Native CSS Blur Fade-In (No FOUC, No JS Delay, Never Disappears) */
+	@keyframes blurFadeIn {
+		from {
+			opacity: 0;
+			filter: blur(12px);
+		}
+		to {
+			opacity: 1;
+			filter: blur(0px);
+		}
+	}
+
+	.blur-fade-in {
+		animation: blurFadeIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	/* ── Performance & Mobile: disable entrance animations & blur on non-laptop devices ── */
+	@media (max-width: 1023px) {
+		.blur-fade-in {
+			animation: none !important;
+			opacity: 1 !important;
+			filter: none !important;
+			transform: none !important;
+		}
+
+		/* Kill all backdrop-blur on mobile */
+		.backdrop-blur-xl,
+		.backdrop-blur-md,
+		.backdrop-blur-sm,
+		.backdrop-blur-xs,
+		[class*="backdrop-blur"] {
+			-webkit-backdrop-filter: none !important;
+			backdrop-filter: none !important;
+		}
+
+		/* Kill regular filter blur on mobile too */
+		.blur-lg,
+		.blur-md,
+		.blur-sm,
+		.blur-xl,
+		[class*="blur-"] {
+			filter: none !important;
+		}
+	}
+}
