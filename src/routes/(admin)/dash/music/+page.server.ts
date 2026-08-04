@@ -22,7 +22,7 @@ export const actions: Actions = {
 		const artist = formData.get('artist')?.toString().trim();
 		const album = formData.get('album')?.toString().trim() || null;
 		const coverUrl = formData.get('coverUrl')?.toString().trim() || null;
-		const spotifyUrl = formData.get('spotifyUrl')?.toString().trim() || null;
+		const musicUrl = formData.get('musicUrl')?.toString().trim() || null;
 
 		if (!title || !artist) {
 			return fail(400, { error: 'Title and Artist are required' });
@@ -34,7 +34,7 @@ export const actions: Actions = {
 			artist,
 			album,
 			coverUrl,
-			spotifyUrl,
+			musicUrl,
 			playedAt: new Date(),
 			sortOrder: 0
 		});
@@ -49,7 +49,7 @@ export const actions: Actions = {
 		const artist = formData.get('artist')?.toString().trim();
 		const album = formData.get('album')?.toString().trim() || null;
 		const coverUrl = formData.get('coverUrl')?.toString().trim() || null;
-		const spotifyUrl = formData.get('spotifyUrl')?.toString().trim() || null;
+		const musicUrl = formData.get('musicUrl')?.toString().trim() || null;
 
 		if (!id || !title || !artist) {
 			return fail(400, { error: 'ID, Title and Artist are required' });
@@ -62,7 +62,7 @@ export const actions: Actions = {
 				artist,
 				album,
 				coverUrl,
-				spotifyUrl
+				musicUrl
 			})
 			.where(eq(music.id, id));
 
@@ -130,7 +130,7 @@ export const actions: Actions = {
 					.set({
 						album: item.album || existingTracks[0].album,
 						coverUrl: item.coverUrl || existingTracks[0].coverUrl,
-						spotifyUrl: item.spotifyUrl || existingTracks[0].spotifyUrl
+						musicUrl: item.musicUrl || existingTracks[0].musicUrl
 					})
 					.where(eq(music.id, existingTracks[0].id));
 				updatedCount++;
@@ -142,7 +142,7 @@ export const actions: Actions = {
 					artist,
 					album: item.album || null,
 					coverUrl: item.coverUrl || null,
-					spotifyUrl: item.spotifyUrl || null,
+					musicUrl: item.musicUrl || null,
 					playedAt: null,
 					sortOrder: 0
 				});
