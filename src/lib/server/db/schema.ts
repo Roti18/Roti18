@@ -165,7 +165,7 @@ export const music = sqliteTable('music', {
 	artist: text('artist').notNull(),
 	album: text('album'),
 	coverUrl: text('cover_url'),
-	spotifyUrl: text('spotify_url'),
+	musicUrl: text('music_url'),
 	playedAt: integer('played_at', { mode: 'timestamp' })
 		.$defaultFn(() => new Date()),
 	sortOrder: integer('sort_order').notNull().default(0)
