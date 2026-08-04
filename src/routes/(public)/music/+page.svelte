@@ -107,7 +107,7 @@
 						id="track-{track.id}"
 						onmouseenter={(e) => handleRowMouseEnter(track, e.currentTarget as HTMLElement)}
 						onclick={() => window.open(getTrackUrl(track), '_blank')}
-						title="Listen on Spotify"
+						title="Listen on Lament"
 					>
 						<td class="py-3.5 px-3 font-medium text-[#ededed]">
 							<div class="flex items-center gap-3">
