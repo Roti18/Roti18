@@ -8,7 +8,10 @@ import { env } from '$env/dynamic/private';
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = await request.json();
-		const expectedSecret = env.MUSIC_WEBHOOK_SECRET || process.env.MUSIC_WEBHOOK_SECRET || 'brian_music_secret_123';
+		// No hardcoded fallback: the webhook secret must come from Vercel env
+		// (MUSIC_WEBHOOK_SECRET). A missing value must fail loudly, never silently
+		// accept requests with a known default.
+		const expectedSecret = env.MUSIC_WEBHOOK_SECRET || process.env.MUSIC_WEBHOOK_SECRET || '';
 
 		if (!body.secret || body.secret !== expectedSecret) {
 			return json({ success: false, message: 'Invalid or missing webhook secret key' }, { status: 401 });
