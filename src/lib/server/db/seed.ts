@@ -116,20 +116,21 @@ async function seed() {
 		console.log('  - Seeding music...');
 		for (let i = 0; i < mockMusic.length; i++) {
 			const item = mockMusic[i];
-			const link = (item as any).spotifyUrl || `https://open.spotify.com/search/${encodeURIComponent(item.title + ' ' + item.artist)}`;
+			// musicUrl is expected from the Lament store; no Spotify fallback.
+			const link = (item as any).musicUrl || null;
 			await db.insert(schema.music).values({
 				id: item.id,
 				title: item.title,
 				artist: item.artist,
 				album: item.album,
 				coverUrl: item.coverUrl,
-				spotifyUrl: link,
+				musicUrl: link,
 				playedAt: item.playedAt,
 				sortOrder: i
 			}).onConflictDoUpdate({
 				target: schema.music.id,
 				set: {
-					spotifyUrl: link,
+					musicUrl: link,
 					coverUrl: item.coverUrl,
 					title: item.title,
 					artist: item.artist,
