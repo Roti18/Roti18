@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const album = body.album?.trim() || null;
 		const coverUrl = body.coverUrl?.trim() || null;
-		const spotifyUrl = body.spotifyUrl?.trim() || null;
+		const musicUrl = body.musicUrl?.trim() || null;
 		const playedAt = new Date();
 
 		// Check if song already exists in music database table (case-insensitive match)
@@ -63,12 +63,12 @@ export const POST: RequestHandler = async ({ request }) => {
 				.set({
 					album: album || existing.album,
 					coverUrl: coverUrl || existing.coverUrl,
-					spotifyUrl: spotifyUrl || existing.spotifyUrl,
+					musicUrl: musicUrl || existing.musicUrl,
 					playedAt
 				})
 				.where(eq(music.id, existing.id));
 
-			targetTrack = { ...existing, album, coverUrl, spotifyUrl, playedAt };
+			targetTrack = { ...existing, album, coverUrl, musicUrl, playedAt };
 		} else {
 			// Insert new track entry
 			const newTrackId = crypto.randomUUID();
@@ -78,12 +78,12 @@ export const POST: RequestHandler = async ({ request }) => {
 				artist,
 				album,
 				coverUrl,
-				spotifyUrl,
+				musicUrl,
 				playedAt,
 				sortOrder: 0
 			});
 
-			targetTrack = { id: newTrackId, title, artist, album, coverUrl, spotifyUrl, playedAt, sortOrder: 0 };
+			targetTrack = { id: newTrackId, title, artist, album, coverUrl, musicUrl, playedAt, sortOrder: 0 };
 		}
 
 		return json(
