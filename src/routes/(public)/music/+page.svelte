@@ -7,7 +7,7 @@
 	const { data } = $props();
 
 	function getTrackUrl(track: any): string {
-		return track.spotifyUrl || `https://open.spotify.com/search/${encodeURIComponent(track.title + ' ' + track.artist)}`;
+		return track.musicUrl || `https://lament.rynds.my.id/?search=${encodeURIComponent(track.title + ' ' + track.artist)}`;
 	}
 
 	let previewEl: HTMLElement;
