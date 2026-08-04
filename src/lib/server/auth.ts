@@ -5,8 +5,10 @@ import * as schema from '$lib/server/db/schema';
 import { env } from '$env/dynamic/private';
 
 export const auth = betterAuth({
-	baseURL: env.BETTER_AUTH_URL || process.env.BETTER_AUTH_URL || 'http://localhost:5173',
-	secret: env.BETTER_AUTH_SECRET || process.env.BETTER_AUTH_SECRET || 'a_random_32_character_secret_string_here_12345',
+	baseURL: env.BETTER_AUTH_URL || process.env.BETTER_AUTH_URL || '',
+	// No hardcoded fallback: BETTER_AUTH_SECRET must be set in Vercel env.
+	// A missing value would silently mint insecure sessions, so fail loudly instead.
+	secret: env.BETTER_AUTH_SECRET || process.env.BETTER_AUTH_SECRET || '',
 	database: drizzleAdapter(db, {
 		provider: 'sqlite',
 		schema: {
