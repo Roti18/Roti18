@@ -5,7 +5,24 @@ import { music } from '$lib/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { env } from '$env/dynamic/private';
 
+// CORS is enforced by the browser BEFORE the POST is sent (preflight OPTIONS).
+// Without this handler, Vercel returns 405 for the preflight and the browser
+// blocks the request entirely — the webhook would never reach this route.
+const CORS_HEADERS = {
+	'Access-Control-Allow-Origin': '*',
+	'Access-Control-Allow-Methods': 'POST, OPTIONS',
+	'Access-Control-Allow-Headers': 'Content-Type',
+	'Access-Control-Max-Age': '86400'
+};
+
+export const OPTIONS: RequestHandler = async () => {
+	return new Response(null, { status: 204, headers: CORS_HEADERS });
+};
+
 export const POST: RequestHandler = async ({ request }) => {
+	// Webhook calls originate cross-origin (lament.rynds.my.id). Success responses
+	// must carry the same CORS headers or the browser discards the response.
+	const cors = CORS_HEADERS;
 	try {
 		const body = await request.json();
 		// No hardcoded fallback: the webhook secret must come from Vercel env
@@ -14,14 +31,14 @@ export const POST: RequestHandler = async ({ request }) => {
 		const expectedSecret = env.MUSIC_WEBHOOK_SECRET || process.env.MUSIC_WEBHOOK_SECRET || '';
 
 		if (!body.secret || body.secret !== expectedSecret) {
-			return json({ success: false, message: 'Invalid or missing webhook secret key' }, { status: 401 });
+			return json({ success: false, message: 'Invalid or missing webhook secret key' }, { status: 401, headers: cors });
 		}
 
 		const title = body.title?.trim();
 		const artist = body.artist?.trim();
 
 		if (!title || !artist) {
-			return json({ success: false, message: 'Title and Artist are required' }, { status: 400 });
+			return json({ success: false, message: 'Title and Artist are required' }, { status: 400, headers: cors });
 		}
 
 		const album = body.album?.trim() || null;
@@ -69,13 +86,16 @@ export const POST: RequestHandler = async ({ request }) => {
 			targetTrack = { id: newTrackId, title, artist, album, coverUrl, spotifyUrl, playedAt, sortOrder: 0 };
 		}
 
-		return json({
-			success: true,
-			message: 'Track playback registered successfully',
-			track: targetTrack
-		});
+		return json(
+			{
+				success: true,
+				message: 'Track playback registered successfully',
+				track: targetTrack
+			},
+			{ headers: cors }
+		);
 	} catch (err: any) {
 		console.error('[API music/now-playing] Error handling webhook:', err);
-		return json({ success: false, message: err?.message || 'Server error processing webhook' }, { status: 500 });
+		return json({ success: false, message: err?.message || 'Server error processing webhook' }, { status: 500, headers: cors });
 	}
 };
