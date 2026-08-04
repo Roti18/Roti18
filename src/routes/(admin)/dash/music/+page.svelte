@@ -123,7 +123,7 @@ function onSongPlay(song) {
 					artist: "Brian / Lament Streamer",
 					album: "Portfolio Live Test",
 					coverUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300",
-					spotifyUrl: "https://open.spotify.com"
+					musicUrl: "https://lament.rynds.my.id"
 				})
 			});
 			const json = await res.json();
@@ -304,8 +304,8 @@ function onSongPlay(song) {
 							</td>
 							<td class="px-4 py-2.5 font-bold text-white font-['Space_Grotesk']">
 								{track.title}
-								{#if track.spotifyUrl}
-									<a href={track.spotifyUrl} target="_blank" class="inline-block ml-1 text-emerald-400 hover:text-emerald-300">
+								{#if track.musicUrl}
+									<a href={track.musicUrl} target="_blank" class="inline-block ml-1 text-emerald-400 hover:text-emerald-300">
 										<ExternalLink class="w-3 h-3 inline" />
 									</a>
 								{/if}
@@ -370,7 +370,7 @@ function onSongPlay(song) {
 
 	<!-- Dedicated Music Cover Uploader (WebP R2) -->
 	<HeroCoverUploader bind:coverUrl folder="music" />
-	<FormInput id="track-spotify" name="spotifyUrl" type="url" label="Spotify Link (Optional)" value={editingTrack?.spotifyUrl || ''} placeholder="https://open.spotify.com/track/..." />
+	<FormInput id="track-music" name="musicUrl" type="url" label="Music Link (Optional)" value={editingTrack?.musicUrl || ''} placeholder="https://lament.rynds.my.id/track/..." />
 </FormModal>
 
 <!-- Reusable Form Modal: Sync Lament Metadata -->
