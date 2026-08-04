@@ -239,7 +239,7 @@ export const mockMusic = [
 		artist: 'Aftruu',
 		album: 'Echoes Of You',
 		coverUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80',
-		spotifyUrl: 'https://open.spotify.com/search/Aftruu%20Echoes%20Of%20You',
+		musicUrl: 'https://open.spotify.com/search/Aftruu%20Echoes%20Of%20You',
 		playedAt: new Date('2026-07-19')
 	},
 	{
@@ -248,7 +248,7 @@ export const mockMusic = [
 		artist: 'Farves',
 		album: 'Mind',
 		coverUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=80',
-		spotifyUrl: 'https://open.spotify.com/search/Farves%20Mind',
+		musicUrl: 'https://open.spotify.com/search/Farves%20Mind',
 		playedAt: new Date('2026-07-19')
 	},
 	{
@@ -257,7 +257,7 @@ export const mockMusic = [
 		artist: 'Blugazer',
 		album: 'Waking Still Beneath / Mirrored Dusk',
 		coverUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80',
-		spotifyUrl: 'https://open.spotify.com/search/Blugazer%20Waking%20Still%20Beneath',
+		musicUrl: 'https://open.spotify.com/search/Blugazer%20Waking%20Still%20Beneath',
 		playedAt: new Date('2026-07-19')
 	},
 	{
@@ -266,7 +266,7 @@ export const mockMusic = [
 		artist: 'Brendel',
 		album: 'Brighter Than Yesterday',
 		coverUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80',
-		spotifyUrl: 'https://open.spotify.com/search/Brendel%20Brighter%20Than%20Yesterday',
+		musicUrl: 'https://open.spotify.com/search/Brendel%20Brighter%20Than%20Yesterday',
 		playedAt: new Date('2026-07-19')
 	},
 	{
@@ -275,7 +275,7 @@ export const mockMusic = [
 		artist: 'Alangji',
 		album: 'New Day',
 		coverUrl: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&q=80',
-		spotifyUrl: 'https://open.spotify.com/search/Alangji%20New%20Day',
+		musicUrl: 'https://open.spotify.com/search/Alangji%20New%20Day',
 		playedAt: new Date('2026-07-19')
 	},
 	{
@@ -284,7 +284,7 @@ export const mockMusic = [
 		artist: 'Stendahl',
 		album: 'Faded',
 		coverUrl: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800&q=80',
-		spotifyUrl: 'https://open.spotify.com/search/Stendahl%20Faded',
+		musicUrl: 'https://open.spotify.com/search/Stendahl%20Faded',
 		playedAt: new Date('2026-07-18')
 	},
 	{
@@ -293,7 +293,7 @@ export const mockMusic = [
 		artist: 'Sound Quelle',
 		album: 'Higher Note',
 		coverUrl: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=800&q=80',
-		spotifyUrl: 'https://open.spotify.com/search/Sound%20Quelle%20Our%20Own%20Island',
+		musicUrl: 'https://open.spotify.com/search/Sound%20Quelle%20Our%20Own%20Island',
 		playedAt: new Date('2026-07-18')
 	},
 	{
@@ -302,7 +302,7 @@ export const mockMusic = [
 		artist: 'Isam Hadjih',
 		album: 'Through The Dark',
 		coverUrl: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=800&q=80',
-		spotifyUrl: 'https://open.spotify.com/search/Isam%20Hadjih%20Through%20The%20Dark',
+		musicUrl: 'https://open.spotify.com/search/Isam%20Hadjih%20Through%20The%20Dark',
 		playedAt: new Date('2026-07-17')
 	},
 	{
