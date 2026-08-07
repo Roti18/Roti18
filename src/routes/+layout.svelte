@@ -32,9 +32,9 @@
 	let isAnimatingNav = false;
 
 	const navLinks = [
+		{ href: "/about", label: "About" },
 		{ href: "/writing", label: "Writing" },
 		{ href: "/project", label: "Projects" },
-		{ href: "/about", label: "About" },
 		{ href: "/music", label: "Music" },
 		{ href: "/gallery", label: "Gallery" },
 		{ href: "/academics", label: "Academics" },
@@ -549,7 +549,7 @@
 						<span class="relative">
 							Sign In
 							<span
-								class="absolute -bottom-0.5 left-0 w-0 h-[1px] bg-red-400 transition-all duration-300 group-hover:w-full"
+								class="absolute -bottom-0.5 left-0 w-0 h-px bg-red-400 transition-all duration-300 group-hover:w-full"
 							></span>
 						</span>
 						<span
@@ -624,7 +624,7 @@
 <!-- Global GSAP Custom Floating Tooltip -->
 <div
 	bind:this={customTooltipEl}
-	class="hidden lg:block fixed top-0 left-0 z-[9999] pointer-events-none opacity-0 scale-90 rounded-lg bg-[#181818]/95 px-2.5 py-1 text-[11px] font-medium text-[#ededed] shadow-2xl border border-[#2a2a2a] backdrop-blur-md font-sans tracking-tight"
+	class="hidden lg:block fixed top-0 left-0 z-9999 pointer-events-none opacity-0 scale-90 rounded-lg bg-[#181818]/95 px-2.5 py-1 text-[11px] font-medium text-[#ededed] shadow-2xl border border-[#2a2a2a] backdrop-blur-md font-sans tracking-tight"
 >
 	{tooltipText}
 </div>

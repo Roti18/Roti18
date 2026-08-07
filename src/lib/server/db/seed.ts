@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createClient } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
+import { S3Client, ListObjectsV2Command, DeleteObjectsCommand } from '@aws-sdk/client-s3';
 import * as schema from './schema';
 import {
 	mockWritings,
@@ -48,6 +49,54 @@ const url = rawUrl.replace(/^libsql:\/\//, 'https://');
 const client = createClient({ url, authToken });
 const db = drizzle(client, { schema });
 
+async function clearStorage() {
+	// Clears uploaded assets: Cloudflare R2 (when configured) + local static/uploads.
+	// user/session/account rows are never touched (auth survives a reset).
+	const r2AccountId = process.env.R2_ACCOUNT_ID;
+	const r2AccessKeyId = process.env.R2_ACCESS_KEY_ID;
+	const r2SecretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+	const r2Bucket = process.env.R2_BUCKET_NAME || 'portfolio-assets';
+
+	if (r2AccountId && r2AccessKeyId && r2SecretAccessKey) {
+		const s3 = new S3Client({
+			region: 'auto',
+			endpoint: `https://${r2AccountId}.r2.cloudflarestorage.com`,
+			credentials: { accessKeyId: r2AccessKeyId, secretAccessKey: r2SecretAccessKey }
+		});
+
+		let deletedCount = 0;
+		let continuationToken: string | undefined;
+		do {
+			const listed = await s3.send(
+				new ListObjectsV2Command({
+					Bucket: r2Bucket,
+					...(continuationToken ? { ContinuationToken: continuationToken } : {})
+				})
+			);
+
+			const objects = listed.Contents || [];
+			if (objects.length > 0) {
+				await s3.send(
+					new DeleteObjectsCommand({
+						Bucket: r2Bucket,
+						Delete: { Objects: objects.map((o) => ({ Key: o.Key! })) }
+					})
+				);
+				deletedCount += objects.length;
+			}
+			continuationToken = listed.IsTruncated ? listed.NextContinuationToken : undefined;
+		} while (continuationToken);
+
+		console.log(`  - R2 bucket '${r2Bucket}' cleared: ${deletedCount} object(s) deleted`);
+	}
+
+	const localUploads = path.join(process.cwd(), 'static', 'uploads');
+	if (fs.existsSync(localUploads)) {
+		fs.rmSync(localUploads, { recursive: true, force: true });
+		console.log('  - Local static/uploads cleared');
+	}
+}
+
 async function seed() {
 	console.log('🌱 Starting database seed to Turso...');
 
@@ -65,9 +114,17 @@ async function seed() {
 			await db.delete(schema.academicSemester);
 			await db.delete(schema.appSettings);
 			await db.delete(schema.aboutInfo);
+			await db.delete(schema.verification);
 			console.log('  - All tables wiped clean!');
 		} catch (err) {
 			console.warn('  - Note during wipe:', err);
+		}
+
+		console.log('🗑️  Clearing storage (R2 + local uploads)...');
+		try {
+			await clearStorage();
+		} catch (err) {
+			console.warn('  - Note during storage clear:', err);
 		}
 	}
 

@@ -150,7 +150,7 @@
 					</div>
 				{/if}
 				<!-- Gradient Overlay for Title & Artist (No harsh outer border) -->
-				<div class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex flex-col justify-end">
+				<div class="absolute inset-x-0 bottom-0 p-3 bg-linear-to-t from-black/90 via-black/60 to-transparent flex flex-col justify-end">
 					<div class="text-xs font-semibold text-white truncate drop-shadow-sm">{currentTrack.title}</div>
 					<div class="text-[11px] text-[#a1a1a1] truncate font-normal">{currentTrack.artist}</div>
 				</div>

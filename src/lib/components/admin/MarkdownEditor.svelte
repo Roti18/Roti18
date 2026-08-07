@@ -142,7 +142,7 @@
 				<button type="button" onclick={() => insertFormatting('*', '*', 'italic text')} class="p-1.5 rounded-lg hover:bg-[#222222] text-[#a1a1a1] hover:text-white" title="Italic">
 					<Italic class="w-3.5 h-3.5" />
 				</button>
-				<div class="w-[1px] h-4 bg-[#262626] mx-1"></div>
+				<div class="w-px h-4 bg-[#262626] mx-1"></div>
 
 				<button type="button" onclick={() => insertFormatting('# ', '', 'Heading 1')} class="p-1.5 rounded-lg hover:bg-[#222222] text-[#a1a1a1] hover:text-white" title="H1">
 					<Heading1 class="w-3.5 h-3.5" />
@@ -150,7 +150,7 @@
 				<button type="button" onclick={() => insertFormatting('## ', '', 'Heading 2')} class="p-1.5 rounded-lg hover:bg-[#222222] text-[#a1a1a1] hover:text-white" title="H2">
 					<Heading2 class="w-3.5 h-3.5" />
 				</button>
-				<div class="w-[1px] h-4 bg-[#262626] mx-1"></div>
+				<div class="w-px h-4 bg-[#262626] mx-1"></div>
 
 				<button type="button" onclick={() => insertFormatting('> ', '', 'Quote text')} class="p-1.5 rounded-lg hover:bg-[#222222] text-[#a1a1a1] hover:text-white" title="Quote">
 					<Quote class="w-3.5 h-3.5" />
@@ -216,7 +216,7 @@
 					onpaste={handlePaste}
 					rows={14}
 					placeholder="Write markdown article here... Drag & Drop images or Paste (Ctrl+V) directly into text area."
-					class="w-full h-full min-h-[320px] bg-transparent text-xs text-[#ededed] font-mono leading-relaxed placeholder-[#444444] focus:outline-none resize-y"
+					class="w-full h-full min-h-320px bg-transparent text-xs text-[#ededed] font-mono leading-relaxed placeholder-[#444444] focus:outline-none resize-y"
 				></textarea>
 			</div>
 		{:else}

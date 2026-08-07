@@ -13,7 +13,7 @@
 			<section class="blur-fade-in space-y-4" id="year-{group.year}">
 				<div class="flex items-center gap-4 pb-2 border-b border-[#1f1f1f]">
 					<h2 class="text-xs font-semibold text-[#888888] uppercase tracking-wider">{group.year}</h2>
-					<div class="flex-1 h-[1px] bg-[#1a1a1a]"></div>
+					<div class="flex-1 h-px bg-[#1a1a1a]"></div>
 				</div>
 				<div class="flex flex-col divide-y divide-[#141414]">
 					{#each group.items as post}

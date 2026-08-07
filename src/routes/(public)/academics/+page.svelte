@@ -212,7 +212,7 @@
 																›
 															</span>
 															<span
-																class="text-xs font-semibold uppercase tracking-wider capitalize text-[#888888]"
+																class="text-xs font-semibold uppercase tracking-wider text-[#888888]"
 																>{type}</span
 															>
 														</button>
