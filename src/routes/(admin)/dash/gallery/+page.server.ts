@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { galleryPhoto } from '$lib/server/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
+import { deleteStorageFile } from '$lib/server/storage';
 
 export const load: PageServerLoad = async () => {
 	const photosList = await db
@@ -51,7 +52,15 @@ export const actions: Actions = {
 		const cameraDesc = formData.get('cameraDesc')?.toString().trim() || null;
 
 		if (!id || !title || !imageUrl) {
-			return fail(400, { error: 'ID, Title and Image URL are required' });
+			return fail(400, { error: 'ID, Title, and Image URL are required' });
+		}
+
+		const existing = await db.query.galleryPhoto.findFirst({
+			where: eq(galleryPhoto.id, id)
+		});
+
+		if (existing && existing.imageUrl && existing.imageUrl !== imageUrl) {
+			await deleteStorageFile(existing.imageUrl);
 		}
 
 		await db
@@ -74,6 +83,14 @@ export const actions: Actions = {
 
 		if (!id) {
 			return fail(400, { error: 'Missing photo ID' });
+		}
+
+		const existing = await db.query.galleryPhoto.findFirst({
+			where: eq(galleryPhoto.id, id)
+		});
+
+		if (existing?.imageUrl) {
+			await deleteStorageFile(existing.imageUrl);
 		}
 
 		await db.delete(galleryPhoto).where(eq(galleryPhoto.id, id));
