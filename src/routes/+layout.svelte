@@ -44,6 +44,7 @@
 	const isAdminRoute = $derived(
 		currentPath.startsWith("/dash") || currentPath.startsWith("/admin"),
 	);
+	const isErrorPage = $derived(Boolean(page.error));
 	const currentSection = $derived(() => {
 		const path = currentPath;
 		if (path === "/") return null;
@@ -70,6 +71,9 @@
 				}
 				requestAnimationFrame(raf);
 			});
+
+			// Markdown code-block copy + copy/check icon state now lives in
+			// <MarkdownContent> (per-container, with real lucide icons).
 
 			// Global GSAP Custom Tooltip Manager for title and data-tooltip attributes
 			let activeTarget: HTMLElement | null = null;
@@ -362,7 +366,7 @@
 	</script>
 </svelte:head>
 
-{#if !isAdminRoute}
+{#if !isAdminRoute && !isErrorPage}
 	<!-- Sticky Header Navigation Bar (Smooth Ultra-Blur Frosted Glass Constant at Top) -->
 	<nav
 		class="sticky top-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-xl transition-all duration-300"
@@ -608,7 +612,9 @@
 		{@render children()}
 	</main>
 {:else}
-	{@render children()}
+	<main class="min-h-screen">
+		{@render children()}
+	</main>
 {/if}
 
 {#if showAuthModal}
