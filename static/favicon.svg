@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+	<!-- Accent: thin red underline slash (the "slanted" brand mark) -->
+	<rect x="14" y="56" width="36" height="3.5" rx="1.75" fill="#f87171" />
+
+	<!-- Stylized italic "R" monogram, transparent background -->
+	<g fill="#f87171">
+		<!-- Vertical stem -->
+		<path d="M18 13 h7 v35 h-7 Z" />
+		<!-- Top curve + diagonal (italic) -->
+		<path d="M25 13 h11 c6.2 0 10.5 4.2 10.5 10 0 5.6-4.2 10-9.8 10 H32 L42 48 h-8.5 Z" />
+	</g>
+</svg>
