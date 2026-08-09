@@ -6,6 +6,7 @@
 	import FormInput from "$lib/components/admin/FormInput.svelte";
 	import FormTextarea from "$lib/components/admin/FormTextarea.svelte";
 	import HeroCoverUploader from "$lib/components/admin/HeroCoverUploader.svelte";
+	import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
 
 	let { data } = $props();
 	const projects = $derived(data.projects);
@@ -14,6 +15,7 @@
 	let showModal = $state(false);
 	let editingItem = $state<any>(null);
 	let thumbnailUrl = $state("");
+	let content = $state('');
 
 	const filteredItems = $derived(
 		projects.filter(
@@ -27,12 +29,14 @@
 	function openCreateModal() {
 		editingItem = null;
 		thumbnailUrl = "";
+		content = "";
 		showModal = true;
 	}
 
 	function openEditModal(item: any) {
 		editingItem = item;
 		thumbnailUrl = item.thumbnailUrl || "";
+		content = item.content || "";
 		showModal = true;
 	}
 </script>
@@ -231,14 +235,11 @@
 	<!-- Dedicated Project Thumbnail Uploader (WebP R2) -->
 	<HeroCoverUploader bind:coverUrl={thumbnailUrl} folder="projects" />
 
-	<FormTextarea
-		id="project-content"
-		name="content"
-		label="Detailed Description (Optional)"
-		rows={4}
-		value={editingItem?.content || ''}
-		placeholder="Detailed breakdown of technologies and features..."
-	/>
+	<div class="space-y-1">
+		<span class="text-[#a1a1a1] font-medium text-xs">Detailed Description (Markdown, Optional)</span>
+		<input type="hidden" name="content" value={content} />
+		<MarkdownEditor bind:value={content} articleSlug={editingItem?.slug || 'new-project'} />
+	</div>
 
 	<div class="flex items-center gap-2 pt-1">
 		<input
