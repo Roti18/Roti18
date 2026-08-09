@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { academicMaterial } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, ne, and, asc } from 'drizzle-orm';
 import { processMarkdown } from '$lib/server/markdown/processor';
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -32,10 +32,19 @@ export const load: PageServerLoad = async ({ params }) => {
 		const course = found.course;
 		const semester = course.semester;
 
+		const readNext = await db.query.academicMaterial.findMany({
+			where: and(
+				eq(academicMaterial.courseId, course.id),
+				ne(academicMaterial.id, found.id)
+			),
+			orderBy: [asc(academicMaterial.sortOrder), asc(academicMaterial.createdAt)]
+		});
+
 		return {
 			material: found,
 			course,
 			semester,
+			readNext,
 			breadcrumb: [
 				{ label: semester.title, href: `/academics?open=${semester.slug}` },
 				{
