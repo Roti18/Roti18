@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { music } from '$lib/server/db/schema';
 import { eq, desc, asc, sql } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
+import { deleteStorageFile } from '$lib/server/storage';
 
 export const load: PageServerLoad = async () => {
 	const tracks = await db
@@ -51,8 +52,21 @@ export const actions: Actions = {
 		const coverUrl = formData.get('coverUrl')?.toString().trim() || null;
 		const musicUrl = formData.get('musicUrl')?.toString().trim() || null;
 
-		if (!id || !title || !artist) {
-			return fail(400, { error: 'ID, Title and Artist are required' });
+		if (!id || !title || !artist || !musicUrl) {
+			return fail(400, { error: 'ID, Title, Artist, and Music URL are required' });
+		}
+
+		const existing = await db.query.music.findFirst({
+			where: eq(music.id, id)
+		});
+
+		if (existing) {
+			if (existing.coverUrl && coverUrl && existing.coverUrl !== coverUrl) {
+				await deleteStorageFile(existing.coverUrl);
+			}
+			if (existing.musicUrl && musicUrl && existing.musicUrl !== musicUrl) {
+				await deleteStorageFile(existing.musicUrl);
+			}
 		}
 
 		await db
@@ -75,6 +89,15 @@ export const actions: Actions = {
 
 		if (!id) {
 			return fail(400, { error: 'Missing track ID' });
+		}
+
+		const existing = await db.query.music.findFirst({
+			where: eq(music.id, id)
+		});
+
+		if (existing) {
+			if (existing.coverUrl) await deleteStorageFile(existing.coverUrl);
+			if (existing.musicUrl) await deleteStorageFile(existing.musicUrl);
 		}
 
 		await db.delete(music).where(eq(music.id, id));
