@@ -195,15 +195,15 @@ export async function processMarkdown(markdownText: string): Promise<ProcessedMa
 				highlighted = `<pre><code>${code}</code></pre>`;
 			}
 
-			return `<div class="relative group my-6 rounded-2xl border border-[#222222] bg-[#090909] overflow-hidden text-xs">
-				<div class="flex items-center justify-between px-4 py-2 bg-[#141414] border-b border-[#222222] text-[10px] font-mono text-[#777777]">
+			return `<div class="not-prose relative group my-8 rounded-2xl border border-[#222222] bg-[#090909] overflow-hidden">
+				<div class="flex items-center justify-between px-4 py-2 bg-[#141414] border-b border-[#222222] text-[11px] font-mono text-[#777777] uppercase tracking-wider">
 					<span>${lang || 'code'}</span>
-					<button data-copy type="button" class="px-2 py-0.5 rounded bg-[#222222] hover:bg-[#2a2a2a] text-[#ededed] transition-colors cursor-pointer inline-flex items-center gap-1">
+					<button data-copy type="button" class="px-2.5 py-1 rounded-md bg-[#222222] hover:bg-[#2a2a2a] text-[#ededed] transition-colors cursor-pointer inline-flex items-center gap-1.5">
 						<span class="md-copy-icon"><!-- lucide Copy/Check mounted by MarkdownContent --></span>
-						<span class="copy-label">Copy</span>
+						<span class="copy-label font-sans capitalize">Copy</span>
 					</button>
 				</div>
-				<div class="p-4 overflow-x-auto font-mono leading-relaxed">
+				<div class="p-5 overflow-x-auto text-sm font-mono leading-relaxed [&>pre]:!m-0 [&>pre]:!p-0 [&>pre]:!bg-transparent">
 					${highlighted}
 				</div>
 			</div>`;
