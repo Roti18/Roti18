@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { formatDate } from '$lib/utils/format';
 	import { FileText, ArrowLeft } from 'lucide-svelte';
+	import MarkdownContent from '$lib/components/public/MarkdownContent.svelte';
 
 	import AuthModal from '$lib/components/AuthModal.svelte';
 	import { Lock, LogIn } from 'lucide-svelte';
@@ -77,10 +78,8 @@
 		</header>
 
 		<!-- Content Matching Writing Detail Page Prose (Full Container Width Lines) -->
-		<div
-			class="prose prose-invert max-w-none prose-p:max-w-[70ch] prose-headings:max-w-[70ch] prose-hr:border-[#1f1f1f] prose-hr:my-8 text-base leading-relaxed text-[#ededed] space-y-6"
-		>
-			{@html data.material.contentHtml}
+		<div class="prose-p:max-w-[70ch] prose-headings:max-w-[70ch] prose-hr:border-[#1f1f1f] prose-hr:my-8 text-base leading-relaxed text-[#ededed]">
+			<MarkdownContent html={data.material.contentHtml} containerId="academic-content" />
 		</div>
 
 		<!-- Attachments Section -->

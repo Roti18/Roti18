@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ExternalLink, ArrowLeft } from 'lucide-svelte';
+	import MarkdownContent from '$lib/components/public/MarkdownContent.svelte';
 
 	const { data } = $props();
 </script>
@@ -52,8 +53,8 @@
 		{/if}
 
 		{#if data.project.contentHtml}
-			<div class="prose prose-invert max-w-none prose-p:max-w-[70ch] prose-headings:max-w-[70ch] prose-hr:border-[#1f1f1f] text-sm leading-relaxed text-[#999999] space-y-4">
-				{@html data.project.contentHtml}
+			<div class="prose-p:max-w-[70ch] prose-headings:max-w-[70ch] prose-hr:border-[#1f1f1f] text-sm leading-relaxed text-[#999999]">
+				<MarkdownContent html={data.project.contentHtml} containerId="project-content" />
 			</div>
 		{/if}
 	</article>

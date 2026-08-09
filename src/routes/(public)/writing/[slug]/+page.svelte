@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Heart, ArrowLeft } from 'lucide-svelte';
 	import LightboxImage from '$lib/components/public/LightboxImage.svelte';
+	import MarkdownContent from '$lib/components/public/MarkdownContent.svelte';
 
 	const { data } = $props();
 
@@ -93,10 +94,10 @@
 		</header>
 
 		<!-- Article Body Content with PhotoSwipe WebP Lightbox -->
-		<div id="article-content" class="prose prose-invert max-w-none prose-p:max-w-[75ch] prose-headings:max-w-[75ch] prose-hr:border-[#1f1f1f] prose-hr:my-8 text-base leading-relaxed text-[#ededed] space-y-6">
-			{@html data.post.processedHtml}
-		</div>
-	</article>
+	<div class="text-base leading-relaxed text-[#ededed] prose-p:max-w-[75ch] prose-headings:max-w-[75ch] prose-hr:border-[#1f1f1f] prose-hr:my-8">
+		<MarkdownContent html={data.post.processedHtml} containerId="article-content" />
+	</div>
+</article>
 
 	{#if data.readNext.length > 0}
 		<footer class="blur-fade-in pt-10 border-t border-[#1f1f1f] space-y-4">
