@@ -4,6 +4,7 @@ import { writing } from '$lib/server/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
 import { processMarkdown } from '$lib/server/markdown/processor';
+import { deleteStorageFile } from '$lib/server/storage';
 
 function extractFirstImage(content: string): string | null {
 	const match = content.match(/!\[.*?\]\((https?:\/\/[^\s)]+|\/uploads\/[^\s)]+)\)/);
@@ -83,6 +84,14 @@ export const actions: Actions = {
 		const year = parseInt(yearStr, 10);
 		const rendered = await processMarkdown(content);
 
+		const existing = await db.query.writing.findFirst({
+			where: eq(writing.id, id)
+		});
+
+		if (existing && existing.coverUrl && coverUrl && existing.coverUrl !== coverUrl) {
+			await deleteStorageFile(existing.coverUrl);
+		}
+
 		await db
 			.update(writing)
 			.set({
@@ -107,6 +116,14 @@ export const actions: Actions = {
 
 		if (!id) {
 			return fail(400, { error: 'Missing article ID' });
+		}
+
+		const existing = await db.query.writing.findFirst({
+			where: eq(writing.id, id)
+		});
+
+		if (existing?.coverUrl) {
+			await deleteStorageFile(existing.coverUrl);
 		}
 
 		await db.delete(writing).where(eq(writing.id, id));
