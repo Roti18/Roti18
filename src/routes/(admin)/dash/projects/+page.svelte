@@ -16,6 +16,7 @@
 	let editingItem = $state<any>(null);
 	let thumbnailUrl = $state("");
 	let content = $state('');
+	let tempSlug = $state('');
 
 	const filteredItems = $derived(
 		projects.filter(
@@ -30,6 +31,7 @@
 		editingItem = null;
 		thumbnailUrl = "";
 		content = "";
+		tempSlug = `draft-${Date.now()}`;
 		showModal = true;
 	}
 
@@ -212,22 +214,28 @@
 	/>
 
 	<div class="grid grid-cols-2 gap-3">
-		<FormInput
-			id="project-demo"
-			name="demoUrl"
-			type="url"
-			label="Live Demo URL (Optional)"
-			value={editingItem?.demoUrl || ''}
-			placeholder="https://..."
-		/>
-		<FormInput
-			id="project-repo"
-			name="repoUrl"
-			type="url"
-			label="Repo GitHub URL (Optional)"
-			value={editingItem?.repoUrl || ''}
-			placeholder="https://github.com/..."
-		/>
+		<div>
+			<FormInput
+				id="project-demo"
+				name="demoUrl"
+				type="url"
+				label="Live Demo URL (Optional)"
+				value={editingItem?.demoUrl || ''}
+				placeholder="https://..."
+			/>
+			<input type="hidden" name="demoIsLive" value="true" />
+		</div>
+		<div>
+			<FormInput
+				id="project-repo"
+				name="repoUrl"
+				type="url"
+				label="Repo GitHub URL (Optional)"
+				value={editingItem?.repoUrl || ''}
+				placeholder="https://github.com/..."
+			/>
+			<input type="hidden" name="repoIsPublic" value="true" />
+		</div>
 	</div>
 
 	<input type="hidden" name="thumbnailUrl" value={thumbnailUrl} />
@@ -236,9 +244,9 @@
 	<HeroCoverUploader bind:coverUrl={thumbnailUrl} folder="projects" />
 
 	<div class="space-y-1">
-		<span class="text-[#a1a1a1] font-medium text-xs">Detailed Description (Markdown, Optional)</span>
+		<span class="text-[#a1a1a1] font-medium text-xs">Project Content (Markdown)</span>
 		<input type="hidden" name="content" value={content} />
-		<MarkdownEditor bind:value={content} articleSlug={editingItem?.slug || 'new-project'} />
+		<MarkdownEditor bind:value={content} articleSlug={editingItem?.slug || tempSlug} />
 	</div>
 
 	<div class="flex items-center gap-2 pt-1">
