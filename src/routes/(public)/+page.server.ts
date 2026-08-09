@@ -16,7 +16,7 @@ export const load: PageServerLoad = async () => {
 
 		const featuredProjects = await db.query.project.findMany({
 			where: eq(project.featuredOnHome, true),
-			orderBy: [asc(project.sortOrder)]
+			orderBy: [asc(project.sortOrder), desc(project.createdAt)]
 		});
 
 		const recentMusic = await db.query.music.findMany({
