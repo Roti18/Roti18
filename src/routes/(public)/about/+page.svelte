@@ -15,12 +15,14 @@
 	{#if data.site.avatarUrl}
 		<div class="blur-fade-in mb-6">
 			<img
-				src={data.site.avatarUrl}
-				alt={data.site.fullName}
-				class="w-20 h-20 rounded-full object-cover bg-[#181818]"
-				width="80"
-				height="80"
-			/>
+					src={data.site.avatarUrl}
+					alt={data.site.fullName}
+					class="w-20 h-20 rounded-full object-cover bg-[#181818]"
+					width="80"
+					height="80"
+					loading="lazy"
+					decoding="async"
+				/>
 		</div>
 	{/if}
 

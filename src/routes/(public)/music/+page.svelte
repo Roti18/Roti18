@@ -113,7 +113,7 @@
 							<div class="flex items-center gap-3">
 								<div class="w-9 h-9 rounded-md bg-[#181818] border border-[#222222] overflow-hidden shrink-0 flex items-center justify-center">
 									{#if track.coverUrl}
-										<img src={track.coverUrl} alt={track.title} class="w-full h-full object-cover" />
+										<img src={track.coverUrl} alt={track.title} loading="lazy" decoding="async" class="w-full h-full object-cover" />
 									{:else}
 										<Disc size={14} class="text-[#555555]" />
 									{/if}
@@ -143,7 +143,7 @@
 		{#if currentTrack}
 			<div class="relative w-full aspect-square overflow-hidden rounded-xl bg-[#141414]">
 				{#if currentTrack.coverUrl}
-					<img src={currentTrack.coverUrl} alt={currentTrack.title} class="w-full h-full object-cover block rounded-xl" />
+					<img src={currentTrack.coverUrl} alt={currentTrack.title} loading="lazy" decoding="async" class="w-full h-full object-cover block rounded-xl" />
 				{:else}
 					<div class="w-full h-full flex items-center justify-center bg-[#141414] text-[#555555] rounded-xl">
 						<Disc size={32} />

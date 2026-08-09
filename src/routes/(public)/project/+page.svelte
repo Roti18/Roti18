@@ -165,6 +165,8 @@
 			<img
 				src={currentProject.thumbnailUrl}
 				alt={currentProject.title}
+				loading="lazy"
+				decoding="async"
 				class="w-full h-full object-cover block"
 			/>
 		{/if}
