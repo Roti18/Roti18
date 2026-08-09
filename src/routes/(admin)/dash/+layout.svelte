@@ -80,7 +80,7 @@
 </script>
 
 <svelte:head>
-	<title>Admin Portal — M. Roni</title>
+	<title>Admin Portal | M. Roni</title>
 </svelte:head>
 
 <div class="min-h-screen bg-[#0a0a0a] text-[#ededed] font-sans antialiased flex flex-col">

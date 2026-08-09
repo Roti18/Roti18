@@ -7,7 +7,7 @@ import { env } from '$env/dynamic/private';
 
 // CORS is enforced by the browser BEFORE the POST is sent (preflight OPTIONS).
 // Without this handler, Vercel returns 405 for the preflight and the browser
-// blocks the request entirely — the webhook would never reach this route.
+// blocks the request entirely - the webhook would never reach this route.
 const CORS_HEADERS = {
 	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Allow-Methods': 'POST, OPTIONS',

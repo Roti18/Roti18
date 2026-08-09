@@ -394,7 +394,7 @@ function onSongPlay(song) {
 		placeholder="https://lament-music.app/api/tracks"
 	/>
 
-	<div class="text-center font-mono text-[10px] text-[#555555] font-bold uppercase">— OR —</div>
+	<div class="text-center font-mono text-[10px] text-[#555555] font-bold uppercase">| OR |</div>
 
 	<FormTextarea
 		id="lament-json"
