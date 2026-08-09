@@ -1,5 +1,13 @@
+import { createRequire } from 'node:module';
 import { Marked } from 'marked';
 import { createHighlighter, type Highlighter } from 'shiki';
+
+// sanitize-html is CommonJS ("main": "index.js", no "type": "module"). A bare
+// import() goes through Vite's SSR dep optimizer, whose ESM-wrapped copy calls
+// require() at top level → "require is not defined" in dev. Node's own
+// createRequire bypasses Vite entirely and loads the real CJS file; the Vercel
+// adapter bundles it as an external, where plain require works too.
+const nodeRequire = createRequire(import.meta.url);
 
 let highlighterPromise: Promise<Highlighter> | null = null;
 
@@ -30,15 +38,16 @@ const sanitizeOptions: any = {
 	allowedTags: [
 		'p', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 		'a', 'img', 'figure', 'figcaption', 'hr',
-		'strong', 'em', 'del', 'code', 'pre',
+		'strong', 'em', 'del', 'code', 'pre', 'button',
 		'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
 		'ul', 'ol', 'li', 'span', 'div'
 	],
 	allowedAttributes: {
-		a: ['href', 'title', 'target', 'rel'],
+		a: ['href', 'title', 'target', 'rel', 'class'],
 		img: ['src', 'alt', 'title', 'loading', 'decoding', 'width', 'height', 'data-pswp-src'],
 		th: ['class'],
 		td: ['class'],
+		button: ['data-copy', 'type', 'class'],
 		code: ['class'],
 		pre: ['class'],
 		span: ['class'],
@@ -110,6 +119,14 @@ export async function processMarkdown(markdownText: string): Promise<ProcessedMa
 			</h${depth}>`;
 		},
 
+		link({ href, title, tokens }: { href: string; title?: string | null; tokens: any }) {
+			const anyThis = this as any;
+			const text = anyThis.parser.parseInline(tokens);
+			const external = /^https?:\/\//i.test(href);
+			const target = external ? ' target="_blank" rel="noopener noreferrer"' : '';
+			return `<a href="${href}"${target} class="${external ? 'md-link md-link-external' : 'md-link'}">${title ? `<span class="md-link-title">${title}</span>` : ''}${text}</a>`;
+		},
+
 		image({ href, title, text }: { href: string; title: string | null; text: string }) {
 			const alt = title || text || '';
 
@@ -157,14 +174,12 @@ export async function processMarkdown(markdownText: string): Promise<ProcessedMa
 
 	const rawHtml = await marked.parse(markdownText);
 
-	// Sanitize safely using dynamic import to prevent CommonJS require() errors on Vercel
 	let sanitized = rawHtml;
 	try {
-		const sanitizeModule = await import('sanitize-html');
-		const sanitizeHtml = sanitizeModule.default || sanitizeModule;
+		const sanitizeHtml = nodeRequire('sanitize-html');
 		sanitized = sanitizeHtml(rawHtml, sanitizeOptions);
 	} catch (err) {
-		console.warn('[processor] sanitize-html module failed to load, using marked output directly:', err);
+		console.warn('[processor] sanitize-html failed, using marked output directly:', err);
 	}
 
 	// Add Shiki Syntax Highlighting & Copy Code Button to code blocks
@@ -183,11 +198,9 @@ export async function processMarkdown(markdownText: string): Promise<ProcessedMa
 			return `<div class="relative group my-6 rounded-2xl border border-[#222222] bg-[#090909] overflow-hidden text-xs">
 				<div class="flex items-center justify-between px-4 py-2 bg-[#141414] border-b border-[#222222] text-[10px] font-mono text-[#777777]">
 					<span>${lang || 'code'}</span>
-					<button
-						onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy', 2000)"
-						class="px-2 py-0.5 rounded bg-[#222222] hover:bg-[#2a2a2a] text-[#ededed] transition-colors cursor-pointer"
-					>
-						Copy
+					<button data-copy type="button" class="px-2 py-0.5 rounded bg-[#222222] hover:bg-[#2a2a2a] text-[#ededed] transition-colors cursor-pointer inline-flex items-center gap-1">
+						<span class="md-copy-icon"><!-- lucide Copy/Check mounted by MarkdownContent --></span>
+						<span class="copy-label">Copy</span>
 					</button>
 				</div>
 				<div class="p-4 overflow-x-auto font-mono leading-relaxed">
