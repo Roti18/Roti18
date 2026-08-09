@@ -17,6 +17,7 @@
 
 	let content = $state('');
 	let coverUrl = $state('');
+	let tempSlug = $state('');
 
 	const filteredItems = $derived(
 		writings.filter((w) => {
@@ -40,6 +41,7 @@
 		editingItem = null;
 		content = '';
 		coverUrl = '';
+		tempSlug = `draft-${Date.now()}`;
 		showModal = true;
 	}
 
@@ -246,7 +248,7 @@
 	<!-- Markdown Editor with R2 Upload Integration -->
 	<div class="space-y-1">
 		<span class="text-[#a1a1a1] font-medium text-xs">Article Content (Markdown)</span>
-		<MarkdownEditor bind:value={content} bind:coverUrl articleSlug={editingItem?.slug || 'new-article'} />
+		<MarkdownEditor bind:value={content} bind:coverUrl articleSlug={editingItem?.slug || tempSlug} />
 	</div>
 
 	<div class="flex items-center gap-2 pt-1">
