@@ -13,8 +13,8 @@
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-10">
 	<article class="blur-fade-in space-y-8">
 		<header class="space-y-4">
-			<h1 class="text-2xl font-medium text-[#ededed] tracking-tight">{data.project.title}</h1>
-			<p class="text-sm text-[#999999] leading-relaxed max-w-[70ch]">{data.project.shortDesc}</p>
+			<h1 class="text-4xl font-semibold text-[#ededed] leading-tight tracking-tight">{data.project.title}</h1>
+			<p class="text-base text-[#999999] leading-relaxed max-w-[70ch]">{data.project.shortDesc}</p>
 
 			<div class="flex items-center gap-3 pt-2">
 				{#if data.project.repoUrl && data.project.repoIsPublic}
@@ -58,6 +58,25 @@
 			</div>
 		{/if}
 	</article>
+
+	{#if data.readNext.length > 0}
+		<footer class="blur-fade-in pt-10 border-t border-[#1f1f1f] space-y-4">
+			<div class="w-6 h-0.5 bg-[#f87171] rounded-full"></div>
+			<h2 class="text-xs font-semibold text-[#888888] uppercase tracking-wider">
+				Other Projects
+			</h2>
+			<div class="flex flex-col gap-2">
+				{#each data.readNext as next}
+					<a
+						href="/project/{next.slug}"
+						class="text-base text-[#ededed] hover:underline underline-offset-4 w-fit py-1 font-['Space_Grotesk']"
+					>
+						{next.title}
+					</a>
+				{/each}
+			</div>
+		</footer>
+	{/if}
 
 	<!-- Bottom Back Button -->
 	<div class="blur-fade-in pt-6 border-t border-[#1f1f1f]">
