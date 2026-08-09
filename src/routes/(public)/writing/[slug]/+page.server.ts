@@ -3,6 +3,7 @@ import { error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { writing } from '$lib/server/db/schema';
 import { eq, ne, and, desc } from 'drizzle-orm';
+import { processMarkdown } from '$lib/server/markdown/processor';
 
 export const load: PageServerLoad = async ({ params }) => {
 	try {
@@ -18,10 +19,21 @@ export const load: PageServerLoad = async ({ params }) => {
 			limit: 5
 		});
 
+		// Self-heal: posts saved before the copy-button renderer don't contain a
+		// code-block copy button (their contentHtml was sanitized with an allowlist
+		// that stripped <button>). Re-render on read when the stored HTML is stale,
+		// so existing posts get the fix without an admin re-save. Marked+Shiki runs
+		// once per cached page then is cached by the edge (s-maxage).
+		let processedHtml = post.contentHtml;
+		if (!processedHtml.includes('data-md-arrow') && !processedHtml.includes('md-copy-icon')) {
+			const cooked = await processMarkdown(post.content);
+			processedHtml = cooked.html;
+		}
+
 		return {
 			post: {
 				...post,
-				processedHtml: post.contentHtml
+				processedHtml
 			},
 			readNext
 		};

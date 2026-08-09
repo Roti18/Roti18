@@ -3,6 +3,7 @@ import { error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { academicMaterial } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
+import { processMarkdown } from '$lib/server/markdown/processor';
 
 export const load: PageServerLoad = async ({ params }) => {
 	try {
@@ -18,6 +19,15 @@ export const load: PageServerLoad = async ({ params }) => {
 		});
 
 		if (!found || !found.course) throw error(404, 'Material not found');
+
+		// Self-heal stale stored HTML (same as writing/project) so code-block
+		// copy buttons appear on materials saved before the renderer change.
+		let contentHtml = found.contentHtml;
+		if (!contentHtml?.includes('data-md-arrow') && !contentHtml?.includes('md-copy-icon')) {
+			const cooked = await processMarkdown(found.content);
+			contentHtml = cooked.html;
+		}
+		found.contentHtml = contentHtml;
 
 		const course = found.course;
 		const semester = course.semester;
