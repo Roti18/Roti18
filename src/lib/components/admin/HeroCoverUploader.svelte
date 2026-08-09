@@ -132,10 +132,18 @@
 		<!-- Drag and Drop Cover Upload Box -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
+			role="button"
+			tabindex="0"
 			ondragover={(e) => e.preventDefault()}
 			ondrop={handleDrop}
 			onclick={() => fileInputEl?.click()}
-			class="relative rounded-2xl border-2 border-dashed border-[#2b2b2b] hover:border-red-500/50 bg-[#121212] p-5 text-center transition-all group cursor-pointer"
+			onkeydown={(e) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					fileInputEl?.click();
+				}
+			}}
+			class="relative rounded-2xl border-2 border-dashed border-[#2b2b2b] hover:border-red-500/50 bg-[#121212] p-5 text-center transition-all group cursor-pointer outline-none focus-visible:border-red-500/70"
 		>
 			<div class="space-y-2 pointer-events-none">
 				<div class="mx-auto w-9 h-9 rounded-full bg-[#1c1c1c] text-red-400 flex items-center justify-center group-hover:scale-110 transition-transform">

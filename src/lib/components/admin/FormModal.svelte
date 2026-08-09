@@ -10,7 +10,7 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4" onclick={() => (open = false)}>
-		<div class="relative w-full {maxWidth} max-h-[90vh] overflow-y-auto rounded-2xl border border-[#222222] bg-[#121212] p-6 shadow-2xl space-y-4 text-xs" onclick={(e) => e.stopPropagation()}>
+		<div class="relative w-full {maxWidth} max-h-[90vh] overflow-y-auto rounded-2xl border border-[#222222] bg-[#121212] p-6 shadow-2xl space-y-4 text-xs" data-lenis-prevent onclick={(e) => e.stopPropagation()}>
 			<div class="flex items-center justify-between border-b border-[#222222] pb-3">
 				<h2 class="text-base font-bold text-white font-['Space_Grotesk']">{title}</h2>
 				<button type="button" onclick={() => (open = false)} class="text-[#666666] hover:text-white transition-colors cursor-pointer">
