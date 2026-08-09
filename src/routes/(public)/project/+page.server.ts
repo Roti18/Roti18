@@ -1,13 +1,13 @@
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { project } from '$lib/server/db/schema';
-import { desc } from 'drizzle-orm';
+import { desc, asc } from 'drizzle-orm';
 
 export const load: PageServerLoad = async () => {
 	const projects = await db
 		.select()
 		.from(project)
-		.orderBy(desc(project.createdAt));
+		.orderBy(asc(project.sortOrder), desc(project.createdAt));
 
 	return {
 		projects
