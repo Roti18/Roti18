@@ -1,17 +1,18 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import {
-		GraduationCap,
-		Plus,
-		Search,
-		Trash2,
-		Edit,
-		BookOpen,
-		FileText,
-		Paperclip,
-		X,
-		Layers
-	} from "lucide-svelte";
+import {
+	GraduationCap,
+	Plus,
+	Search,
+	Trash2,
+	Edit,
+	BookOpen,
+	FileText,
+	Paperclip,
+	X,
+	Layers
+} from "lucide-svelte";
+import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
 
 	let { data, form } = $props();
 	const semesters = $derived(data.semesters);
@@ -27,6 +28,7 @@
 	let showSemesterModal = $state(false);
 
 	let editingMaterial = $state<any>(null);
+	let materialContent = $state('');
 
 	// Attachment inputs
 	let attachmentList = $state<{ name: string; url: string }[]>([]);
@@ -35,12 +37,14 @@
 
 	function openCreateMaterial() {
 		editingMaterial = null;
+		materialContent = '';
 		attachmentList = [];
 		showMaterialModal = true;
 	}
 
 	function openEditMaterial(item: any) {
 		editingMaterial = item;
+		materialContent = item.content || '';
 		attachmentList = item.attachments || [];
 		showMaterialModal = true;
 	}
@@ -341,7 +345,7 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4" onclick={() => (showMaterialModal = false)}>
-		<div class="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#222222] bg-[#121212] p-6 shadow-2xl space-y-4" onclick={(e) => e.stopPropagation()}>
+		<div class="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#222222] bg-[#121212] p-6 shadow-2xl space-y-4" data-lenis-prevent onclick={(e) => e.stopPropagation()}>
 			<div class="flex items-center justify-between border-b border-[#222222] pb-3">
 				<h2 class="text-base font-bold text-white font-['Space_Grotesk']">
 					{editingMaterial ? 'Edit Academic Material' : 'Add New Academic Material'}
@@ -404,15 +408,9 @@
 				</div>
 
 				<div class="space-y-1">
-					<label for="mat-content" class="text-[#a1a1a1] font-medium">Material Content / Lecture Notes *</label>
-					<textarea
-						id="mat-content"
-						name="content"
-						required
-						rows="5"
-						placeholder="Write lecture notes, instructions..."
-						class="w-full rounded-xl bg-[#181818] border border-[#262626] p-3 text-[#ededed] placeholder-[#555555] focus:outline-none focus:border-amber-500/50 font-sans"
-					>{editingMaterial?.content || ''}</textarea>
+					<label for="mat-content" class="text-[#a1a1a1] font-medium">Material Content / Lecture Notes (Markdown) *</label>
+					<input type="hidden" name="content" value={materialContent} />
+					<MarkdownEditor bind:value={materialContent} articleSlug={editingMaterial?.id || 'new-material'} />
 				</div>
 
 				<!-- Attachments Manager -->
