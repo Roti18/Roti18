@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { ArrowUpRight } from 'lucide-svelte';
-	import { canUseBlur } from '$lib/utils/perf';
+	import { browser } from "$app/environment";
+	import { canUseBlur } from "$lib/utils/perf";
 
 	const { data } = $props();
 
@@ -39,7 +38,7 @@
 		currentProject = project;
 
 		if (browser) {
-			import('gsap').then(({ gsap }) => {
+			import("gsap").then(({ gsap }) => {
 				// Smooth sliding hover pill background transition between rows
 				if (pillEl && targetNode) {
 					const rect = targetNode.getBoundingClientRect();
@@ -50,7 +49,7 @@
 						height: rect.height,
 						opacity: 1,
 						duration: 0.25,
-						ease: 'power2.out',
+						ease: "power2.out",
 					});
 				}
 
@@ -61,7 +60,7 @@
 
 					gsap.set(previewEl, {
 						x: pos.x,
-						y: pos.y
+						y: pos.y,
 					});
 
 					gsap.fromTo(
@@ -69,15 +68,19 @@
 						{
 							opacity: 0,
 							scale: 0.88,
-							...(canUseBlur() ? { filter: 'blur(16px) brightness(1.2)' } : {}),
+							...(canUseBlur()
+								? { filter: "blur(16px) brightness(1.2)" }
+								: {}),
 						},
 						{
 							opacity: 1,
 							scale: 1,
-							...(canUseBlur() ? { filter: 'blur(0px) brightness(1)' } : {}),
+							...(canUseBlur()
+								? { filter: "blur(0px) brightness(1)" }
+								: {}),
 							duration: 0.35,
 							delay: 0.12,
-							ease: 'power3.out',
+							ease: "power3.out",
 						},
 					);
 				}
@@ -89,7 +92,7 @@
 		if (hoverTimer) clearTimeout(hoverTimer);
 		currentProject = null;
 		if (browser) {
-			import('gsap').then(({ gsap }) => {
+			import("gsap").then(({ gsap }) => {
 				if (pillEl) {
 					gsap.to(pillEl, { opacity: 0, duration: 0.2 });
 				}
@@ -97,9 +100,9 @@
 					gsap.to(previewEl, {
 						opacity: 0,
 						scale: 0.9,
-						...(canUseBlur() ? { filter: 'blur(12px)' } : {}),
+						...(canUseBlur() ? { filter: "blur(12px)" } : {}),
 						duration: 0.2,
-						ease: 'power2.in',
+						ease: "power2.in",
 					});
 				}
 			});
@@ -132,10 +135,7 @@
 				class="blur-fade-in group relative z-10 flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 py-3 px-3 rounded-xl transition-colors"
 				id="project-{project.slug}"
 				onmouseenter={(e) =>
-					handleMouseEnter(
-						project,
-						e.currentTarget as HTMLElement,
-					)}
+					handleMouseEnter(project, e.currentTarget as HTMLElement)}
 			>
 				<span
 					class="text-base font-medium text-[#ededed] group-hover:text-white shrink-0"
@@ -147,10 +147,6 @@
 				>
 					{project.shortDesc}
 				</span>
-				<ArrowUpRight
-					size={14}
-					class="text-[#666666] group-hover:text-[#ededed] transition-colors shrink-0"
-				/>
 			</a>
 		{/each}
 	</div>
