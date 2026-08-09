@@ -101,6 +101,52 @@
 		text-decoration: none;
 	}
 
+	/* ── Code-block background: force black, keep Shiki syntax colors ──
+   Shiki's <pre> carries an inline navy background (#24292e) that overrides
+   the wrapper's dark box. Neutralize ONLY the background, so syntax
+   highlighting token colors (span inline styles) are left untouched. */
+	div.relative.group pre.shiki {
+		background-color: #090909 !important;
+	}
+
+	@keyframes mdIconSwap {
+		from {
+			transform: scale(0.6);
+			opacity: 0;
+		}
+		to {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+
+	/* ── Markdown inline links: red underline + animated gradient underline ── */
+	.md-link {
+		color: var(--accent-red);
+		text-decoration: none;
+		background-image: linear-gradient(currentColor, currentColor);
+		background-size: 0% 1px;
+		background-position: 0 100%;
+		background-repeat: no-repeat;
+		transition:
+			background-size 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+			color 0.2s ease;
+	}
+
+	.md-link:hover {
+		color: var(--accent-red);
+		background-size: 100% 1px;
+	}
+
+	/* `title` text rendered as "undertext" - small muted caption beside the link */
+	.md-link-title {
+		display: block;
+		font-size: 0.75em;
+		font-weight: 400;
+		color: var(--text-subtle);
+		margin-top: -0.25em;
+	}
+
 	/* Ultra-Smooth Native CSS Blur Fade-In (No FOUC, No JS Delay, Never Disappears) */
 	@keyframes blurFadeIn {
 		from {
