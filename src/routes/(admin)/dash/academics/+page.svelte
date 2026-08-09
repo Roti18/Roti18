@@ -15,6 +15,8 @@ import {
 import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
 
 	let { data, form } = $props();
+	let tempSlug = $state('');
+
 	const semesters = $derived(data.semesters);
 	const courses = $derived(data.courses);
 	const materials = $derived(data.materials);
@@ -39,6 +41,7 @@ import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
 		editingMaterial = null;
 		materialContent = '';
 		attachmentList = [];
+		tempSlug = `draft-${Date.now()}`;
 		showMaterialModal = true;
 	}
 
@@ -408,9 +411,9 @@ import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
 				</div>
 
 				<div class="space-y-1">
-					<label for="mat-content" class="text-[#a1a1a1] font-medium">Material Content / Lecture Notes (Markdown) *</label>
+					<span class="text-[#a1a1a1] font-medium text-xs">Material Content (Markdown)</span>
 					<input type="hidden" name="content" value={materialContent} />
-					<MarkdownEditor bind:value={materialContent} articleSlug={editingMaterial?.id || 'new-material'} />
+					<MarkdownEditor bind:value={materialContent} articleSlug={editingMaterial?.id || tempSlug} />
 				</div>
 
 				<!-- Attachments Manager -->
