@@ -108,6 +108,26 @@
 		{/if}
 	</article>
 
+	{#if data.readNext.length > 0}
+		<footer class="blur-fade-in pt-10 border-t border-[#1f1f1f] space-y-4">
+			<div class="w-6 h-0.5 bg-[#f87171] rounded-full"></div>
+			<h2 class="text-xs font-semibold text-[#888888] uppercase tracking-wider">
+				Next in {data.course.title}
+			</h2>
+			<div class="flex flex-col gap-2">
+				{#each data.readNext as next}
+					<a
+						href="/academics/{next.fullSlug}"
+						class="text-base text-[#ededed] hover:underline underline-offset-4 w-fit py-1 font-['Space_Grotesk']"
+					>
+						<span class="text-[10px] font-mono text-[#777777] uppercase mr-2 border border-[#333] px-1.5 py-0.5 rounded bg-[#161616]">{next.type}</span> 
+						{next.title}
+					</a>
+				{/each}
+			</div>
+		</footer>
+	{/if}
+
 	<!-- Footer Navigation Matching Writing Detail -->
 	<div class="blur-fade-in pt-6 border-t border-[#1f1f1f]">
 		<a
