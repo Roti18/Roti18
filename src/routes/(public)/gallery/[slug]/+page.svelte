@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { ArrowLeft } from 'lucide-svelte';
+	import SEO from '$lib/components/public/SEO.svelte';
 
 	const { data } = $props();
 </script>
 
-<svelte:head>
-	<title>{data.photo.title} - Gallery - M. Roni</title>
-	<meta name="description" content={data.photo.shortDesc || data.photo.title} />
-</svelte:head>
+<SEO 
+	title={`${data.photo.title} - Gallery - M. Roni`}
+	description={data.photo.shortDesc || data.photo.title}
+	image={data.photo.originalUrl || data.photo.imageUrl}
+/>
 
 <div class="max-w-5xl mx-auto px-6 py-16 space-y-8">
 	<article class="blur-fade-in space-y-6">
