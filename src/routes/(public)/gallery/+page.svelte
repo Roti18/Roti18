@@ -7,6 +7,8 @@
 	import { formatDate } from "$lib/utils/format";
 	import { Camera, Calendar } from "lucide-svelte";
 
+	import SEO from '$lib/components/public/SEO.svelte';
+
 	const { data } = $props();
 
 	let gridEl = $state<HTMLElement>();
@@ -146,10 +148,10 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<svelte:head>
-	<title>Gallery - M. Roni</title>
-	<meta name="description" content="A collection of photographs." />
-</svelte:head>
+<SEO 
+	title="Gallery - M. Roni"
+	description="A collection of photographs."
+/>
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-8">
 	<div
