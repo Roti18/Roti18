@@ -16,7 +16,7 @@
 	} from "lucide-svelte";
 	import AssetManager from "./AssetManager.svelte";
 
-	let { value = $bindable(""), coverUrl = $bindable(""), articleSlug = "uncategorized" } = $props();
+	let { value = $bindable(""), coverUrl = $bindable(""), articleSlug = "uncategorized", folder = "writing" } = $props();
 
 	let activeTab = $state<'editor' | 'assets'>('editor');
 	let isUploadingInline = $state(false);
@@ -66,7 +66,7 @@
 
 		try {
 			const formData = new FormData();
-			formData.append("folder", `writing/${articleSlug}`);
+			formData.append("folder", `${folder}/${articleSlug}`);
 			for (let i = 0; i < files.length; i++) {
 				formData.append("file", files[i]);
 			}
@@ -80,7 +80,7 @@
 			if (json.success && json.files) {
 				for (const file of json.files) {
 					const altText = file.filename ? file.filename.replace('.webp', '') : 'image';
-					insertTextAtCursor(`\n![${altText}](${file.optimizedUrl})\n`);
+					insertTextAtCursor(`\n![${altText}](${file.originalUrl || file.optimizedUrl})\n`);
 				}
 			}
 		} catch (err) {
@@ -222,6 +222,7 @@
 		{:else}
 			<div class="p-4">
 				<AssetManager
+					folder={`${folder}/${articleSlug}`}
 					onSelectImage={(url: string) => {
 						insertTextAtCursor(`\n![image](${url})\n`);
 						activeTab = 'editor';
