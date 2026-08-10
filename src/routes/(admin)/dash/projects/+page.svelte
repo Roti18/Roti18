@@ -15,6 +15,7 @@
 	let showModal = $state(false);
 	let editingItem = $state<any>(null);
 	let thumbnailUrl = $state("");
+	let originalUrl = $state("");
 	let content = $state('');
 	let tempSlug = $state('');
 
@@ -30,6 +31,7 @@
 	function openCreateModal() {
 		editingItem = null;
 		thumbnailUrl = "";
+		originalUrl = "";
 		content = "";
 		tempSlug = `draft-${Date.now()}`;
 		showModal = true;
@@ -38,6 +40,7 @@
 	function openEditModal(item: any) {
 		editingItem = item;
 		thumbnailUrl = item.thumbnailUrl || "";
+		originalUrl = item.originalUrl || "";
 		content = item.content || "";
 		showModal = true;
 	}
@@ -239,14 +242,15 @@
 	</div>
 
 	<input type="hidden" name="thumbnailUrl" value={thumbnailUrl} />
+	<input type="hidden" name="originalUrl" value={originalUrl} />
 
 	<!-- Dedicated Project Thumbnail Uploader (WebP R2) -->
-	<HeroCoverUploader bind:coverUrl={thumbnailUrl} folder="projects" />
+	<HeroCoverUploader bind:coverUrl={thumbnailUrl} bind:originalUrl={originalUrl} folder="projects" />
 
 	<div class="space-y-1">
 		<span class="text-[#a1a1a1] font-medium text-xs">Project Content (Markdown)</span>
 		<input type="hidden" name="content" value={content} />
-		<MarkdownEditor bind:value={content} articleSlug={editingItem?.slug || tempSlug} />
+		<MarkdownEditor bind:value={content} articleSlug={editingItem?.slug || tempSlug} folder="projects" />
 	</div>
 
 	<div class="flex items-center gap-2 pt-1">
