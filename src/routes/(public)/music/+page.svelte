@@ -162,7 +162,7 @@
 >
 	<div class="blur-fade-in overflow-x-auto -mx-3">
 		<table
-			class="w-full text-left text-base text-[#ededed] border-collapse"
+			class="w-full min-w-[800px] text-left text-base text-[#ededed] border-collapse whitespace-nowrap"
 			id="music-table"
 		>
 			<thead>
@@ -171,9 +171,7 @@
 				>
 					<th class="py-3.5 px-3 font-semibold">Song</th>
 					<th class="py-3.5 px-3 font-semibold">Artist</th>
-					<th class="py-3.5 px-3 font-semibold hidden sm:table-cell"
-						>Album</th
-					>
+					<th class="py-3.5 px-3 font-semibold">Album</th>
 					<th class="py-3.5 px-3 font-semibold text-right">Played</th>
 				</tr>
 			</thead>
@@ -231,7 +229,7 @@
 							>{track.artist}</td
 						>
 						<td
-							class="py-3.5 px-3 text-[#888888] hidden sm:table-cell font-normal no-underline"
+							class="py-3.5 px-3 text-[#888888] font-normal no-underline"
 							>{track.album || "-"}</td
 						>
 						<td
