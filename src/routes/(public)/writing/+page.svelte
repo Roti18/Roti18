@@ -1,11 +1,13 @@
 <script lang="ts">
+	import SEO from '$lib/components/public/SEO.svelte';
+
 	const { data } = $props();
 </script>
 
-<svelte:head>
-	<title>Writing - M. Roni</title>
-	<meta name="description" content="Thoughts on software engineering, design, and building things." />
-</svelte:head>
+<SEO 
+	title="Writing - M. Roni"
+	description="Thoughts on software engineering, design, and building things."
+/>
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-12">
 	<div class="space-y-12">
