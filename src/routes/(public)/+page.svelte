@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { ChevronRight } from 'lucide-svelte';
 	import SocialIcon from '$lib/components/public/SocialIcon.svelte';
+	import SEO from '$lib/components/public/SEO.svelte';
 
 	const { data } = $props();
 </script>
 
-<svelte:head>
-	<title>{data.site.fullName} - {data.site.title}</title>
-	<meta name="description" content={data.site.description} />
-</svelte:head>
+<SEO 
+	title={`${data.site.fullName} - ${data.site.title}`}
+	description={data.site.description}
+/>
 
 <div class="max-w-5xl mx-auto px-6 py-12 md:py-20 space-y-16">
 	<!-- Hero Section -->
