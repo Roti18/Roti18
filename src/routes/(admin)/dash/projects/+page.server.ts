@@ -22,8 +22,9 @@ export const actions: Actions = {
 		const title = formData.get('title')?.toString().trim();
 		const slug = formData.get('slug')?.toString().trim() || title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 		const shortDesc = formData.get('shortDesc')?.toString().trim();
-		const content = formData.get('content')?.toString().trim() || null;
+		const content = formData.get('content')?.toString().trim() || '';
 		const thumbnailUrl = formData.get('thumbnailUrl')?.toString().trim() || null;
+		const originalUrl = formData.get('originalUrl')?.toString().trim() || null;
 		const repoUrl = formData.get('repoUrl')?.toString().trim() || null;
 		const repoIsPublic = formData.get('repoIsPublic') === 'true' || formData.get('repoIsPublic') === 'on';
 		const demoUrl = formData.get('demoUrl')?.toString().trim() || null;
@@ -41,9 +42,10 @@ export const actions: Actions = {
 			slug: slug || `project-${Date.now()}`,
 			title,
 			shortDesc,
-			content,
+			content: content || null,
 			contentHtml: content,
 			thumbnailUrl,
+			originalUrl,
 			repoUrl,
 			repoIsPublic,
 			demoUrl,
@@ -63,8 +65,9 @@ export const actions: Actions = {
 		const title = formData.get('title')?.toString().trim();
 		const slug = formData.get('slug')?.toString().trim();
 		const shortDesc = formData.get('shortDesc')?.toString().trim();
-		const content = formData.get('content')?.toString().trim() || null;
+		const content = formData.get('content')?.toString().trim() || '';
 		const thumbnailUrl = formData.get('thumbnailUrl')?.toString().trim() || null;
+		const originalUrl = formData.get('originalUrl')?.toString().trim() || null;
 		const repoUrl = formData.get('repoUrl')?.toString().trim() || null;
 		const repoIsPublic = formData.get('repoIsPublic') === 'true' || formData.get('repoIsPublic') === 'on';
 		const demoUrl = formData.get('demoUrl')?.toString().trim() || null;
@@ -81,8 +84,13 @@ export const actions: Actions = {
 			where: eq(project.id, id)
 		});
 
-		if (existing && existing.thumbnailUrl && thumbnailUrl && existing.thumbnailUrl !== thumbnailUrl) {
-			await deleteStorageFile(existing.thumbnailUrl);
+		if (existing) {
+			if (existing.thumbnailUrl && existing.thumbnailUrl !== thumbnailUrl) {
+				await deleteStorageFile(existing.thumbnailUrl);
+			}
+			if (existing.originalUrl && existing.originalUrl !== originalUrl) {
+				await deleteStorageFile(existing.originalUrl);
+			}
 		}
 
 		await db
@@ -91,9 +99,10 @@ export const actions: Actions = {
 				title,
 				slug: slug || undefined,
 				shortDesc,
-				content,
+				content: content || null,
 				contentHtml: content,
 				thumbnailUrl,
+				originalUrl,
 				repoUrl,
 				repoIsPublic,
 				demoUrl,
@@ -121,6 +130,9 @@ export const actions: Actions = {
 
 		if (existing?.thumbnailUrl) {
 			await deleteStorageFile(existing.thumbnailUrl);
+		}
+		if (existing?.originalUrl) {
+			await deleteStorageFile(existing.originalUrl);
 		}
 
 		await db.delete(project).where(eq(project.id, id));
