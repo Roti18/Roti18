@@ -3,6 +3,7 @@
 	import { goto } from "$app/navigation";
 	import { onDestroy } from "svelte";
 	import { browser } from "$app/environment";
+	import SEO from '$lib/components/public/SEO.svelte';
 
 	import AuthModal from "$lib/components/AuthModal.svelte";
 	import { Lock, LogIn } from "lucide-svelte";
@@ -100,13 +101,10 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Academics - M. Roni</title>
-	<meta
-		name="description"
-		content="Academic resources archive - semesters, courses, and materials."
-	/>
-</svelte:head>
+<SEO 
+	title="Academics - M. Roni"
+	description="Academic resources archive - semesters, courses, and materials."
+/>
 
 <div class="relative min-h-[70vh]">
 	<div
