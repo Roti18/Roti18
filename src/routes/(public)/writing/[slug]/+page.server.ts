@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		// so existing posts get the fix without an admin re-save. Marked+Shiki runs
 		// once per cached page then is cached by the edge (s-maxage).
 		let processedHtml = post.contentHtml;
-		if (!processedHtml.includes('data-md-arrow') && !processedHtml.includes('md-copy-icon')) {
+		if (!processedHtml.includes('md-copy-icon') || processedHtml.includes('<figcaption')) {
 			const cooked = await processMarkdown(post.content);
 			processedHtml = cooked.html;
 		}
