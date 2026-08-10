@@ -22,8 +22,18 @@ export const actions: Actions = {
 		const title = formData.get('title')?.toString().trim();
 		const slug = formData.get('slug')?.toString().trim() || title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 		const imageUrl = formData.get('imageUrl')?.toString().trim();
+		const originalUrl = formData.get('originalUrl')?.toString().trim() || null;
 		const shortDesc = formData.get('shortDesc')?.toString().trim() || null;
 		const cameraDesc = formData.get('cameraDesc')?.toString().trim() || null;
+		const createdAtStr = formData.get('createdAt')?.toString().trim();
+
+		let createdAt = new Date();
+		if (createdAtStr) {
+			const parsed = new Date(createdAtStr);
+			if (!isNaN(parsed.getTime())) {
+				createdAt = parsed;
+			}
+		}
 
 		if (!title || !imageUrl) {
 			return fail(400, { error: 'Title and Image URL are required' });
@@ -34,9 +44,10 @@ export const actions: Actions = {
 			slug: slug || `photo-${Date.now()}`,
 			title,
 			imageUrl,
+			originalUrl,
 			shortDesc,
 			cameraDesc,
-			createdAt: new Date()
+			createdAt
 		});
 
 		return { success: true, message: 'Gallery photo added successfully' };
@@ -48,8 +59,18 @@ export const actions: Actions = {
 		const title = formData.get('title')?.toString().trim();
 		const slug = formData.get('slug')?.toString().trim();
 		const imageUrl = formData.get('imageUrl')?.toString().trim();
+		const originalUrl = formData.get('originalUrl')?.toString().trim() || null;
 		const shortDesc = formData.get('shortDesc')?.toString().trim() || null;
 		const cameraDesc = formData.get('cameraDesc')?.toString().trim() || null;
+		const createdAtStr = formData.get('createdAt')?.toString().trim();
+
+		let createdAt: Date | undefined = undefined;
+		if (createdAtStr) {
+			const parsed = new Date(createdAtStr);
+			if (!isNaN(parsed.getTime())) {
+				createdAt = parsed;
+			}
+		}
 
 		if (!id || !title || !imageUrl) {
 			return fail(400, { error: 'ID, Title, and Image URL are required' });
@@ -59,8 +80,13 @@ export const actions: Actions = {
 			where: eq(galleryPhoto.id, id)
 		});
 
-		if (existing && existing.imageUrl && existing.imageUrl !== imageUrl) {
-			await deleteStorageFile(existing.imageUrl);
+		if (existing) {
+			if (existing.imageUrl && existing.imageUrl !== imageUrl) {
+				await deleteStorageFile(existing.imageUrl);
+			}
+			if (existing.originalUrl && existing.originalUrl !== originalUrl) {
+				await deleteStorageFile(existing.originalUrl);
+			}
 		}
 
 		await db
@@ -69,8 +95,10 @@ export const actions: Actions = {
 				title,
 				slug: slug || undefined,
 				imageUrl,
+				originalUrl,
 				shortDesc,
-				cameraDesc
+				cameraDesc,
+				createdAt: createdAt || undefined
 			})
 			.where(eq(galleryPhoto.id, id));
 
@@ -91,6 +119,9 @@ export const actions: Actions = {
 
 		if (existing?.imageUrl) {
 			await deleteStorageFile(existing.imageUrl);
+		}
+		if (existing?.originalUrl) {
+			await deleteStorageFile(existing.originalUrl);
 		}
 
 		await db.delete(galleryPhoto).where(eq(galleryPhoto.id, id));
