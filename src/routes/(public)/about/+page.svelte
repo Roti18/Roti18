@@ -1,15 +1,16 @@
 <script lang="ts">
 	import SocialIcon from '$lib/components/public/SocialIcon.svelte';
+	import SEO from '$lib/components/public/SEO.svelte';
 
 	const { data } = $props();
 
 	const bioText = $derived((data.site.longDescription || data.site.description || '').split('\n\n').filter(Boolean));
 </script>
 
-<svelte:head>
-	<title>About - M. Roni</title>
-	<meta name="description" content={data.site.description} />
-</svelte:head>
+<SEO 
+	title="About - M. Roni"
+	description={data.site.description}
+/>
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-12">
 	{#if data.site.avatarUrl}
