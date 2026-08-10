@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
+	import { env } from '$env/dynamic/public';
+	import SEO from '$lib/components/public/SEO.svelte';
 	import { formatDate } from "$lib/utils/format";
 	import { Disc, Loader2 } from "lucide-svelte";
 	import { canUseBlur } from "$lib/utils/perf";
@@ -42,9 +44,10 @@
 	});
 
 	function getTrackUrl(track: any): string {
+		const lamentUrl = env.PUBLIC_LAMENT_URL as string;
 		return (
 			track.musicUrl ||
-			`https://lament.rynds.my.id/?search=${encodeURIComponent(track.title + " " + track.artist)}`
+			`${lamentUrl}/?search=${encodeURIComponent(track.title + " " + track.artist)}`
 		);
 	}
 
@@ -150,10 +153,10 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Music - M. Roni</title>
-	<meta name="description" content="Music I've been listening to recently." />
-</svelte:head>
+<SEO 
+	title="Music - M. Roni"
+	description="Music I've been listening to recently."
+/>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
