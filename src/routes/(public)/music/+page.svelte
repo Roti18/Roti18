@@ -1,10 +1,45 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
 	import { formatDate } from "$lib/utils/format";
-	import { Disc } from "lucide-svelte";
+	import { Disc, Loader2 } from "lucide-svelte";
 	import { canUseBlur } from "$lib/utils/perf";
+	import { goto } from "$app/navigation";
+	import { page } from "$app/state";
+	import { onMount } from "svelte";
 
 	const { data } = $props();
+
+	let loadingMore = $state(false);
+	let loadMoreEl = $state<HTMLElement>();
+
+	$effect(() => {
+		if (data.tracks) {
+			loadingMore = false;
+		}
+	});
+
+	onMount(() => {
+		if (!browser) return;
+		// Wait a tick for the element to bind
+		setTimeout(() => {
+			if (!loadMoreEl) return;
+			const observer = new IntersectionObserver((entries) => {
+				// Only load more if we haven't exhausted the DB
+				if (entries[0].isIntersecting && !loadingMore && data.tracks.length >= (data.limit || 20)) {
+					loadingMore = true;
+					const currentLimit = Number(page.url.searchParams.get("limit")) || 20;
+					goto(`?limit=${currentLimit + 20}`, {
+						keepFocus: true,
+						noScroll: true,
+						replaceState: true
+					});
+				}
+			}, { rootMargin: "300px" });
+			
+			observer.observe(loadMoreEl);
+			return () => observer.disconnect();
+		}, 100);
+	});
 
 	function getTrackUrl(track: any): string {
 		return (
@@ -41,6 +76,7 @@
 		currentTrack = track;
 
 		if (browser) {
+			if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 			import("gsap").then(({ gsap }) => {
 				// GSAP Staggered Letter Build Animation on Song Title Hover
 				const titleChars = targetNode.querySelectorAll(".title-char");
@@ -167,6 +203,7 @@
 											alt={track.title}
 											loading="lazy"
 											decoding="async"
+											referrerpolicy="no-referrer"
 											class="w-full h-full object-cover"
 										/>
 									{:else}
@@ -207,9 +244,16 @@
 		</table>
 	</div>
 
+	<!-- Infinite Scroll Trigger Element -->
+	<div bind:this={loadMoreEl} class="w-full h-20 flex items-center justify-center pt-8">
+		{#if loadingMore}
+			<Loader2 class="w-5 h-5 text-[#666] animate-spin" />
+		{/if}
+	</div>
+
 	<!-- Vinyl Grooves "Picture Disc" in a Frosted Glass Sleeve -->
 	<div
-		class="fixed top-0 left-0 z-50 pointer-events-none w-52 rounded-2xl overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_24px_48px_rgba(0,0,0,0.8)] bg-white/10 backdrop-blur-2xl p-4 flex flex-col items-center gap-4 ring-1 ring-black/50"
+		class="fixed top-0 left-0 z-50 pointer-events-none w-52 rounded-2xl overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_24px_48px_rgba(0,0,0,0.8)] bg-white/10 backdrop-blur-2xl p-4 flex-col items-center gap-4 ring-1 ring-black/50 hidden md:flex"
 		bind:this={previewEl}
 		style="opacity: 0; transform: scale(0.85);"
 	>
