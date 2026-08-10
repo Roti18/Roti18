@@ -15,6 +15,7 @@
 			<img
 				src={data.photo.imageUrl}
 				alt={data.photo.title}
+				loading="lazy"
 				class="w-full h-auto block"
 				{...data.photo.width && data.photo.height ? { width: data.photo.width, height: data.photo.height } : {}}
 			/>
