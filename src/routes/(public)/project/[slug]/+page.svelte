@@ -46,9 +46,9 @@
 			</div>
 		</header>
 
-		{#if data.project.thumbnailUrl}
+		{#if data.project.thumbnailUrl || data.project.originalUrl}
 			<div class="rounded-xl overflow-hidden border border-[#1f1f1f]">
-				<img src={data.project.thumbnailUrl} alt={data.project.title} class="w-full h-auto block" />
+				<img src={data.project.originalUrl || data.project.thumbnailUrl} alt={data.project.title} class="w-full h-auto block" />
 			</div>
 		{/if}
 
