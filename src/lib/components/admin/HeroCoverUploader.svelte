@@ -2,7 +2,7 @@
 	import { Upload, ImageIcon, Trash2, RefreshCw, Sparkles, FileImage, Check } from "lucide-svelte";
 	import AssetManager from "./AssetManager.svelte";
 
-	let { coverUrl = $bindable(""), content = "", articleSlug = "new-article", folder = "" } = $props();
+	let { coverUrl = $bindable(""), originalUrl = $bindable(""), content = "", articleSlug = "new-article", folder = "", onExifExtract = undefined as ((desc: string, dateStr?: string) => void) | undefined } = $props();
 
 	let uploading = $state(false);
 	let uploadError = $state<string | null>(null);
@@ -13,6 +13,32 @@
 		if (!files || files.length === 0) return;
 		uploading = true;
 		uploadError = null;
+
+		if (onExifExtract && typeof onExifExtract === 'function') {
+			try {
+				const exifr = (await import('exifr')).default;
+				const exif = await exifr.parse(files[0], { tiff: true, exif: true });
+				if (exif) {
+					let desc = '';
+					if (exif.Make || exif.Model) {
+						desc += `${exif.Make ? exif.Make + ' ' : ''}${exif.Model || ''}`.trim();
+					}
+					const specs = [];
+					if (exif.FocalLength) specs.push(`${exif.FocalLength}mm`);
+					if (exif.FNumber) specs.push(`f/${exif.FNumber}`);
+					if (exif.ISO) specs.push(`ISO ${exif.ISO}`);
+					
+					if (specs.length > 0) {
+						desc += (desc ? ', ' : '') + specs.join(', ');
+					}
+					if (desc || exif.DateTimeOriginal) {
+						onExifExtract(desc, exif.DateTimeOriginal ? exif.DateTimeOriginal.toISOString() : undefined);
+					}
+				}
+			} catch (e) {
+				console.warn('[EXIF] Failed to parse metadata:', e);
+			}
+		}
 
 		try {
 			const targetFolder = folder ? folder : `writing/${articleSlug}`;
@@ -27,6 +53,7 @@
 				uploadError = json.message || "Upload failed";
 			} else if (json.files && json.files[0]) {
 				coverUrl = json.files[0].optimizedUrl;
+				originalUrl = json.files[0].originalUrl;
 			}
 		} catch (err: any) {
 			uploadError = err.message || "Upload error";
@@ -53,6 +80,7 @@
 
 	function removeCover() {
 		coverUrl = "";
+		originalUrl = "";
 	}
 </script>
 
