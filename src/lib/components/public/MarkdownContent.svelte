@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { mount, unmount } from 'svelte';
 	import { Copy, Check } from 'lucide-svelte';
 
@@ -7,7 +6,8 @@
 
 	let containerEl = $state<HTMLElement>();
 
-	onMount(() => {
+	$effect(() => {
+		html; // Track html dependency so this re-runs on navigation
 		const root = containerEl;
 		if (!root) return;
 
