@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import { env } from '$env/dynamic/public';
 	import { formatDateShort } from "$lib/utils/format";
 	import {
 		Music,
@@ -114,6 +115,7 @@ function onSongPlay(song) {
 		testingWebhook = true;
 		testResult = null;
 		try {
+			const lamentUrl = env.PUBLIC_LAMENT_URL as string;
 			const res = await fetch("/api/music/now-playing", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -123,7 +125,7 @@ function onSongPlay(song) {
 					artist: "Brian / Lament Streamer",
 					album: "Portfolio Live Test",
 					coverUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300",
-					musicUrl: "https://lament.rynds.my.id"
+					musicUrl: lamentUrl
 				})
 			});
 			const json = await res.json();
