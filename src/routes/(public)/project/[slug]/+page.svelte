@@ -1,14 +1,25 @@
 <script lang="ts">
 	import { ExternalLink, ArrowLeft } from 'lucide-svelte';
 	import MarkdownContent from '$lib/components/public/MarkdownContent.svelte';
+	import SEO from '$lib/components/public/SEO.svelte';
+	import { page } from '$app/state';
 
 	const { data } = $props();
+	
+	const origin = $derived(page.url.origin);
 </script>
 
-<svelte:head>
-	<title>{data.project.title} - M. Roni</title>
-	<meta name="description" content={data.project.shortDesc} />
-</svelte:head>
+<SEO 
+	title={`${data.project.title} - M. Roni`}
+	description={data.project.shortDesc}
+	image={data.project.originalUrl || data.project.thumbnailUrl || `${origin}/favicon-512.png`}
+	type="article"
+	article={{
+		publishedTime: data.project.createdAt.toISOString(),
+		modifiedTime: data.project.updatedAt.toISOString(),
+		author: "M. Roni"
+	}}
+/>
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-10">
 	<article class="blur-fade-in space-y-8">
