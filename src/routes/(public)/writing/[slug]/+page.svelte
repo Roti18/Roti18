@@ -3,11 +3,15 @@
 	import { Heart, ArrowLeft } from 'lucide-svelte';
 	import LightboxImage from '$lib/components/public/LightboxImage.svelte';
 	import MarkdownContent from '$lib/components/public/MarkdownContent.svelte';
+	import SEO from '$lib/components/public/SEO.svelte';
+	import { page } from '$app/state';
 
 	const { data } = $props();
 
 	let likes = $state(0);
 	let liked = $state(false);
+	
+	const origin = $derived(page.url.origin);
 
 	onMount(() => {
 		likes = data.post.likes;
@@ -52,9 +56,19 @@
 	}
 </script>
 
+<SEO 
+	title={`${data.post.title} - M. Roni`}
+	description={data.post.excerpt || data.post.title}
+	image={data.post.coverUrl || `${origin}/favicon-512.png`}
+	type="article"
+	article={{
+		publishedTime: data.post.createdAt.toISOString(),
+		modifiedTime: data.post.updatedAt.toISOString(),
+		author: "M. Roni"
+	}}
+/>
+
 <svelte:head>
-	<title>{data.post.title} - M. Roni</title>
-	<meta name="description" content={data.post.excerpt || data.post.title} />
 	<script type="application/ld+json">
 		{JSON.stringify({
 			"@context": "https://schema.org",
@@ -64,7 +78,7 @@
 			"datePublished": data.post.createdAt,
 			"dateModified": data.post.updatedAt,
 			"author": { "@type": "Person", "name": "M. Roni" },
-			"mainEntityOfPage": `https://rynds.my.id/writing/${data.post.slug}`
+			"mainEntityOfPage": `${origin}/writing/${data.post.slug}`
 		})}
 	</script>
 </svelte:head>
