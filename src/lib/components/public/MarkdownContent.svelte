@@ -19,27 +19,36 @@
 			const holder = btn.querySelector('.md-copy-icon');
 			if (!holder) return;
 			mounted.push(
-				mount(Copy, { target: holder as HTMLElement, props: { size: 12, 'aria-hidden': true } })
+				mount(Copy, { target: holder as HTMLElement, props: { size: 12, 'aria-hidden': true, class: 'md-svg-copy' } })
 			);
 			mounted.push(
-				mount(Check, { target: holder as HTMLElement, props: { size: 12, 'aria-hidden': true } })
+				mount(Check, { target: holder as HTMLElement, props: { size: 12, 'aria-hidden': true, class: 'md-svg-check' } })
 			);
-			const svgs = holder.querySelectorAll('svg');
-			const copyIcon = svgs[0] as SVGElement | undefined;
-			const checkIcon = svgs[1] as SVGElement | undefined;
-			if (!copyIcon || !checkIcon) return;
-			checkIcon.style.display = 'none';
+			
+			// Try to hide check immediately, but don't fail if not found yet
+			const tryHideCheck = () => {
+				const checkIcon = holder.querySelector('.md-svg-check') as SVGElement | null;
+				if (checkIcon) checkIcon.style.display = 'none';
+			};
+			tryHideCheck();
+			// Also run after a microtask in case mount was deferred
+			Promise.resolve().then(tryHideCheck);
 
 			const button = btn as HTMLButtonElement;
 			const label = btn.querySelector('.copy-label');
 			const setState = (state: 'copy' | 'check' | 'failed') => {
+				const copyIcon = holder.querySelector('.md-svg-copy') as SVGElement | null;
+				const checkIcon = holder.querySelector('.md-svg-check') as SVGElement | null;
+
 				if (state === 'check') {
-					copyIcon.style.display = 'none';
-					checkIcon.style.display = 'block';
-					checkIcon.style.animation = 'mdIconSwap 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
+					if (copyIcon) copyIcon.style.display = 'none';
+					if (checkIcon) {
+						checkIcon.style.display = 'block';
+						checkIcon.style.animation = 'mdIconSwap 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
+					}
 				} else {
-					copyIcon.style.display = 'block';
-					checkIcon.style.display = 'none';
+					if (copyIcon) copyIcon.style.display = 'block';
+					if (checkIcon) checkIcon.style.display = 'none';
 				}
 				if (label) {
 					label.textContent =
