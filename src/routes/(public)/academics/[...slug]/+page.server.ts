@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		// Self-heal stale stored HTML (same as writing/project) so code-block
 		// copy buttons appear on materials saved before the renderer change.
 		let contentHtml = found.contentHtml;
-		if (!contentHtml?.includes('data-md-arrow') && !contentHtml?.includes('md-copy-icon')) {
+		if (!contentHtml?.includes('md-copy-icon') || contentHtml?.includes('<figcaption')) {
 			const cooked = await processMarkdown(found.content);
 			contentHtml = cooked.html;
 		}
