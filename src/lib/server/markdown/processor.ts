@@ -139,7 +139,6 @@ export async function processMarkdown(markdownText: string): Promise<ProcessedMa
 					class="w-full h-auto object-cover rounded-2xl cursor-zoom-in transition-transform hover:scale-[1.01]"
 					data-pswp-src="${href}"
 				/>
-				${alt ? `<figcaption class="p-2 text-center text-xs font-mono text-[#777777] border-t border-[#1a1a1a]">${alt}</figcaption>` : ''}
 			</figure>`;
 		},
 
