@@ -20,7 +20,7 @@ export const load: PageServerLoad = async () => {
 		});
 
 		const recentMusic = await db.query.music.findMany({
-			orderBy: [asc(music.playedAt)],
+			orderBy: [desc(music.playedAt)],
 			limit: 4
 		});
 
