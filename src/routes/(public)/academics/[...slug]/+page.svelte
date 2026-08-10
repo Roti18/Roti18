@@ -3,6 +3,8 @@
 	import { FileText, ArrowLeft } from 'lucide-svelte';
 	import MarkdownContent from '$lib/components/public/MarkdownContent.svelte';
 
+	import SEO from '$lib/components/public/SEO.svelte';
+
 	import AuthModal from '$lib/components/AuthModal.svelte';
 	import { Lock, LogIn } from 'lucide-svelte';
 
@@ -15,10 +17,16 @@
 	const showModal = $derived(!hasAccess && !overlayClosed);
 </script>
 
-<svelte:head>
-	<title>{data.material.title} - Academics - M. Roni</title>
-	<meta name="description" content="{data.material.title} - {data.course.title}" />
-</svelte:head>
+<SEO 
+	title={`${data.material.title} - Academics - M. Roni`}
+	description={`${data.material.title} - ${data.course.title}`}
+	type="article"
+	article={{
+		publishedTime: data.material.createdAt.toISOString(),
+		modifiedTime: data.material.updatedAt.toISOString(),
+		author: "M. Roni"
+	}}
+/>
 
 <div class="relative min-h-[70vh]">
 	<div class="max-w-5xl mx-auto px-6 py-12 space-y-12 transition-all duration-500 {hasAccess ? '' : 'filter blur-md pointer-events-none select-none opacity-40'}">
