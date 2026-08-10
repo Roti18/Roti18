@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
 	import { canUseBlur } from "$lib/utils/perf";
+	import SEO from '$lib/components/public/SEO.svelte';
 
 	const { data } = $props();
 
 </script>
 
-<svelte:head>
-	<title>Projects - M. Roni</title>
-	<meta name="description" content="Things I've built and worked on." />
-</svelte:head>
+<SEO 
+	title="Projects - M. Roni"
+	description="Things I've built and worked on."
+/>
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-12">
 	<div class="flex flex-col gap-1 -mx-3">
