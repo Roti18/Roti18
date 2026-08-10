@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Upload, Copy, Check, Image as ImageIcon, Sparkles, Trash2, Plus } from "lucide-svelte";
 
-	let { onSelectImage = (_url: string) => {}, onSetCover = (_url: string) => {} } = $props();
+	let { onSelectImage = (_url: string) => {}, onSetCover = (_url: string) => {}, folder = "writing/general" } = $props();
 
 	let uploading = $state(false);
 	let uploadError = $state<string | null>(null);
@@ -16,6 +16,7 @@
 
 		try {
 			const formData = new FormData();
+			formData.append("folder", folder);
 			for (let i = 0; i < files.length; i++) {
 				formData.append("file", files[i]);
 			}
@@ -46,7 +47,7 @@
 	}
 
 	function copyMarkdown(asset: any) {
-		const md = `![${asset.filename || 'image'}](${asset.optimizedUrl})`;
+		const md = `![${asset.filename || 'image'}](${asset.originalUrl || asset.optimizedUrl})`;
 		navigator.clipboard.writeText(md);
 		copiedUrl = asset.optimizedUrl;
 		setTimeout(() => (copiedUrl = null), 2000);
@@ -128,7 +129,7 @@
 							</button>
 							<button
 								type="button"
-								onclick={() => onSelectImage(asset.optimizedUrl)}
+								onclick={() => onSelectImage(asset.originalUrl || asset.optimizedUrl)}
 								class="flex-1 px-2 py-1 rounded bg-[#222222] hover:bg-[#2a2a2a] text-[10px] text-blue-400 font-mono transition-colors"
 								title="Insert into Markdown Content"
 							>
