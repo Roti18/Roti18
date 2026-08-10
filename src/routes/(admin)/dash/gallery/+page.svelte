@@ -13,6 +13,9 @@
 	let showModal = $state(false);
 	let editingItem = $state<any>(null);
 	let imageUrl = $state("");
+	let originalUrl = $state("");
+	let cameraDesc = $state("");
+	let takenAt = $state("");
 
 	const filteredItems = $derived(
 		photos.filter(
@@ -27,12 +30,23 @@
 	function openCreateModal() {
 		editingItem = null;
 		imageUrl = "";
+		originalUrl = "";
+		cameraDesc = "";
+		takenAt = "";
 		showModal = true;
 	}
 
 	function openEditModal(item: any) {
 		editingItem = item;
 		imageUrl = item.imageUrl || "";
+		originalUrl = item.originalUrl || "";
+		cameraDesc = item.cameraDesc || "";
+		if (item.createdAt) {
+			const d = new Date(item.createdAt);
+			takenAt = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+		} else {
+			takenAt = "";
+		}
 		showModal = true;
 	}
 </script>
@@ -87,7 +101,7 @@
 					{#each filteredItems as item}
 						<tr class="hover:bg-white/5 transition-colors">
 							<td class="px-4 py-2.5">
-								<a href={item.imageUrl} target="_blank" class="inline-block">
+								<a href={item.originalUrl || item.imageUrl} target="_blank" class="inline-block">
 									<img src={item.imageUrl} alt={item.title} class="w-12 h-12 rounded-xl object-cover border border-[#2a2a2a]" />
 								</a>
 							</td>
@@ -164,9 +178,24 @@
 	/>
 
 	<input type="hidden" name="imageUrl" value={imageUrl} />
+	<input type="hidden" name="originalUrl" value={originalUrl} />
 
 	<!-- Dedicated Gallery Photo Uploader (WebP R2) -->
-	<HeroCoverUploader bind:coverUrl={imageUrl} folder="gallery" />
+	<HeroCoverUploader bind:coverUrl={imageUrl} bind:originalUrl={originalUrl} folder="gallery" onExifExtract={(desc, dateStr) => {
+		if (desc && !cameraDesc) cameraDesc = desc;
+		if (dateStr && !takenAt) {
+			const d = new Date(dateStr);
+			takenAt = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+		}
+	}} />
+
+	<FormInput
+		id="photo-takenat"
+		name="createdAt"
+		type="datetime-local"
+		label="Date Taken (Override automatic)"
+		bind:value={takenAt}
+	/>
 
 	<FormInput
 		id="photo-slug"
@@ -181,7 +210,7 @@
 		id="photo-cameradesc"
 		name="cameraDesc"
 		label="Camera / Lens EXIF Info (Optional)"
-		value={editingItem?.cameraDesc || ''}
+		bind:value={cameraDesc}
 		placeholder="e.g. Sony A7IV 35mm f/1.4"
 	/>
 
