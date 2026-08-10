@@ -354,14 +354,12 @@
 </script>
 
 <svelte:head>
-	<title>Portfolio</title>
-	<link rel="canonical" href={`https://rynds.my.id${base}${page.url.pathname}`} />
 	<script type="application/ld+json">
 		{JSON.stringify({
 			"@context": "https://schema.org",
 			"@type": "WebSite",
 			"name": "M. Roni",
-			"url": "https://rynds.my.id"
+			"url": page.url.origin
 		})}
 	</script>
 </svelte:head>
