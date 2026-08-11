@@ -4,6 +4,7 @@
 	import { pushState } from "$app/navigation";
 	import { page } from "$app/state";
 	import { canUseBlur } from "$lib/utils/perf";
+	import { formatDate } from "$lib/utils/format";
 	import { Camera, Calendar } from "lucide-svelte";
 
 	import SEO from '$lib/components/public/SEO.svelte';

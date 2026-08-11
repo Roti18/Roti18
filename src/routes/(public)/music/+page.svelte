@@ -4,6 +4,7 @@
 	import SEO from "$lib/components/public/SEO.svelte";
 	import { formatDate } from "$lib/utils/format";
 	import { Disc, Loader2 } from "lucide-svelte";
+	import { canUseBlur } from "$lib/utils/perf";
 	import { onMount } from "svelte";
 
 	const { data } = $props();
