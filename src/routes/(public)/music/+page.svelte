@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
-	import { env } from '$env/dynamic/public';
-	import SEO from '$lib/components/public/SEO.svelte';
+	import { env } from "$env/dynamic/public";
+	import SEO from "$lib/components/public/SEO.svelte";
 	import { formatDate } from "$lib/utils/format";
 	import { Disc, Loader2 } from "lucide-svelte";
 	import { canUseBlur } from "$lib/utils/perf";
@@ -25,19 +25,27 @@
 		// Wait a tick for the element to bind
 		setTimeout(() => {
 			if (!loadMoreEl) return;
-			const observer = new IntersectionObserver((entries) => {
-				// Only load more if we haven't exhausted the DB
-				if (entries[0].isIntersecting && !loadingMore && data.tracks.length >= (data.limit || 20)) {
-					loadingMore = true;
-					const currentLimit = Number(page.url.searchParams.get("limit")) || 20;
-					goto(`?limit=${currentLimit + 20}`, {
-						keepFocus: true,
-						noScroll: true,
-						replaceState: true
-					});
-				}
-			}, { rootMargin: "300px" });
-			
+			const observer = new IntersectionObserver(
+				(entries) => {
+					// Only load more if we haven't exhausted the DB
+					if (
+						entries[0].isIntersecting &&
+						!loadingMore &&
+						data.tracks.length >= (data.limit || 20)
+					) {
+						loadingMore = true;
+						const currentLimit =
+							Number(page.url.searchParams.get("limit")) || 20;
+						goto(`?limit=${currentLimit + 20}`, {
+							keepFocus: true,
+							noScroll: true,
+							replaceState: true,
+						});
+					}
+				},
+				{ rootMargin: "300px" },
+			);
+
 			observer.observe(loadMoreEl);
 			return () => observer.disconnect();
 		}, 100);
@@ -76,12 +84,15 @@
 	function handleRowMouseEnter(
 		track: (typeof data.tracks)[0],
 		targetNode: HTMLElement,
-		e: MouseEvent
+		e: MouseEvent,
 	) {
 		currentTrack = track;
 
 		if (browser) {
-			if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+			if (
+				!window.matchMedia("(hover: hover) and (pointer: fine)").matches
+			)
+				return;
 			import("gsap").then(({ gsap }) => {
 				// GSAP Staggered Letter Build Animation on Song Title Hover
 				const titleChars = targetNode.querySelectorAll(".title-char");
@@ -146,7 +157,7 @@
 					ease: "power2.in",
 					onComplete: () => {
 						currentTrack = null;
-					}
+					},
 				});
 			});
 		} else {
@@ -155,7 +166,7 @@
 	}
 </script>
 
-<SEO 
+<SEO
 	title="Music - M. Roni"
 	description="Music I've been listening to recently."
 />
@@ -167,7 +178,7 @@
 >
 	<div class="blur-fade-in overflow-x-auto -mx-3">
 		<table
-			class="w-full min-w-[800px] text-left text-base text-[#ededed] border-collapse whitespace-nowrap"
+			class="w-full text-left text-base text-[#ededed] border-collapse"
 			id="music-table"
 		>
 			<thead>
@@ -176,8 +187,14 @@
 				>
 					<th class="py-3.5 px-3 font-semibold">Song</th>
 					<th class="py-3.5 px-3 font-semibold">Artist</th>
-					<th class="py-3.5 px-3 font-semibold">Album</th>
-					<th class="py-3.5 px-3 font-semibold text-right">Played</th>
+					<th
+						class="py-3.5 px-3 font-semibold text-right hidden sm:table-cell"
+						>Album</th
+					>
+					<th
+						class="py-3.5 px-3 font-semibold text-left sm:text-right"
+						>Played</th
+					>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-[#141414]">
@@ -190,13 +207,13 @@
 							handleRowMouseEnter(
 								track,
 								e.currentTarget as HTMLElement,
-								e
+								e,
 							)}
 						onclick={() =>
 							window.open(getTrackUrl(track), "_blank")}
 						title="Listen on Lament"
 					>
-						<td class="py-3.5 px-3 font-medium text-[#ededed]">
+						<td class="py-3.5 px-3 font-medium text-[#ededed] whitespace-nowrap">
 							<div class="flex items-center gap-3">
 								<div
 									class="w-9 h-9 rounded-md bg-[#181818] border border-[#222222] overflow-hidden shrink-0 flex items-center justify-center"
@@ -231,15 +248,15 @@
 							</div>
 						</td>
 						<td
-							class="py-3.5 px-3 text-[#a1a1a1] font-normal no-underline"
+							class="py-3.5 px-3 text-[#a1a1a1] font-normal no-underline whitespace-nowrap"
 							>{track.artist}</td
 						>
 						<td
-							class="py-3.5 px-3 text-[#888888] font-normal no-underline"
+							class="py-3.5 px-3 text-[#888888] font-normal no-underline text-right hidden sm:table-cell"
 							>{track.album || "-"}</td
 						>
 						<td
-							class="py-3.5 px-3 text-[#737373] text-right whitespace-nowrap font-normal no-underline"
+							class="py-3.5 px-3 text-[#737373] text-left sm:text-right whitespace-nowrap font-normal no-underline"
 							>{formatDate(track.playedAt!)}</td
 						>
 					</tr>
@@ -249,7 +266,10 @@
 	</div>
 
 	<!-- Infinite Scroll Trigger Element -->
-	<div bind:this={loadMoreEl} class="w-full h-20 flex items-center justify-center pt-8">
+	<div
+		bind:this={loadMoreEl}
+		class="w-full h-20 flex items-center justify-center pt-8"
+	>
 		{#if loadingMore}
 			<Loader2 class="w-5 h-5 text-[#666] animate-spin" />
 		{/if}
