@@ -54,13 +54,14 @@
 	let previewEl: HTMLElement;
 	let currentTrack: (typeof data.tracks)[0] | null = $state(null);
 
-	function calculateElementPosition(node: HTMLElement) {
+	function calculateElementPosition(node: HTMLElement, e: MouseEvent) {
 		const rect = node.getBoundingClientRect();
 		const previewWidth = 200;
 		const previewHeight = 200;
 		const headerHeight = 64; // Sticky header (56px) + safety buffer
 
-		let x = rect.right - previewWidth;
+		// Position it near the mouse pointer (20px to the right)
+		let x = e.clientX + 20;
 		let y = rect.top - previewHeight - 14;
 
 		if (y < headerHeight) {
@@ -75,6 +76,7 @@
 	function handleRowMouseEnter(
 		track: (typeof data.tracks)[0],
 		targetNode: HTMLElement,
+		e: MouseEvent
 	) {
 		currentTrack = track;
 
@@ -99,7 +101,7 @@
 
 				// GSAP Song Cover Ink Bleed Reveal (Clean borderless image card)
 				if (previewEl && targetNode) {
-					const pos = calculateElementPosition(targetNode);
+					const pos = calculateElementPosition(targetNode, e);
 					gsap.killTweensOf(previewEl);
 
 					gsap.set(previewEl, {
@@ -188,6 +190,7 @@
 							handleRowMouseEnter(
 								track,
 								e.currentTarget as HTMLElement,
+								e
 							)}
 						onclick={() =>
 							window.open(getTrackUrl(track), "_blank")}
