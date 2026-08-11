@@ -7,7 +7,7 @@
 	import { formatDate } from "$lib/utils/format";
 	import { Camera, Calendar } from "lucide-svelte";
 
-	import SEO from '$lib/components/public/SEO.svelte';
+	import SEO from "$lib/components/public/SEO.svelte";
 
 	const { data } = $props();
 
@@ -72,34 +72,60 @@
 					if (entries[0].isIntersecting && !loadingMore && hasMore) {
 						loadingMore = true;
 						try {
-							const res = await fetch(`/api/gallery/photos?offset=${loadedPhotos.length}&limit=20`);
+							const res = await fetch(
+								`/api/gallery/photos?offset=${loadedPhotos.length}&limit=20`,
+							);
 							if (res.ok) {
 								const json = await res.json();
 								if (json.photos && json.photos.length > 0) {
 									const previousLength = loadedPhotos.length;
-									loadedPhotos = [...loadedPhotos, ...json.photos];
-									if (json.photos.length < 20) hasMore = false;
-									
+									loadedPhotos = [
+										...loadedPhotos,
+										...json.photos,
+									];
+									if (json.photos.length < 20)
+										hasMore = false;
+
 									tick().then(async () => {
 										if (gridEl) {
-											const items = gridEl.querySelectorAll(".gallery-item");
-											const newItems = Array.from(items).slice(previousLength);
+											const items =
+												gridEl.querySelectorAll(
+													".gallery-item",
+												);
+											const newItems =
+												Array.from(items).slice(
+													previousLength,
+												);
 											if (newItems.length > 0) {
-												const { gsap } = await import("gsap");
+												const { gsap } = await import(
+													"gsap"
+												);
 												gsap.fromTo(
 													newItems,
 													{
 														opacity: 0,
-														...(canUseBlur() ? { filter: "blur(12px)" } : {}),
+														...(canUseBlur()
+															? {
+																	filter: "blur(12px)",
+																}
+															: {}),
 													},
 													{
 														opacity: 1,
-														...(canUseBlur() ? { filter: "blur(0px)" } : {}),
+														...(canUseBlur()
+															? {
+																	filter: "blur(0px)",
+																}
+															: {}),
 														duration: 0.7,
 														ease: "power2.out",
-														stagger: { amount: 0.35 },
-														clearProps: canUseBlur() ? "filter" : "",
-													}
+														stagger: {
+															amount: 0.35,
+														},
+														clearProps: canUseBlur()
+															? "filter"
+															: "",
+													},
 												);
 											}
 										}
@@ -107,6 +133,7 @@
 								} else {
 									hasMore = false;
 								}
+								``;
 							} else {
 								hasMore = false;
 							}
@@ -118,7 +145,7 @@
 						}
 					}
 				},
-				{ rootMargin: "300px" }
+				{ rootMargin: "300px" },
 			);
 			observer.observe(loadMoreEl);
 			return () => observer.disconnect();
@@ -167,9 +194,9 @@
 		if (!browser || !modalEl || isClosing) return;
 		isClosing = true;
 		const { gsap } = await import("gsap");
-		
+
 		gsap.to(modalEl, { opacity: 0, duration: 0.3, ease: "power2.inOut" });
-		
+
 		if (modalImageEl) {
 			gsap.to(modalImageEl, {
 				scale: 0.8,
@@ -181,7 +208,7 @@
 				onComplete: () => {
 					isClosing = false;
 					history.back();
-				}
+				},
 			});
 		} else {
 			isClosing = false;
@@ -197,12 +224,16 @@
 
 	function handleMouseMove(e: MouseEvent) {
 		if (!browser || !metaContainer) return;
-		if (window.innerWidth < 1024 || window.matchMedia("(hover: none)").matches) return;
+		if (
+			window.innerWidth < 1024 ||
+			window.matchMedia("(hover: none)").matches
+		)
+			return;
 		const rect = metaContainer.getBoundingClientRect();
-		
+
 		// Optional: only show flashlight if cursor is somewhat near the metadata
 		// But allowing it from everywhere gives a cool effect as the light approaches
-		
+
 		import("gsap").then(({ gsap }) => {
 			if (!metaContainer) return;
 			gsap.to(metaContainer, {
@@ -210,7 +241,7 @@
 				"--mouse-y": `${e.clientY - rect.top}px`,
 				duration: 0.4,
 				ease: "power3.out",
-				overwrite: "auto"
+				overwrite: "auto",
 			});
 		});
 	}
@@ -218,10 +249,7 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<SEO 
-	title="Gallery - M. Roni"
-	description="A collection of photographs."
-/>
+<SEO title="Gallery - M. Roni" description="A collection of photographs." />
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-8">
 	<div
@@ -255,9 +283,14 @@
 			</button>
 		{/each}
 	</div>
-	<div bind:this={loadMoreEl} class="h-10 w-full flex items-center justify-center">
+	<div
+		bind:this={loadMoreEl}
+		class="h-10 w-full flex items-center justify-center"
+	>
 		{#if loadingMore}
-			<div class="w-5 h-5 rounded-full border-2 border-[#333333] border-t-white animate-spin"></div>
+			<div
+				class="w-5 h-5 rounded-full border-2 border-[#333333] border-t-white animate-spin"
+			></div>
 		{/if}
 	</div>
 </div>
@@ -283,34 +316,50 @@
 				class="max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-[#2a2a2a]"
 				bind:clientWidth={imgWidth}
 			/>
-			
-			<div 
+
+			<div
 				class="mt-5 text-left flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-4 spotlight-mask mx-auto"
 				bind:this={metaContainer}
-				style="width: {imgWidth ? `${imgWidth}px` : '100%'}; min-width: min(100%, 280px);"
+				style="width: {imgWidth
+					? `${imgWidth}px`
+					: '100%'}; min-width: min(100%, 280px);"
 			>
 				<div class="space-y-1.5 flex-1">
-					<h2 class="text-base md:text-xl font-bold text-white font-['Space_Grotesk'] tracking-tight leading-tight">
+					<h2
+						class="text-base md:text-xl font-bold text-white font-['Space_Grotesk'] tracking-tight leading-tight"
+					>
 						{selectedPhoto.title}
 					</h2>
 					{#if selectedPhoto.shortDesc}
-						<p class="text-xs md:text-sm text-[#a1a1a1] max-w-xl leading-relaxed">
+						<p
+							class="text-xs md:text-sm text-[#a1a1a1] max-w-xl leading-relaxed"
+						>
 							{selectedPhoto.shortDesc}
 						</p>
 					{/if}
 				</div>
 
-				<div class="flex flex-col items-start md:items-end shrink-0 pt-2 md:pt-1">
+				<div
+					class="flex flex-col items-start md:items-end shrink-0 pt-2 md:pt-1"
+				>
 					{#if selectedPhoto.cameraDesc}
-						<div class="flex items-center gap-1.5 md:gap-2 font-mono text-[9px] md:text-xs text-[#ededed] px-2.5 md:px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-none rounded-br-xl md:rounded-none md:rounded-bl-xl">
+						<div
+							class="flex items-center gap-1.5 md:gap-2 font-mono text-[9px] md:text-xs text-[#ededed] px-2.5 md:px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-none rounded-br-xl md:rounded-none md:rounded-bl-xl"
+						>
 							<Camera class="w-3.5 h-3.5 text-[#a1a1a1]" />
 							<span>{selectedPhoto.cameraDesc}</span>
 						</div>
 					{/if}
 					{#if selectedPhoto.createdAt}
-						<div class="flex items-center gap-1.5 md:gap-2 font-mono text-[8px] md:text-[10px] text-[#888888] uppercase tracking-wider px-2.5 md:px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-none rounded-br-xl md:rounded-none md:rounded-bl-xl mt-[2px]">
+						<div
+							class="flex items-center gap-1.5 md:gap-2 font-mono text-[8px] md:text-[10px] text-[#888888] uppercase tracking-wider px-2.5 md:px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-none rounded-br-xl md:rounded-none md:rounded-bl-xl mt-[2px]"
+						>
 							<Calendar class="w-3.5 h-3.5 text-[#555555]" />
-							<span>{formatDate(new Date(selectedPhoto.createdAt))}</span>
+							<span
+								>{formatDate(
+									new Date(selectedPhoto.createdAt),
+								)}</span
+							>
 						</div>
 					{/if}
 				</div>
