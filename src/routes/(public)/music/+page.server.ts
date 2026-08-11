@@ -3,17 +3,14 @@ import { db } from '$lib/server/db';
 import { music } from '$lib/server/db/schema';
 import { desc } from 'drizzle-orm';
 
-export const load: PageServerLoad = async ({ url }) => {
+export const load: PageServerLoad = async () => {
 	try {
-		const limitParam = url.searchParams.get('limit');
-		const limit = limitParam ? parseInt(limitParam) : 20;
-
 		const tracks = await db.query.music.findMany({
 			orderBy: [desc(music.playedAt)],
-			limit: limit
+			limit: 20
 		});
 
-		return { tracks, limit };
+		return { tracks, limit: 20 };
 	} catch (err) {
 		console.error('Failed to load music tracks from DB:', err);
 		return { tracks: [] };

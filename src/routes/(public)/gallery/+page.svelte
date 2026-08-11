@@ -23,6 +23,11 @@
 		(page.state as any)?.photo as (typeof data.photos)[0] | undefined,
 	);
 
+	let loadedPhotos = $state(data.photos || []);
+	let loadingMore = $state(false);
+	let hasMore = $state((data.photos || []).length === 20);
+	let loadMoreEl = $state<HTMLElement>();
+
 	$effect(() => {
 		if (statePhoto) {
 			selectedPhoto = statePhoto;
@@ -31,6 +36,11 @@
 		} else {
 			selectedPhoto = null;
 		}
+	});
+
+	$effect(() => {
+		loadedPhotos = data.photos || [];
+		hasMore = (data.photos || []).length === 20;
 	});
 
 	onMount(async () => {
@@ -53,6 +63,66 @@
 				},
 			);
 		}
+
+		if (!browser) return;
+		setTimeout(() => {
+			if (!loadMoreEl) return;
+			const observer = new IntersectionObserver(
+				async (entries) => {
+					if (entries[0].isIntersecting && !loadingMore && hasMore) {
+						loadingMore = true;
+						try {
+							const res = await fetch(`/api/gallery/photos?offset=${loadedPhotos.length}&limit=20`);
+							if (res.ok) {
+								const json = await res.json();
+								if (json.photos && json.photos.length > 0) {
+									const previousLength = loadedPhotos.length;
+									loadedPhotos = [...loadedPhotos, ...json.photos];
+									if (json.photos.length < 20) hasMore = false;
+									
+									tick().then(async () => {
+										if (gridEl) {
+											const items = gridEl.querySelectorAll(".gallery-item");
+											const newItems = Array.from(items).slice(previousLength);
+											if (newItems.length > 0) {
+												const { gsap } = await import("gsap");
+												gsap.fromTo(
+													newItems,
+													{
+														opacity: 0,
+														...(canUseBlur() ? { filter: "blur(12px)" } : {}),
+													},
+													{
+														opacity: 1,
+														...(canUseBlur() ? { filter: "blur(0px)" } : {}),
+														duration: 0.7,
+														ease: "power2.out",
+														stagger: { amount: 0.35 },
+														clearProps: canUseBlur() ? "filter" : "",
+													}
+												);
+											}
+										}
+									});
+								} else {
+									hasMore = false;
+								}
+							} else {
+								hasMore = false;
+							}
+						} catch (e) {
+							console.error(e);
+							hasMore = false;
+						} finally {
+							loadingMore = false;
+						}
+					}
+				},
+				{ rootMargin: "300px" }
+			);
+			observer.observe(loadMoreEl);
+			return () => observer.disconnect();
+		}, 100);
 	});
 
 	function openPhoto(photo: (typeof data.photos)[0]) {
@@ -159,7 +229,7 @@
 		bind:this={gridEl}
 		id="gallery-grid"
 	>
-		{#each data.photos as photo}
+		{#each loadedPhotos as photo}
 			<button
 				class="gallery-item group relative aspect-4/3 overflow-hidden rounded-2xl bg-[#141414] cursor-pointer text-left border border-[#1f1f1f] shadow-lg flex items-center justify-center"
 				onclick={() => openPhoto(photo)}
@@ -184,6 +254,11 @@
 				</div>
 			</button>
 		{/each}
+	</div>
+	<div bind:this={loadMoreEl} class="h-10 w-full flex items-center justify-center">
+		{#if loadingMore}
+			<div class="w-5 h-5 rounded-full border-2 border-[#333333] border-t-white animate-spin"></div>
+		{/if}
 	</div>
 </div>
 

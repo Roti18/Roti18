@@ -11,13 +11,14 @@
 
 	const { data } = $props();
 
+	let loadedTracks = $state(data.tracks || []);
 	let loadingMore = $state(false);
+	let hasMore = $state((data.tracks || []).length === 20);
 	let loadMoreEl = $state<HTMLElement>();
 
 	$effect(() => {
-		if (data.tracks) {
-			loadingMore = false;
-		}
+		loadedTracks = data.tracks || [];
+		hasMore = (data.tracks || []).length === 20;
 	});
 
 	onMount(() => {
@@ -26,21 +27,35 @@
 		setTimeout(() => {
 			if (!loadMoreEl) return;
 			const observer = new IntersectionObserver(
-				(entries) => {
+				async (entries) => {
 					// Only load more if we haven't exhausted the DB
 					if (
 						entries[0].isIntersecting &&
 						!loadingMore &&
-						data.tracks.length >= (data.limit || 20)
+						hasMore
 					) {
 						loadingMore = true;
-						const currentLimit =
-							Number(page.url.searchParams.get("limit")) || 20;
-						goto(`?limit=${currentLimit + 20}`, {
-							keepFocus: true,
-							noScroll: true,
-							replaceState: true,
-						});
+						try {
+							const res = await fetch(`/api/music/tracks?offset=${loadedTracks.length}&limit=20`);
+							if (res.ok) {
+								const json = await res.json();
+								if (json.tracks && json.tracks.length > 0) {
+									loadedTracks = [...loadedTracks, ...json.tracks];
+									if (json.tracks.length < 20) {
+										hasMore = false;
+									}
+								} else {
+									hasMore = false;
+								}
+							} else {
+								hasMore = false;
+							}
+						} catch (e) {
+							console.error(e);
+							hasMore = false;
+						} finally {
+							loadingMore = false;
+						}
 					}
 				},
 				{ rootMargin: "300px" },
@@ -178,27 +193,27 @@
 >
 	<div class="blur-fade-in overflow-x-auto -mx-3">
 		<table
-			class="w-full text-left text-base text-[#ededed] border-collapse"
+			class="w-full text-left text-base text-[#ededed] border-collapse table-fixed"
 			id="music-table"
 		>
 			<thead>
 				<tr
 					class="border-b border-[#1f1f1f] text-xs uppercase tracking-wider text-[#666666]"
 				>
-					<th class="py-3.5 px-3 font-semibold">Song</th>
-					<th class="py-3.5 px-3 font-semibold">Artist</th>
+					<th class="py-3.5 px-3 font-semibold w-[45%] sm:w-[35%]">Song</th>
+					<th class="py-3.5 px-3 font-semibold w-[30%] sm:w-[25%]">Artist</th>
 					<th
-						class="py-3.5 px-3 font-semibold text-right hidden sm:table-cell"
+						class="py-3.5 px-3 font-semibold text-right hidden sm:table-cell sm:w-[25%]"
 						>Album</th
 					>
 					<th
-						class="py-3.5 px-3 font-semibold text-left sm:text-right"
+						class="py-3.5 px-3 font-semibold text-left sm:text-right w-[25%] sm:w-[15%]"
 						>Played</th
 					>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-[#141414]">
-				{#each data.tracks as track}
+				{#each loadedTracks as track}
 					<!-- svelte-ignore a11y_click_events_have_key_events -->
 					<tr
 						class="group hover:bg-[#141414] transition-colors cursor-pointer"
@@ -213,7 +228,7 @@
 							window.open(getTrackUrl(track), "_blank")}
 						title="Listen on Lament"
 					>
-						<td class="py-3.5 px-3 font-medium text-[#ededed] whitespace-nowrap">
+						<td class="py-3.5 px-3 font-medium text-[#ededed] overflow-hidden whitespace-nowrap">
 							<div class="flex items-center gap-3">
 								<div
 									class="w-9 h-9 rounded-md bg-[#181818] border border-[#222222] overflow-hidden shrink-0 flex items-center justify-center"
@@ -248,13 +263,17 @@
 							</div>
 						</td>
 						<td
-							class="py-3.5 px-3 text-[#a1a1a1] font-normal no-underline whitespace-nowrap"
-							>{track.artist}</td
+							class="py-3.5 px-3 text-[#a1a1a1] font-normal no-underline truncate"
+							title={track.artist}
 						>
+							{track.artist}
+						</td>
 						<td
-							class="py-3.5 px-3 text-[#888888] font-normal no-underline text-right hidden sm:table-cell"
-							>{track.album || "-"}</td
+							class="py-3.5 px-3 text-[#888888] font-normal no-underline text-right hidden sm:table-cell truncate"
+							title={track.album}
 						>
+							{track.album || "-"}
+						</td>
 						<td
 							class="py-3.5 px-3 text-[#737373] text-left sm:text-right whitespace-nowrap font-normal no-underline"
 							>{formatDate(track.playedAt!)}</td

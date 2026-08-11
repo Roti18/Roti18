@@ -7,7 +7,8 @@ export const load: PageServerLoad = async () => {
 	const photos = await db
 		.select()
 		.from(galleryPhoto)
-		.orderBy(desc(galleryPhoto.createdAt));
+		.orderBy(desc(galleryPhoto.createdAt))
+		.limit(20);
 
 	return {
 		photos
