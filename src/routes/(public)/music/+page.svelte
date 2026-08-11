@@ -224,7 +224,7 @@
 							)}
 						onclick={() =>
 							window.open(getTrackUrl(track), "_blank")}
-						data-tooltip="Listen on Lament"
+						data-tooltip={track.title}
 					>
 						<td class="py-3.5 px-3 font-medium text-[#ededed] overflow-hidden whitespace-nowrap">
 							<div class="flex items-center gap-3">
