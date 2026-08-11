@@ -224,7 +224,6 @@
 							)}
 						onclick={() =>
 							window.open(getTrackUrl(track), "_blank")}
-						title="Listen on Lament"
 					>
 						<td class="py-3.5 px-3 font-medium text-[#ededed] overflow-hidden whitespace-nowrap">
 							<div class="flex items-center gap-3">
@@ -262,13 +261,11 @@
 						</td>
 						<td
 							class="py-3.5 px-3 text-[#a1a1a1] font-normal no-underline truncate"
-							title={track.artist}
 						>
 							{track.artist}
 						</td>
 						<td
 							class="py-3.5 px-3 text-[#888888] font-normal no-underline text-right hidden sm:table-cell truncate"
-							title={track.album}
 						>
 							{track.album || "-"}
 						</td>
