@@ -153,7 +153,8 @@
 	});
 
 	function openPhoto(photo: (typeof data.photos)[0]) {
-		pushState(`/gallery/${photo.slug}`, { photo });
+		const plainPhoto = $state.snapshot(photo);
+		pushState(`/gallery/${photo.slug}`, { photo: plainPhoto });
 	}
 
 	async function showModal() {
@@ -258,7 +259,9 @@
 		id="gallery-grid"
 	>
 		{#each loadedPhotos as photo}
-			<button
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div
 				class="gallery-item group relative aspect-4/3 overflow-hidden rounded-2xl bg-[#141414] cursor-pointer text-left border border-[#1f1f1f] shadow-lg flex items-center justify-center"
 				onclick={() => openPhoto(photo)}
 				id="gallery-{photo.slug}"
@@ -280,7 +283,7 @@
 						>{photo.title}</span
 					>
 				</div>
-			</button>
+			</div>
 		{/each}
 	</div>
 	<div
