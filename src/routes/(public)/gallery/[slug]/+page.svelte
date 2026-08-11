@@ -3,6 +3,8 @@
 	import SEO from '$lib/components/public/SEO.svelte';
 
 	const { data } = $props();
+	
+	let imageLoaded = $state(false);
 </script>
 
 <SEO 
@@ -13,12 +15,19 @@
 
 <div class="max-w-5xl mx-auto px-6 py-16 space-y-8">
 	<article class="blur-fade-in space-y-6">
-		<div class="rounded-xl overflow-hidden bg-[#141414] border border-[#1f1f1f]">
+		<div class="rounded-xl overflow-hidden bg-[#141414] border border-[#1f1f1f] relative">
+			<!-- Skeleton Loader -->
+			{#if !imageLoaded}
+				<div class="absolute inset-0 bg-[#1f1f1f] animate-pulse"></div>
+			{/if}
+			
 			<img
 				src={data.photo.imageUrl}
 				alt={data.photo.title}
-				loading="lazy"
-				class="w-full h-auto block"
+				loading="eager"
+				decoding="async"
+				onload={() => (imageLoaded = true)}
+				class="w-full h-auto block transition-opacity duration-700 {imageLoaded ? 'opacity-100' : 'opacity-0'}"
 				{...data.photo.width && data.photo.height ? { width: data.photo.width, height: data.photo.height } : {}}
 			/>
 		</div>

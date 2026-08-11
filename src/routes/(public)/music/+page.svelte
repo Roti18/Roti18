@@ -5,13 +5,13 @@
 	import { formatDate } from "$lib/utils/format";
 	import { Disc, Loader2 } from "lucide-svelte";
 	import { canUseBlur } from "$lib/utils/perf";
-	import { onMount } from "svelte";
+	import { onMount, untrack } from "svelte";
 
 	const { data } = $props();
 
-	let loadedTracks = $state(data.tracks || []);
+	let loadedTracks = $state(untrack(() => data.tracks || []));
 	let loadingMore = $state(false);
-	let hasMore = $state((data.tracks || []).length === 20);
+	let hasMore = $state(untrack(() => (data.tracks || []).length === 20));
 	let loadMoreEl = $state<HTMLElement>();
 
 	$effect(() => {
@@ -27,18 +27,19 @@
 			const observer = new IntersectionObserver(
 				async (entries) => {
 					// Only load more if we haven't exhausted the DB
-					if (
-						entries[0].isIntersecting &&
-						!loadingMore &&
-						hasMore
-					) {
+					if (entries[0].isIntersecting && !loadingMore && hasMore) {
 						loadingMore = true;
 						try {
-							const res = await fetch(`/api/music/tracks?offset=${loadedTracks.length}&limit=20`);
+							const res = await fetch(
+								`/api/music/tracks?offset=${loadedTracks.length}&limit=20`,
+							);
 							if (res.ok) {
 								const json = await res.json();
 								if (json.tracks && json.tracks.length > 0) {
-									loadedTracks = [...loadedTracks, ...json.tracks];
+									loadedTracks = [
+										...loadedTracks,
+										...json.tracks,
+									];
 									if (json.tracks.length < 20) {
 										hasMore = false;
 									}
@@ -75,18 +76,25 @@
 	let previewEl: HTMLElement;
 	let currentTrack: (typeof data.tracks)[0] | null = $state(null);
 
-	function calculateElementPosition(node: HTMLElement, e: MouseEvent) {
-		const rect = node.getBoundingClientRect();
+	function calculateElementPosition(e: MouseEvent) {
 		const previewWidth = 200;
 		const previewHeight = 200;
 		const headerHeight = 64; // Sticky header (56px) + safety buffer
 
 		// Position it near the mouse pointer (20px to the right)
 		let x = e.clientX + 20;
-		let y = rect.top - previewHeight - 14;
+		// If not enough space on right, flip to left
+		if (x + previewWidth > window.innerWidth - 16) {
+			x = e.clientX - previewWidth - 20;
+		}
+
+		// Move it a bit lower
+		let y = e.clientY - previewHeight / 2 + 90;
 
 		if (y < headerHeight) {
-			y = rect.bottom + 14;
+			y = headerHeight + 10;
+		} else if (y + previewHeight > window.innerHeight - 20) {
+			y = window.innerHeight - previewHeight - 20;
 		}
 
 		x = Math.max(16, Math.min(x, window.innerWidth - previewWidth - 16));
@@ -124,8 +132,8 @@
 				}
 
 				// GSAP Song Cover Ink Bleed Reveal (Clean borderless image card)
-				if (previewEl && targetNode) {
-					const pos = calculateElementPosition(targetNode, e);
+				if (previewEl) {
+					const pos = calculateElementPosition(e);
 					gsap.killTweensOf(previewEl);
 
 					gsap.set(previewEl, {
@@ -154,6 +162,21 @@
 						},
 					);
 				}
+			});
+		}
+	}
+
+	function handleRowMouseMove(e: MouseEvent) {
+		if (browser && previewEl && currentTrack) {
+			import("gsap").then(({ gsap }) => {
+				const pos = calculateElementPosition(e);
+				gsap.to(previewEl, {
+					x: pos.x,
+					y: pos.y,
+					duration: 0.6,
+					ease: "power3.out",
+					overwrite: "auto",
+				});
 			});
 		}
 	}
@@ -198,8 +221,12 @@
 				<tr
 					class="border-b border-[#1f1f1f] text-xs uppercase tracking-wider text-[#666666]"
 				>
-					<th class="py-3.5 px-3 font-semibold w-[45%] sm:w-[35%]">Song</th>
-					<th class="py-3.5 px-3 font-semibold w-[30%] sm:w-[25%]">Artist</th>
+					<th class="py-3.5 px-3 font-semibold w-[45%] sm:w-[35%]"
+						>Song</th
+					>
+					<th class="py-3.5 px-3 font-semibold w-[30%] sm:w-[25%]"
+						>Artist</th
+					>
 					<th
 						class="py-3.5 px-3 font-semibold text-right hidden sm:table-cell sm:w-[25%]"
 						>Album</th
@@ -214,19 +241,17 @@
 				{#each loadedTracks as track}
 					<!-- svelte-ignore a11y_click_events_have_key_events -->
 					<tr
-						class="group hover:bg-[#141414] transition-colors cursor-pointer"
+						class="group/row hover:bg-[#141414] transition-all duration-300 cursor-pointer"
 						id="track-{track.id}"
 						onmouseenter={(e) =>
-							handleRowMouseEnter(
-								track,
-								e.currentTarget as HTMLElement,
-								e,
-							)}
+							handleRowMouseEnter(track, e.currentTarget, e)}
+						onmousemove={handleRowMouseMove}
 						onclick={() =>
 							window.open(getTrackUrl(track), "_blank")}
-						data-tooltip={track.title}
 					>
-						<td class="py-3.5 px-3 font-medium text-[#ededed] overflow-hidden whitespace-nowrap">
+						<td
+							class="py-3.5 px-3 font-medium text-[#ededed] overflow-hidden whitespace-nowrap"
+						>
 							<div class="flex items-center gap-3">
 								<div
 									class="w-9 h-9 rounded-md bg-[#181818] border border-[#222222] overflow-hidden shrink-0 flex items-center justify-center"
@@ -262,13 +287,11 @@
 						</td>
 						<td
 							class="py-3.5 px-3 text-[#a1a1a1] font-normal no-underline truncate"
-							data-tooltip={track.artist}
 						>
 							{track.artist}
 						</td>
 						<td
 							class="py-3.5 px-3 text-[#888888] font-normal no-underline text-right hidden sm:table-cell truncate"
-							data-tooltip={track.album}
 						>
 							{track.album || "-"}
 						</td>

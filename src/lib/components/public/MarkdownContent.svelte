@@ -69,6 +69,51 @@
 			});
 		});
 
+		// Setup Image Lazy Loading & Skeletons
+		root.querySelectorAll('img').forEach((img) => {
+			if (img.dataset.skeletonProcessed) return;
+			img.dataset.skeletonProcessed = 'true';
+
+			// Ensure proper lazy loading
+			img.setAttribute('loading', 'lazy');
+			img.setAttribute('decoding', 'async');
+
+			// Create a wrapper for the relative positioning
+			const wrapper = document.createElement('div');
+			wrapper.className = 'relative w-full rounded-xl overflow-hidden bg-[#141414] my-6 border border-[#1f1f1f]';
+
+			// Insert wrapper before img, then move img into wrapper
+			img.parentNode?.insertBefore(wrapper, img);
+			wrapper.appendChild(img);
+
+			// Create the skeleton pulse element
+			const skeleton = document.createElement('div');
+			skeleton.className = 'absolute inset-0 bg-[#1f1f1f] animate-pulse z-0';
+			wrapper.appendChild(skeleton);
+
+			// Ensure image is above skeleton and starts transparent
+			img.style.position = 'relative';
+			img.style.zIndex = '10';
+			img.style.opacity = '0';
+			img.style.transition = 'opacity 0.7s ease';
+			img.style.width = '100%';
+			img.style.height = 'auto';
+			img.style.display = 'block';
+
+			// Handle load event
+			const handleLoad = () => {
+				img.style.opacity = '1';
+				// Remove skeleton after transition
+				setTimeout(() => skeleton.remove(), 700);
+			};
+
+			if (img.complete) {
+				handleLoad();
+			} else {
+				img.addEventListener('load', handleLoad);
+			}
+		});
+
 		return () => mounted.forEach((m) => m && unmount(m));
 	});
 </script>

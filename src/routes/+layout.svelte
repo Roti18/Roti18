@@ -95,6 +95,7 @@
 				if (target.hasAttribute("title")) {
 					originalTitle = titleAttr;
 					target.setAttribute("data-tooltip", originalTitle);
+					target.setAttribute("data-had-title", "true");
 					target.removeAttribute("title");
 				} else {
 					originalTitle = target.getAttribute("data-tooltip") || "";
@@ -135,8 +136,9 @@
 				const related = e.relatedTarget as HTMLElement;
 				if (related && activeTarget.contains(related)) return;
 
-				if (activeTarget.hasAttribute("data-tooltip")) {
+				if (activeTarget.hasAttribute("data-had-title")) {
 					activeTarget.setAttribute("title", originalTitle);
+					activeTarget.removeAttribute("data-had-title");
 				}
 
 				if (customTooltipEl) {

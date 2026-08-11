@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, tick } from "svelte";
+	import { onMount, tick, untrack } from "svelte";
 	import { browser } from "$app/environment";
 	import { pushState } from "$app/navigation";
 	import { page } from "$app/state";
@@ -23,9 +23,9 @@
 		(page.state as any)?.photo as (typeof data.photos)[0] | undefined,
 	);
 
-	let loadedPhotos = $state(data.photos || []);
+	let loadedPhotos = $state(untrack(() => data.photos || []));
 	let loadingMore = $state(false);
-	let hasMore = $state((data.photos || []).length === 20);
+	let hasMore = $state(untrack(() => (data.photos || []).length === 20));
 	let loadMoreEl = $state<HTMLElement>();
 
 	$effect(() => {
