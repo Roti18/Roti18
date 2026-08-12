@@ -2,8 +2,10 @@ import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
 import { writing, project, galleryPhoto, academicSemester, academicCourse, academicMaterial } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
+import { env } from '$env/dynamic/public';
+
 export const GET: RequestHandler = async ({ url: requestUrl }) => {
-	const origin = requestUrl.origin;
+	const origin = env.PUBLIC_BASE_URL || requestUrl.origin;
 
 	function buildUrl(loc: string, lastmod?: Date): string {
 		return `<url><loc>${origin}${loc}</loc>${lastmod ? `<lastmod>${lastmod.toISOString().slice(0, 10)}</lastmod>` : ''}</url>`;
