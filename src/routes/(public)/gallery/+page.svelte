@@ -5,7 +5,7 @@
 	import { page } from "$app/state";
 	import { canUseBlur } from "$lib/utils/perf";
 	import { formatDate } from "$lib/utils/format";
-	import { Camera, Calendar } from "lucide-svelte";
+	import { Camera, Calendar, MapPin } from "lucide-svelte";
 
 	import SEO from "$lib/components/public/SEO.svelte";
 
@@ -343,26 +343,50 @@
 				</div>
 
 				<div
-					class="flex flex-col items-start md:items-end shrink-0 pt-2 md:pt-1"
+					class="flex flex-col items-start md:items-end shrink-0 pt-2 md:pt-1 gap-0"
 				>
 					{#if selectedPhoto.cameraDesc}
 						<div
-							class="flex items-center gap-1.5 md:gap-2 font-mono text-[9px] md:text-xs text-[#ededed] px-2.5 md:px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-none rounded-br-xl md:rounded-none md:rounded-bl-xl"
+							class="flex items-center gap-1.5 md:gap-2 font-mono text-[9px] md:text-xs text-[#ededed] px-2.5 md:px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-none rounded-tr-xl md:rounded-tl-xl {(!selectedPhoto.locationName && !selectedPhoto.createdAt) ? 'rounded-br-xl md:rounded-bl-xl' : ''}"
 						>
 							<Camera class="w-3.5 h-3.5 text-[#a1a1a1]" />
 							<span>{selectedPhoto.cameraDesc}</span>
 						</div>
 					{/if}
-					{#if selectedPhoto.createdAt}
+					{#if selectedPhoto.locationName || selectedPhoto.createdAt}
 						<div
-							class="flex items-center gap-1.5 md:gap-2 font-mono text-[8px] md:text-[10px] text-[#888888] uppercase tracking-wider px-2.5 md:px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-none rounded-br-xl md:rounded-none md:rounded-bl-xl mt-[2px]"
+							class="flex items-center flex-wrap gap-2 md:gap-3 px-2.5 md:px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-none rounded-br-xl md:rounded-bl-xl"
 						>
-							<Calendar class="w-3.5 h-3.5 text-[#555555]" />
-							<span
-								>{formatDate(
-									new Date(selectedPhoto.createdAt),
-								)}</span
-							>
+							{#if selectedPhoto.locationName}
+								<div
+									class="flex items-center gap-1.5 md:gap-2 font-mono text-[9px] md:text-xs text-[#ededed]"
+								>
+									<MapPin
+										class="w-3.5 h-3.5 text-[#a1a1a1]"
+									/>
+									<span>{selectedPhoto.locationName}</span>
+								</div>
+							{/if}
+
+							{#if selectedPhoto.locationName && selectedPhoto.createdAt}
+								<span class="text-[#444444] text-[10px]">|</span
+								>
+							{/if}
+
+							{#if selectedPhoto.createdAt}
+								<div
+									class="flex items-center gap-1.5 md:gap-2 font-mono text-[8px] md:text-[10px] text-[#888888] uppercase tracking-wider"
+								>
+									<Calendar
+										class="w-3.5 h-3.5 text-[#555555]"
+									/>
+									<span
+										>{formatDate(
+											new Date(selectedPhoto.createdAt),
+										)}</span
+									>
+								</div>
+							{/if}
 						</div>
 					{/if}
 				</div>
