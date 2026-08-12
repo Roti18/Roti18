@@ -25,6 +25,7 @@ export const actions: Actions = {
 		const originalUrl = formData.get('originalUrl')?.toString().trim() || null;
 		const shortDesc = formData.get('shortDesc')?.toString().trim() || null;
 		const cameraDesc = formData.get('cameraDesc')?.toString().trim() || null;
+		const locationName = formData.get('locationName')?.toString().trim() || null;
 		const createdAtStr = formData.get('createdAt')?.toString().trim();
 
 		let createdAt = new Date();
@@ -47,6 +48,7 @@ export const actions: Actions = {
 			originalUrl,
 			shortDesc,
 			cameraDesc,
+			locationName,
 			createdAt
 		});
 
@@ -62,6 +64,7 @@ export const actions: Actions = {
 		const originalUrl = formData.get('originalUrl')?.toString().trim() || null;
 		const shortDesc = formData.get('shortDesc')?.toString().trim() || null;
 		const cameraDesc = formData.get('cameraDesc')?.toString().trim() || null;
+		const locationName = formData.get('locationName')?.toString().trim() || null;
 		const createdAtStr = formData.get('createdAt')?.toString().trim();
 
 		let createdAt: Date | undefined = undefined;
@@ -98,6 +101,7 @@ export const actions: Actions = {
 				originalUrl,
 				shortDesc,
 				cameraDesc,
+				locationName,
 				createdAt: createdAt || undefined
 			})
 			.where(eq(galleryPhoto.id, id));
