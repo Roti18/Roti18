@@ -147,6 +147,7 @@ export const galleryPhoto = sqliteTable(
 		originalUrl: text('original_url'),
 		shortDesc: text('short_desc'),
 		cameraDesc: text('camera_desc'),
+		locationName: text('location_name'),
 		width: integer('width'),
 		height: integer('height'),
 		sortOrder: integer('sort_order').notNull().default(0),
