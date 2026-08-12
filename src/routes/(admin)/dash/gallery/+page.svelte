@@ -15,6 +15,7 @@
 	let imageUrl = $state("");
 	let originalUrl = $state("");
 	let cameraDesc = $state("");
+	let locationName = $state("");
 	let takenAt = $state("");
 
 	const filteredItems = $derived(
@@ -32,6 +33,7 @@
 		imageUrl = "";
 		originalUrl = "";
 		cameraDesc = "";
+		locationName = "";
 		takenAt = "";
 		showModal = true;
 	}
@@ -41,6 +43,7 @@
 		imageUrl = item.imageUrl || "";
 		originalUrl = item.originalUrl || "";
 		cameraDesc = item.cameraDesc || "";
+		locationName = item.locationName || "";
 		if (item.createdAt) {
 			const d = new Date(item.createdAt);
 			takenAt = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
@@ -181,8 +184,9 @@
 	<input type="hidden" name="originalUrl" value={originalUrl} />
 
 	<!-- Dedicated Gallery Photo Uploader (WebP R2) -->
-	<HeroCoverUploader bind:coverUrl={imageUrl} bind:originalUrl={originalUrl} folder="gallery" onExifExtract={(desc, dateStr) => {
+	<HeroCoverUploader bind:coverUrl={imageUrl} bind:originalUrl={originalUrl} folder="gallery" onExifExtract={(desc, dateStr, loc) => {
 		if (desc && !cameraDesc) cameraDesc = desc;
+		if (loc && !locationName) locationName = loc;
 		if (dateStr && !takenAt) {
 			const d = new Date(dateStr);
 			takenAt = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
@@ -212,6 +216,14 @@
 		label="Camera / Lens EXIF Info (Optional)"
 		bind:value={cameraDesc}
 		placeholder="e.g. Sony A7IV 35mm f/1.4"
+	/>
+
+	<FormInput
+		id="photo-location"
+		name="locationName"
+		label="Location / GPS Data (Optional)"
+		bind:value={locationName}
+		placeholder="e.g. Pantai Kuta, Bali"
 	/>
 
 	<FormInput
