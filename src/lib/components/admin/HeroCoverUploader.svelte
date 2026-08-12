@@ -2,7 +2,7 @@
 	import { Upload, ImageIcon, Trash2, RefreshCw, Sparkles, FileImage, Check } from "lucide-svelte";
 	import AssetManager from "./AssetManager.svelte";
 
-	let { coverUrl = $bindable(""), originalUrl = $bindable(""), content = "", articleSlug = "new-article", folder = "", onExifExtract = undefined as ((desc: string, dateStr?: string) => void) | undefined } = $props();
+	let { coverUrl = $bindable(""), originalUrl = $bindable(""), content = "", articleSlug = "new-article", folder = "", onExifExtract = undefined as ((desc: string, dateStr?: string, locationName?: string) => void) | undefined } = $props();
 
 	let uploading = $state(false);
 	let uploadError = $state<string | null>(null);
@@ -17,7 +17,11 @@
 		if (onExifExtract && typeof onExifExtract === 'function') {
 			try {
 				const exifr = (await import('exifr')).default;
-				const exif = await exifr.parse(files[0], { tiff: true, exif: true });
+				
+				// Run both full parse and specific GPS parse just to be safe
+				const exif = await exifr.parse(files[0], { tiff: true, exif: true, gps: true });
+				const gpsData = await exifr.gps(files[0]).catch(() => null);
+
 				if (exif) {
 					let desc = '';
 					if (exif.Make || exif.Model) {
@@ -31,11 +35,46 @@
 					if (specs.length > 0) {
 						desc += (desc ? ', ' : '') + specs.join(', ');
 					}
-					if (desc || exif.DateTimeOriginal) {
-						onExifExtract(desc, exif.DateTimeOriginal ? exif.DateTimeOriginal.toISOString() : undefined);
+
+					let locationName = '';
+					const lat = gpsData?.latitude ?? exif.latitude;
+					const lon = gpsData?.longitude ?? exif.longitude;
+
+					if (lat != null && lon != null) {
+						// Fallback: raw coordinates if API fails
+						locationName = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+						try {
+							const nomRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1&accept-language=id,en`);
+							if (nomRes.ok) {
+								const nomData = await nomRes.json();
+								if (nomData && nomData.address) {
+									const addr = nomData.address;
+									const specificPoint = addr.natural || addr.tourism || addr.leisure || addr.amenity || addr.historic || addr.road || addr.village || addr.suburb;
+									const cityOrRegion = addr.city || addr.town || addr.municipality || addr.state;
+									
+									if (specificPoint && cityOrRegion && specificPoint !== cityOrRegion) {
+										locationName = `${specificPoint}, ${cityOrRegion}`;
+									} else if (specificPoint) {
+										locationName = specificPoint;
+									} else if (cityOrRegion) {
+										locationName = cityOrRegion;
+									}
+								}
+							} else {
+								console.warn('[EXIF] Nominatim returned non-OK status:', nomRes.status);
+							}
+						} catch (e: any) {
+							console.warn('[EXIF] Failed to fetch reverse geocoding:', e);
+						}
+					} else {
+						console.log('[EXIF] No GPS data found in this image.', exif);
+					}
+
+					if (desc || exif.DateTimeOriginal || locationName) {
+						onExifExtract(desc, exif.DateTimeOriginal ? exif.DateTimeOriginal.toISOString() : undefined, locationName || undefined);
 					}
 				}
-			} catch (e) {
+			} catch (e: any) {
 				console.warn('[EXIF] Failed to parse metadata:', e);
 			}
 		}
