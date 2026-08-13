@@ -260,22 +260,23 @@
 		bind:this={gridEl}
 		id="gallery-grid"
 	>
-		{#each loadedPhotos as photo}
+		{#each loadedPhotos as photo (photo.id)}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
-				class="gallery-item group relative aspect-4/3 overflow-hidden rounded-2xl bg-[#141414] cursor-pointer text-left border border-[#1f1f1f] shadow-lg flex items-center justify-center"
+				class="gallery-item group relative aspect-4/3 overflow-hidden rounded-2xl bg-[#141414] cursor-pointer text-left border border-[#1f1f1f] shadow-lg flex items-center justify-center transform-gpu"
 				onclick={() => openPhoto(photo)}
 				id="gallery-{photo.slug}"
 			>
 				<img
 					src={photo.imageUrl}
 					alt={photo.title}
-					loading="lazy"
+					decoding="async"
 					{...photo.width && photo.height
 						? { width: photo.width, height: photo.height }
 						: {}}
-					class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+					onload={(e) => e.currentTarget.classList.remove('opacity-0')}
+					class="w-full h-full object-cover opacity-0 gallery-img-anim"
 				/>
 				<div
 					class="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
@@ -305,7 +306,7 @@
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
-		class="fixed inset-0 z-50 bg-black/98 backdrop-blur-2xl flex items-center justify-center p-6 cursor-pointer"
+		class="fixed inset-0 z-50 bg-black/98 md:bg-black/80 md:backdrop-blur-2xl flex items-center justify-center p-6 cursor-pointer"
 		bind:this={modalEl}
 		onclick={closeModal}
 		onmousemove={handleMouseMove}
@@ -318,6 +319,7 @@
 			<img
 				src={selectedPhoto.originalUrl || selectedPhoto.imageUrl}
 				alt={selectedPhoto.title}
+				decoding="async"
 				class="max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-[#2a2a2a]"
 				bind:clientWidth={imgWidth}
 				bind:clientHeight={imgHeight}
@@ -398,6 +400,11 @@
 {/if}
 
 <style>
+	.gallery-img-anim {
+		transition: opacity 700ms ease-out;
+		will-change: opacity;
+	}
+
 	/* Flashlight Spotlight Effect - Disabled on Mobile/Tablet devices and small viewports */
 	@media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
 		.spotlight-mask {

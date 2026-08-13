@@ -43,7 +43,8 @@ export class R2StorageProvider implements StorageProvider {
 				Bucket: this.bucket,
 				Key: key,
 				Body: fileBuffer,
-				ContentType: mimeType
+				ContentType: mimeType,
+				CacheControl: 'public, max-age=31536000, immutable'
 			})
 		);
 

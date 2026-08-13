@@ -4,7 +4,11 @@ import { galleryPhoto } from '$lib/server/db/schema';
 import { desc } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, setHeaders }) => {
+	setHeaders({
+		'cache-control': 'public, max-age=60, s-maxage=60'
+	});
+
 	try {
 		const offset = Number(url.searchParams.get('offset')) || 0;
 		const limit = Number(url.searchParams.get('limit')) || 20;
