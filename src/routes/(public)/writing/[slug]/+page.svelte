@@ -69,18 +69,17 @@
 />
 
 <svelte:head>
-	<script type="application/ld+json">
-		{JSON.stringify({
-			"@context": "https://schema.org",
-			"@type": "Article",
-			"headline": data.post.title,
-			"description": data.post.excerpt || data.post.title,
-			"datePublished": data.post.createdAt,
-			"dateModified": data.post.updatedAt,
-			"author": { "@type": "Person", "name": "M. Roni" },
-			"mainEntityOfPage": `${origin}/writing/${data.post.slug}`
-		})}
-	</script>
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		"@context": "https://schema.org",
+		"@type": "Article",
+		"headline": data.post.title,
+		"description": data.post.excerpt || data.post.title,
+		"datePublished": data.post.createdAt,
+		"dateModified": data.post.updatedAt,
+		"author": { "@type": "Person", "name": "M. Roni" },
+		"mainEntityOfPage": `${origin}/writing/${data.post.slug}`
+	}).replace(/</g, '\\x3C')}</` + `script>`}
 </svelte:head>
 
 <!-- Lightbox PhotoSwipe Integration -->
