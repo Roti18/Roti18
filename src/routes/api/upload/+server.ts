@@ -63,7 +63,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				const webpFilename = isAvatar ? `avatar.webp` : `${baseName}${uuid}.webp`;
 
 				try {
-					const image = sharp(buffer);
+					// .rotate() without arguments automatically applies EXIF orientation and removes the tag
+					const image = sharp(buffer).rotate();
 					const metadata = await image.metadata();
 					width = metadata.width || 0;
 					height = metadata.height || 0;

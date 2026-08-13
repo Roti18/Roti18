@@ -17,6 +17,8 @@
 	let metaContainer = $state<HTMLElement>();
 	let selectedPhoto: (typeof data.photos)[0] | null = $state(null);
 	let imgWidth = $state(0);
+	let imgHeight = $state(0);
+	let isPortrait = $derived(imgWidth > 0 && imgHeight > 0 ? imgHeight >= imgWidth : false);
 	let isClosing = false;
 
 	const statePhoto = $derived(
@@ -309,7 +311,7 @@
 		onmousemove={handleMouseMove}
 	>
 		<div
-			class="relative max-w-4xl max-h-[90vh] w-full flex flex-col items-center justify-center cursor-default mx-auto"
+			class="relative max-w-6xl max-h-[90vh] w-full flex {isPortrait ? 'flex-col md:flex-row md:items-center' : 'flex-col items-center'} justify-center gap-6 md:gap-10 cursor-default mx-auto"
 			onclick={(e) => e.stopPropagation()}
 			bind:this={modalImageEl}
 		>
@@ -318,14 +320,14 @@
 				alt={selectedPhoto.title}
 				class="max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-[#2a2a2a]"
 				bind:clientWidth={imgWidth}
+				bind:clientHeight={imgHeight}
 			/>
 
 			<div
-				class="mt-5 text-left flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-4 spotlight-mask mx-auto"
+				class="text-left flex flex-col {isPortrait ? 'justify-center w-full md:w-[360px] lg:w-[420px] shrink-0' : 'md:flex-row md:items-start'} justify-between gap-6 spotlight-mask {isPortrait ? 'mx-0' : 'mx-auto'}"
 				bind:this={metaContainer}
-				style="width: {imgWidth
-					? `${imgWidth}px`
-					: '100%'}; min-width: min(100%, 280px);"
+				style:width={isPortrait ? null : (imgWidth ? imgWidth + 'px' : '100%')}
+				style:min-width={isPortrait ? null : 'min(100%, 560px)'}
 			>
 				<div class="space-y-1.5 flex-1">
 					<h2
@@ -343,11 +345,11 @@
 				</div>
 
 				<div
-					class="flex flex-col items-start md:items-end shrink-0 pt-2 md:pt-1 gap-0"
+					class="flex flex-row flex-wrap items-start {isPortrait ? '' : 'md:flex-col md:items-end md:pt-1 md:gap-0'} shrink-0 pt-2 gap-2"
 				>
 					{#if selectedPhoto.cameraDesc}
 						<div
-							class="flex items-center gap-1.5 md:gap-2 font-mono text-[9px] md:text-xs text-[#ededed] px-2.5 md:px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-none rounded-tr-xl md:rounded-tl-xl {(!selectedPhoto.locationName && !selectedPhoto.createdAt) ? 'rounded-br-xl md:rounded-bl-xl' : ''}"
+							class="flex items-center gap-1.5 md:gap-2 font-mono text-[10px] md:text-xs text-[#ededed] px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-xl {isPortrait ? '' : 'md:rounded-none md:rounded-tl-xl'} {(!selectedPhoto.locationName && !selectedPhoto.createdAt && !isPortrait) ? 'md:rounded-bl-xl' : ''}"
 						>
 							<Camera class="w-3.5 h-3.5 text-[#a1a1a1]" />
 							<span>{selectedPhoto.cameraDesc}</span>
@@ -355,7 +357,7 @@
 					{/if}
 					{#if selectedPhoto.locationName || selectedPhoto.createdAt}
 						<div
-							class="flex items-center flex-wrap gap-2 md:gap-3 px-2.5 md:px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-none rounded-br-xl md:rounded-bl-xl"
+							class="flex items-center flex-wrap gap-2 md:gap-3 px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-xl {isPortrait ? '' : 'md:rounded-none md:rounded-bl-xl'}"
 						>
 							{#if selectedPhoto.locationName}
 								<div
