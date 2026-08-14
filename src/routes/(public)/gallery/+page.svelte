@@ -326,7 +326,7 @@
 			/>
 
 			<div
-				class="text-left flex flex-col {isPortrait ? 'justify-center w-full md:w-[360px] lg:w-[420px] shrink-0' : 'md:flex-row md:items-start'} justify-between gap-6 spotlight-mask {isPortrait ? 'mx-0' : 'mx-auto'}"
+				class="text-left flex flex-col {isPortrait ? 'justify-center w-full md:w-360px lg:w-420px shrink-0' : 'md:flex-row md:items-start'} justify-between gap-6 spotlight-mask {isPortrait ? 'mx-0' : 'mx-auto'}"
 				bind:this={metaContainer}
 				style:width={isPortrait ? null : (imgWidth ? imgWidth + 'px' : '100%')}
 				style:min-width={isPortrait ? null : 'min(100%, 560px)'}
