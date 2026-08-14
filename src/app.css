@@ -133,6 +133,12 @@
 		color: inherit !important;
 	}
 
+	/* ── Force Remove Padding & Margin from ALL Images ── */
+	img, .prose img, .prose figure img {
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+
 	@keyframes mdIconSwap {
 		from {
 			transform: scale(0.6);
