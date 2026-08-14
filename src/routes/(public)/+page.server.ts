@@ -6,28 +6,27 @@ import { getDynamicSiteConfig } from '$lib/server/db/siteConfig';
 
 export const load: PageServerLoad = async () => {
 	try {
-		const dynamicSite = await getDynamicSiteConfig();
-
-		const recentWritings = await db.query.writing.findMany({
-			where: eq(writing.published, true),
-			orderBy: [desc(writing.createdAt)],
-			limit: 5
-		});
-
-		const featuredProjects = await db.query.project.findMany({
-			where: eq(project.featuredOnHome, true),
-			orderBy: [asc(project.sortOrder), desc(project.createdAt)]
-		});
-
-		const recentMusic = await db.query.music.findMany({
-			orderBy: [desc(music.playedAt)],
-			limit: 4
-		});
+		const [dynamicSite, recentWritings, projects, recentMusic] = await Promise.all([
+			getDynamicSiteConfig(),
+			db.query.writing.findMany({
+				where: eq(writing.published, true),
+				orderBy: [desc(writing.createdAt)],
+				limit: 5
+			}),
+			db.query.project.findMany({
+				where: eq(project.featuredOnHome, true),
+				orderBy: [asc(project.sortOrder), desc(project.createdAt)]
+			}),
+			db.query.music.findMany({
+				orderBy: [desc(music.playedAt)],
+				limit: 4
+			})
+		]);
 
 		return {
 			site: dynamicSite,
 			recentWritings,
-			projects: featuredProjects,
+			projects,
 			recentMusic
 		};
 	} catch (err) {
