@@ -22,7 +22,8 @@
 					class="w-16 h-16 rounded-full object-cover bg-[#181818]"
 					width="64"
 					height="64"
-					loading="lazy"
+					loading="eager"
+					fetchpriority="high"
 					decoding="async"
 				/>
 			</div>
