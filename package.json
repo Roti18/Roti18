@@ -36,6 +36,8 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.1101.0",
+		"@fontsource/inter": "^5.3.0",
+		"@fontsource/space-grotesk": "^5.3.0",
 		"@lucide/svelte": "^1.28.0",
 		"better-auth": "^1.6.25",
 		"exifr": "^7.1.3",
