@@ -88,6 +88,11 @@
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-12">
 	<article class="blur-fade-in space-y-8">
 		<header class="space-y-4 mb-10 pb-6 border-b border-[#1f1f1f]">
+		<p>{data.post.createdAt.toLocaleDateString('en-US', {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric'
+		})}</p>
 			<h1 class="text-3xl font-semibold text-[#ededed] leading-tight tracking-tight">
 				{data.post.title}
 			</h1>
