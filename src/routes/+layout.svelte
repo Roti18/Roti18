@@ -11,7 +11,14 @@
 		ChevronDown,
 		ShieldCheck,
 	} from "lucide-svelte";
-	import { gsap } from "gsap";
+	import "@fontsource/inter/400.css";
+	import "@fontsource/inter/500.css";
+	import "@fontsource/inter/600.css";
+	import "@fontsource/inter/700.css";
+	import "@fontsource/space-grotesk/400.css";
+	import "@fontsource/space-grotesk/500.css";
+	import "@fontsource/space-grotesk/600.css";
+	import "@fontsource/space-grotesk/700.css";
 	import { canUseBlur } from "$lib/utils/perf";
 	import { base } from "$app/paths";
 
@@ -30,6 +37,7 @@
 	let toggleBtnEl = $state<HTMLElement>();
 	let headerHoverTimer: ReturnType<typeof setTimeout> | null = null;
 	let isAnimatingNav = false;
+	let gsap: any;
 
 	const navLinks = [
 		{ href: "/about", label: "About" },
@@ -57,6 +65,9 @@
 
 	onMount(() => {
 		if (browser) {
+			import("gsap").then((m) => {
+				gsap = m.gsap;
+			});
 			import("lenis").then(({ default: Lenis }) => {
 				const lenis = new Lenis({
 					duration: 1.1,
@@ -80,7 +91,7 @@
 			let originalTitle = "";
 
 			const handleMouseOver = (e: MouseEvent) => {
-				if (window.innerWidth < 1024) return;
+				if (window.innerWidth < 1024 || !gsap) return;
 				const target = (e.target as HTMLElement)?.closest(
 					"[title], [data-tooltip]",
 				) as HTMLElement;
@@ -121,6 +132,7 @@
 			};
 
 			const handleMouseMove = (e: MouseEvent) => {
+				if (!gsap) return;
 				if (activeTarget && customTooltipEl) {
 					gsap.to(customTooltipEl, {
 						x: e.clientX + 10,
@@ -132,7 +144,7 @@
 			};
 
 			const handleMouseOut = (e: MouseEvent) => {
-				if (!activeTarget) return;
+				if (!activeTarget || !gsap) return;
 				const related = e.relatedTarget as HTMLElement;
 				if (related && activeTarget.contains(related)) return;
 
@@ -175,7 +187,7 @@
 	}
 
 	function toggleDesktopNav() {
-		if (!browser || isAnimatingNav) return;
+		if (!browser || isAnimatingNav || !gsap) return;
 		isAnimatingNav = true;
 
 		if (headerHoverTimer) clearTimeout(headerHoverTimer);
@@ -327,8 +339,7 @@
 	}
 
 	function handleHeaderLinkHover(targetNode: HTMLElement) {
-		if (!browser || !headerPillEl || !desktopNavOpen || isAnimatingNav)
-			return;
+		if (!browser || !headerPillEl || !desktopNavOpen || isAnimatingNav || !gsap) return;
 		if (headerHoverTimer) clearTimeout(headerHoverTimer);
 
 		const pill = headerPillEl;
@@ -348,7 +359,7 @@
 
 	function handleHeaderMouseLeave() {
 		if (headerHoverTimer) clearTimeout(headerHoverTimer);
-		if (!browser || !headerPillEl) return;
+		if (!browser || !headerPillEl || !gsap) return;
 		const pill = headerPillEl;
 		gsap.killTweensOf(pill);
 		gsap.to(pill, { opacity: 0, duration: 0.2, ease: "power2.out" });
