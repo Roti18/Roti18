@@ -15,14 +15,20 @@
 	let modalEl = $state<HTMLElement>();
 	let modalImageEl = $state<HTMLElement>();
 	let metaContainer = $state<HTMLElement>();
-	let selectedPhoto: (typeof data.photos)[0] | null = $state(null);
+	let selectedPhoto: (typeof data.photos)[number] | null = $state(null);
 	let imgWidth = $state(0);
 	let imgHeight = $state(0);
-	let isPortrait = $derived(imgWidth > 0 && imgHeight > 0 ? imgHeight >= imgWidth : false);
+	let isPortrait = $derived(
+		(selectedPhoto as any)?.width && (selectedPhoto as any)?.height
+			? (selectedPhoto as any).height >= (selectedPhoto as any).width
+			: imgWidth > 0 && imgHeight > 0
+				? imgHeight >= imgWidth
+				: false,
+	);
 	let isClosing = false;
 
 	const statePhoto = $derived(
-		(page.state as any)?.photo as (typeof data.photos)[0] | undefined,
+		(page.state as any)?.photo as (typeof data.photos)[number] | undefined,
 	);
 
 	let loadedPhotos = $state(untrack(() => data.photos || []));
@@ -154,7 +160,7 @@
 		}, 100);
 	});
 
-	function openPhoto(photo: (typeof data.photos)[0]) {
+	function openPhoto(photo: (typeof data.photos)[number]) {
 		const plainPhoto = $state.snapshot(photo);
 		pushState(`/gallery/${photo.slug}`, { photo: plainPhoto });
 	}
@@ -167,18 +173,20 @@
 		const { gsap } = await import("gsap");
 		gsap.killTweensOf([modalEl, modalImageEl]);
 
+		const isMobile = !canUseBlur();
+
 		gsap.fromTo(
 			modalEl,
 			{ opacity: 0 },
-			{ opacity: 1, duration: 0.35, ease: "power2.out" },
+			{ opacity: 1, duration: isMobile ? 0.25 : 0.35, ease: "power2.out" },
 		);
 
 		gsap.fromTo(
 			modalImageEl,
 			{
-				scale: 0.7,
+				scale: isMobile ? 0.95 : 0.7,
 				opacity: 0,
-				y: 40,
+				y: isMobile ? 15 : 40,
 				...(canUseBlur() ? { filter: "blur(16px)" } : {}),
 			},
 			{
@@ -186,7 +194,7 @@
 				opacity: 1,
 				y: 0,
 				...(canUseBlur() ? { filter: "blur(0px)" } : {}),
-				duration: 0.55,
+				duration: isMobile ? 0.35 : 0.55,
 				ease: "power3.out",
 				clearProps: canUseBlur() ? "filter" : "",
 			},
@@ -197,16 +205,17 @@
 		if (!browser || !modalEl || isClosing) return;
 		isClosing = true;
 		const { gsap } = await import("gsap");
+		const isMobile = !canUseBlur();
 
-		gsap.to(modalEl, { opacity: 0, duration: 0.3, ease: "power2.inOut" });
+		gsap.to(modalEl, { opacity: 0, duration: isMobile ? 0.2 : 0.3, ease: "power2.inOut" });
 
 		if (modalImageEl) {
 			gsap.to(modalImageEl, {
-				scale: 0.8,
+				scale: isMobile ? 0.96 : 0.8,
 				opacity: 0,
-				y: 25,
+				y: isMobile ? 10 : 25,
 				...(canUseBlur() ? { filter: "blur(10px)" } : {}),
-				duration: 0.3,
+				duration: isMobile ? 0.2 : 0.3,
 				ease: "power2.inOut",
 				onComplete: () => {
 					isClosing = false;
@@ -306,13 +315,13 @@
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
-		class="fixed inset-0 z-50 bg-black/98 md:bg-black/80 md:backdrop-blur-2xl flex items-center justify-center p-6 cursor-pointer"
+		class="fixed inset-0 z-50 bg-black/98 md:bg-black/80 md:backdrop-blur-2xl flex items-center justify-center p-6 cursor-pointer transform-gpu"
 		bind:this={modalEl}
 		onclick={closeModal}
 		onmousemove={handleMouseMove}
 	>
 		<div
-			class="relative max-w-6xl max-h-[90vh] w-full flex {isPortrait ? 'flex-col md:flex-row md:items-center' : 'flex-col items-center'} justify-center gap-6 md:gap-10 cursor-default mx-auto"
+			class="relative max-w-6xl max-h-[90vh] w-full flex {isPortrait ? 'flex-col md:flex-row md:items-center' : 'flex-col items-center'} justify-center gap-6 md:gap-10 cursor-default mx-auto transform-gpu"
 			onclick={(e) => e.stopPropagation()}
 			bind:this={modalImageEl}
 		>
