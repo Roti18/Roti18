@@ -53,23 +53,25 @@
 
 	onMount(async () => {
 		if (browser && gridEl) {
-			const { gsap } = await import("gsap");
-			const items = gridEl.querySelectorAll(".gallery-item");
-			gsap.fromTo(
-				items,
-				{
-					opacity: 0,
-					...(canUseBlur() ? { filter: "blur(12px)" } : {}),
-				},
-				{
-					opacity: 1,
-					...(canUseBlur() ? { filter: "blur(0px)" } : {}),
-					duration: 0.7,
-					ease: "power2.out",
-					stagger: { amount: 0.35 },
-					clearProps: canUseBlur() ? "filter" : "",
-				},
-			);
+			if (window.innerWidth >= 1024) {
+				const { gsap } = await import("gsap");
+				const items = gridEl.querySelectorAll(".gallery-item");
+				gsap.fromTo(
+					items,
+					{
+						opacity: 0,
+						...(canUseBlur() ? { filter: "blur(12px)" } : {}),
+					},
+					{
+						opacity: 1,
+						...(canUseBlur() ? { filter: "blur(0px)" } : {}),
+						duration: 0.7,
+						ease: "power2.out",
+						stagger: { amount: 0.35 },
+						clearProps: canUseBlur() ? "filter" : "",
+					},
+				);
+			}
 		}
 
 		if (!browser) return;
@@ -105,36 +107,38 @@
 													previousLength,
 												);
 											if (newItems.length > 0) {
-												const { gsap } = await import(
-													"gsap"
-												);
-												gsap.fromTo(
-													newItems,
-													{
-														opacity: 0,
-														...(canUseBlur()
-															? {
-																	filter: "blur(12px)",
-																}
-															: {}),
-													},
-													{
-														opacity: 1,
-														...(canUseBlur()
-															? {
-																	filter: "blur(0px)",
-																}
-															: {}),
-														duration: 0.7,
-														ease: "power2.out",
-														stagger: {
-															amount: 0.35,
+												if (window.innerWidth >= 1024) {
+													const { gsap } = await import(
+														"gsap"
+													);
+													gsap.fromTo(
+														newItems,
+														{
+															opacity: 0,
+															...(canUseBlur()
+																? {
+																		filter: "blur(12px)",
+																	}
+																: {}),
 														},
-														clearProps: canUseBlur()
-															? "filter"
-															: "",
-													},
-												);
+														{
+															opacity: 1,
+															...(canUseBlur()
+																? {
+																		filter: "blur(0px)",
+																	}
+																: {}),
+															duration: 0.7,
+															ease: "power2.out",
+															stagger: {
+																amount: 0.35,
+															},
+															clearProps: canUseBlur()
+																? "filter"
+																: "",
+														},
+													);
+												}
 											}
 										}
 									});
@@ -170,23 +174,25 @@
 		await tick();
 		if (!modalEl || !modalImageEl) return;
 
+		if (window.innerWidth < 1024) {
+			return;
+		}
+
 		const { gsap } = await import("gsap");
 		gsap.killTweensOf([modalEl, modalImageEl]);
-
-		const isMobile = !canUseBlur();
 
 		gsap.fromTo(
 			modalEl,
 			{ opacity: 0 },
-			{ opacity: 1, duration: isMobile ? 0.25 : 0.35, ease: "power2.out" },
+			{ opacity: 1, duration: 0.35, ease: "power2.out" },
 		);
 
 		gsap.fromTo(
 			modalImageEl,
 			{
-				scale: isMobile ? 0.95 : 0.7,
+				scale: 0.7,
 				opacity: 0,
-				y: isMobile ? 15 : 40,
+				y: 40,
 				...(canUseBlur() ? { filter: "blur(16px)" } : {}),
 			},
 			{
@@ -194,7 +200,7 @@
 				opacity: 1,
 				y: 0,
 				...(canUseBlur() ? { filter: "blur(0px)" } : {}),
-				duration: isMobile ? 0.35 : 0.55,
+				duration: 0.55,
 				ease: "power3.out",
 				clearProps: canUseBlur() ? "filter" : "",
 			},
@@ -204,18 +210,24 @@
 	async function closeModal() {
 		if (!browser || !modalEl || isClosing) return;
 		isClosing = true;
-		const { gsap } = await import("gsap");
-		const isMobile = !canUseBlur();
 
-		gsap.to(modalEl, { opacity: 0, duration: isMobile ? 0.2 : 0.3, ease: "power2.inOut" });
+		if (window.innerWidth < 1024) {
+			isClosing = false;
+			history.back();
+			return;
+		}
+
+		const { gsap } = await import("gsap");
+
+		gsap.to(modalEl, { opacity: 0, duration: 0.3, ease: "power2.inOut" });
 
 		if (modalImageEl) {
 			gsap.to(modalImageEl, {
-				scale: isMobile ? 0.96 : 0.8,
+				scale: 0.8,
 				opacity: 0,
-				y: isMobile ? 10 : 25,
+				y: 25,
 				...(canUseBlur() ? { filter: "blur(10px)" } : {}),
-				duration: isMobile ? 0.2 : 0.3,
+				duration: 0.3,
 				ease: "power2.inOut",
 				onComplete: () => {
 					isClosing = false;
