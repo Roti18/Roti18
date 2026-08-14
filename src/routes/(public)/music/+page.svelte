@@ -209,7 +209,7 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-	class="max-w-5xl mx-auto px-6 py-12 space-y-8"
+	class="max-w-5xl mx-auto px-6 py-12"
 	onmouseleave={handleRowMouseLeave}
 >
 	<div class="blur-fade-in overflow-x-auto -mx-3">
@@ -301,19 +301,24 @@
 						>
 					</tr>
 				{/each}
+
+				<!-- Infinite Scroll Trigger Element -->
+				{#if hasMore}
+				<tr bind:this={loadMoreEl}>
+					<td colspan="4" class="py-8">
+						<div class="flex items-center justify-center h-5">
+							{#if loadingMore}
+								<Loader2 class="w-5 h-5 text-[#666] animate-spin" />
+							{/if}
+						</div>
+					</td>
+				</tr>
+				{/if}
 			</tbody>
 		</table>
 	</div>
 
-	<!-- Infinite Scroll Trigger Element -->
-	<div
-		bind:this={loadMoreEl}
-		class="w-full h-20 flex items-center justify-center pt-8"
-	>
-		{#if loadingMore}
-			<Loader2 class="w-5 h-5 text-[#666] animate-spin" />
-		{/if}
-	</div>
+
 
 	<!-- Vinyl Grooves "Picture Disc" in a Frosted Glass Sleeve -->
 	<div
@@ -324,7 +329,7 @@
 		{#if currentTrack}
 			<!-- Spinning Picture Disc Vinyl -->
 			<div
-				class="relative w-40 h-40 rounded-full overflow-hidden border-[4px] border-[#0a0a0a] shadow-[0_8px_16px_rgba(0,0,0,0.6)] shrink-0 animate-[spin_5s_linear_infinite]"
+				class="relative w-40 h-40 rounded-full overflow-hidden border-4 border-[#0a0a0a] shadow-[0_8px_16px_rgba(0,0,0,0.6)] shrink-0 animate-[spin_5s_linear_infinite]"
 			>
 				<!-- Cover Art (The Picture) -->
 				{#if currentTrack.coverUrl}
@@ -335,7 +340,7 @@
 					/>
 				{:else}
 					<div
-						class="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-700"
+						class="w-full h-full bg-linear-to-br from-indigo-500 to-purple-700"
 					></div>
 				{/if}
 
