@@ -15,7 +15,8 @@
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
 		"db:seed": "npx tsx src/lib/server/db/seed.ts",
-		"db:seed:reset": "npx tsx src/lib/server/db/seed.ts --reset"
+		"db:seed:reset": "npx tsx src/lib/server/db/seed.ts --reset",
+		"db:seed:academics": "npx tsx src/lib/server/db/seed-academics.ts"
 	},
 	"devDependencies": {
 		"@libsql/client": "^0.17.3",
