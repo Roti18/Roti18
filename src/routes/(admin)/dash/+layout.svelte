@@ -7,6 +7,7 @@
 		FileText,
 		FolderGit2,
 		UserCheck,
+		Users,
 		Image,
 		GraduationCap,
 		Music,
@@ -54,6 +55,7 @@
 		{
 			label: "System",
 			items: [
+				{ href: "/dash/users", label: "User Logins", icon: Users },
 				{ href: "/dash/settings", label: "Settings", icon: Settings }
 			]
 		}
