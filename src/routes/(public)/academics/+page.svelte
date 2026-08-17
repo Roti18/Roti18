@@ -3,7 +3,7 @@
 	import { goto } from "$app/navigation";
 	import { onDestroy } from "svelte";
 	import { browser } from "$app/environment";
-	import SEO from '$lib/components/public/SEO.svelte';
+	import SEO from "$lib/components/public/SEO.svelte";
 
 	import AuthModal from "$lib/components/AuthModal.svelte";
 	import { Lock, LogIn } from "lucide-svelte";
@@ -101,7 +101,7 @@
 	}
 </script>
 
-<SEO 
+<SEO
 	title="Academics - M. Roni"
 	description="Academic resources archive - semesters, courses, and materials."
 />
@@ -171,7 +171,7 @@
 											>{course.title}</span
 										>
 										<span class="text-xs text-[#666666]"
-											>({course.dosenName})</span
+											>{course.dosenName}</span
 										>
 									</button>
 
