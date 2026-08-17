@@ -59,7 +59,7 @@
 
 		{#if data.project.thumbnailUrl || data.project.originalUrl}
 			<div class="rounded-xl overflow-hidden border border-[#1f1f1f]">
-				<img src={data.project.originalUrl || data.project.thumbnailUrl} alt={data.project.title} loading="lazy" class="w-full h-auto block" />
+				<img draggable="false" oncontextmenu={(e) => e.preventDefault()} src={data.project.originalUrl || data.project.thumbnailUrl} alt={data.project.title} loading="lazy" class="select-none w-full h-auto block" />
 			</div>
 		{/if}
 
