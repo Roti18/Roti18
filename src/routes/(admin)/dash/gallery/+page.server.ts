@@ -23,6 +23,10 @@ export const actions: Actions = {
 		const slug = formData.get('slug')?.toString().trim() || title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 		const imageUrl = formData.get('imageUrl')?.toString().trim();
 		const originalUrl = formData.get('originalUrl')?.toString().trim() || null;
+		const widthStr = formData.get('width')?.toString();
+		const heightStr = formData.get('height')?.toString();
+		const width = widthStr ? parseInt(widthStr) : 0;
+		const height = heightStr ? parseInt(heightStr) : 0;
 		const shortDesc = formData.get('shortDesc')?.toString().trim() || null;
 		const cameraDesc = formData.get('cameraDesc')?.toString().trim() || null;
 		const locationName = formData.get('locationName')?.toString().trim() || null;
@@ -46,6 +50,8 @@ export const actions: Actions = {
 			title,
 			imageUrl,
 			originalUrl,
+			width,
+			height,
 			shortDesc,
 			cameraDesc,
 			locationName,
@@ -62,6 +68,10 @@ export const actions: Actions = {
 		const slug = formData.get('slug')?.toString().trim();
 		const imageUrl = formData.get('imageUrl')?.toString().trim();
 		const originalUrl = formData.get('originalUrl')?.toString().trim() || null;
+		const widthStr = formData.get('width')?.toString();
+		const heightStr = formData.get('height')?.toString();
+		const width = widthStr ? parseInt(widthStr) : undefined;
+		const height = heightStr ? parseInt(heightStr) : undefined;
 		const shortDesc = formData.get('shortDesc')?.toString().trim() || null;
 		const cameraDesc = formData.get('cameraDesc')?.toString().trim() || null;
 		const locationName = formData.get('locationName')?.toString().trim() || null;
@@ -99,6 +109,8 @@ export const actions: Actions = {
 				slug: slug || undefined,
 				imageUrl,
 				originalUrl,
+				width: width !== undefined ? width : undefined,
+				height: height !== undefined ? height : undefined,
 				shortDesc,
 				cameraDesc,
 				locationName,
