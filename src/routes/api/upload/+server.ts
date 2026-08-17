@@ -69,10 +69,27 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					width = metadata.width || 0;
 					height = metadata.height || 0;
 
-					const webpBuffer = await image.webp({ quality: 82 }).toBuffer();
+					// 1. Raw Backup: Store the untouched original just in case, but don't return it for UI
+					await storage.upload(buffer, rawFilename, mimeType, folderParam);
 
-					originalObj = await storage.upload(buffer, rawFilename, mimeType, folderParam);
-					optimizedObj = await storage.upload(webpBuffer, webpFilename, 'image/webp', folderParam);
+					// 2. Modal Image: High Quality WebP (90%) for full screen viewing
+					const modalImage = sharp(buffer).rotate();
+					if (width > 2560) {
+						modalImage.resize({ width: 2560, withoutEnlargement: true });
+					}
+					const modalBuffer = await modalImage.webp({ quality: 90 }).toBuffer();
+					const modalFilename = isAvatar ? `avatar-modal.webp` : `${baseName}${uuid}-modal.webp`;
+					originalObj = await storage.upload(modalBuffer, modalFilename, 'image/webp', folderParam);
+
+					// 3. Grid Image: Smaller WebP (80%) for fast grid loading
+					const gridImage = sharp(buffer).rotate();
+					if (width > 800) {
+						gridImage.resize({ width: 800, withoutEnlargement: true });
+					}
+					const gridBuffer = await gridImage.webp({ quality: 80 }).toBuffer();
+					const gridFilename = isAvatar ? `avatar-grid.webp` : `${baseName}${uuid}-grid.webp`;
+					optimizedObj = await storage.upload(gridBuffer, gridFilename, 'image/webp', folderParam);
+
 				} catch (e) {
 					console.warn('[Sharp] Image processing error, storing original instead:', e);
 					const fallbackFilename = isAvatar ? `avatar${ext}` : `${baseName}${uuid}${ext}`;
