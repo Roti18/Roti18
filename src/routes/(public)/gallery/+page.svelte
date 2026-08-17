@@ -5,7 +5,7 @@
 	import { page } from "$app/state";
 	import { canUseBlur } from "$lib/utils/perf";
 	import { formatDate } from "$lib/utils/format";
-	import { Camera, Calendar, MapPin } from "lucide-svelte";
+	import { Camera, Calendar, MapPin, X } from "lucide-svelte";
 
 	import SEO from "$lib/components/public/SEO.svelte";
 
@@ -108,9 +108,8 @@
 												);
 											if (newItems.length > 0) {
 												if (window.innerWidth >= 1024) {
-													const { gsap } = await import(
-														"gsap"
-													);
+													const { gsap } =
+														await import("gsap");
 													gsap.fromTo(
 														newItems,
 														{
@@ -133,9 +132,10 @@
 															stagger: {
 																amount: 0.35,
 															},
-															clearProps: canUseBlur()
-																? "filter"
-																: "",
+															clearProps:
+																canUseBlur()
+																	? "filter"
+																	: "",
 														},
 													);
 												}
@@ -277,40 +277,138 @@
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-8">
 	<div
-		class="flex flex-wrap gap-3 md:gap-4 after:content-[''] after:flex-grow-[9999]"
+		class="flex flex-col gap-24 md:gap-40"
 		bind:this={gridEl}
 		id="gallery-grid"
 	>
-		{#each loadedPhotos as photo (photo.id)}
-			{@const ratio = photo.width && photo.height ? photo.width / photo.height : 1}
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div
-				class="gallery-item group relative overflow-hidden rounded-xl bg-[#141414] cursor-pointer text-left border border-[#1f1f1f] shadow-lg transform-gpu"
-				style="flex-grow: {ratio}; flex-basis: calc({ratio} * var(--base-height)); aspect-ratio: {ratio};"
-				onclick={() => openPhoto(photo)}
-				id="gallery-{photo.slug}"
-			>
-				<img
-					src={photo.imageUrl}
-					alt={photo.title}
-					decoding="async"
-					{...photo.width && photo.height
-						? { width: photo.width, height: photo.height }
-						: {}}
-					onload={(e) => e.currentTarget.classList.remove('opacity-0', 'scale-[1.05]')}
-					class="w-full h-full object-cover opacity-0 scale-[1.05] group-hover:scale-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]"
-				/>
-				<div
-					class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 md:p-5"
-				>
-					<span
-						class="text-sm md:text-base font-medium text-white font-['Space_Grotesk'] translate-y-2 group-hover:translate-y-0 transition-transform duration-300"
-					>
-						{photo.title}
-					</span>
+		{#each loadedPhotos as photo, i (photo.id)}
+			{@const isPortrait = photo.width && photo.height && photo.height > photo.width}
+			{@const pattern = i % 4}
+			
+			{#if pattern === 0}
+				<!-- Image Left (Large), Text Right (Centered) -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="gallery-item flex flex-col md:flex-row items-center gap-8 md:gap-16 group cursor-pointer" onclick={() => openPhoto(photo)}>
+					<div class="w-full md:w-3/5 overflow-hidden rounded-xl bg-[#141414] shadow-2xl relative">
+						<img draggable="false" oncontextmenu={(e) => e.preventDefault()} src={photo.originalUrl || photo.imageUrl} alt={photo.title} class="select-none w-full h-auto object-cover opacity-0 scale-[1.03] group-hover:scale-100 transition-all duration-700 ease-out" onload={(e) => e.currentTarget.classList.remove('opacity-0', 'scale-[1.03]')}/>
+					</div>
+					<div class="w-full md:w-2/5 space-y-4 md:pr-8">
+						<div class="flex items-center gap-3 text-[#888888] text-[10px] font-mono uppercase tracking-widest mb-2">
+							{#if photo.locationName}<span>{photo.locationName}</span>{/if}
+							<div class="w-8 h-px bg-[#333]"></div>
+							<span class="text-[#ededed]">{(i+1).toString().padStart(2, '0')}</span>
+						</div>
+						<h2 class="text-4xl md:text-5xl font-bold text-[#ededed] font-['Space_Grotesk'] tracking-tighter leading-[1.1] group-hover:text-white transition-colors">
+							{photo.title}
+						</h2>
+						{#if photo.shortDesc}
+							<p class="text-base text-[#a1a1a1] leading-relaxed pt-2">{photo.shortDesc}</p>
+						{/if}
+						{#if photo.cameraDesc || photo.createdAt}
+							<div class="flex items-center gap-3 pt-4 text-[10px] text-[#666] font-mono uppercase tracking-wider whitespace-nowrap overflow-x-auto w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+								{#if photo.cameraDesc}<span>{photo.cameraDesc}</span>{/if}
+								{#if photo.cameraDesc && photo.createdAt}<span class="opacity-40">|</span>{/if}
+								{#if photo.createdAt}<span>{formatDate(new Date(photo.createdAt))}</span>{/if}
+							</div>
+						{/if}
+					</div>
 				</div>
-			</div>
+			
+			{:else if pattern === 1}
+				<!-- Text Left, Image Right (Portrait-ish or offset) -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="gallery-item flex flex-col md:flex-row items-center gap-8 md:gap-16 group cursor-pointer" onclick={() => openPhoto(photo)}>
+					<div class="w-full md:w-2/5 space-y-4 md:pl-8 order-2 md:order-1 text-left md:text-right flex flex-col md:items-end">
+						<div class="flex items-center justify-start md:justify-end gap-3 text-[#888888] text-[10px] font-mono uppercase tracking-widest mb-2">
+							{#if photo.locationName}<span>{photo.locationName}</span>{/if}
+							<div class="w-8 h-px bg-[#333]"></div>
+							<span class="text-[#ededed]">{(i+1).toString().padStart(2, '0')}</span>
+						</div>
+						<h2 class="text-4xl md:text-5xl font-bold text-[#ededed] font-['Space_Grotesk'] tracking-tighter leading-[1.1] group-hover:text-white transition-colors">
+							{photo.title}
+						</h2>
+						{#if photo.shortDesc}
+							<p class="text-base text-[#a1a1a1] leading-relaxed pt-2">{photo.shortDesc}</p>
+						{/if}
+						{#if photo.cameraDesc || photo.createdAt}
+							<div class="flex items-center md:justify-end gap-3 pt-4 text-[10px] text-[#666] font-mono uppercase tracking-wider whitespace-nowrap overflow-x-auto w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+								{#if photo.cameraDesc}<span>{photo.cameraDesc}</span>{/if}
+								{#if photo.cameraDesc && photo.createdAt}<span class="opacity-40">|</span>{/if}
+								{#if photo.createdAt}<span>{formatDate(new Date(photo.createdAt))}</span>{/if}
+							</div>
+						{/if}
+					</div>
+					<div class="w-full md:w-3/5 overflow-hidden rounded-xl bg-[#141414] shadow-2xl relative order-1 md:order-2 md:ml-auto">
+						<img draggable="false" oncontextmenu={(e) => e.preventDefault()} src={photo.originalUrl || photo.imageUrl} alt={photo.title} class="select-none w-full h-auto object-cover opacity-0 scale-[1.03] group-hover:scale-100 transition-all duration-700 ease-out" onload={(e) => e.currentTarget.classList.remove('opacity-0', 'scale-[1.03]')}/>
+					</div>
+				</div>
+
+			{:else if pattern === 2}
+				<!-- Wide Image Center, Text Below Split -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="gallery-item flex flex-col gap-6 group cursor-pointer w-full md:w-[95%] mx-auto" onclick={() => openPhoto(photo)}>
+					<div class="w-full overflow-hidden rounded-xl bg-[#141414] shadow-2xl relative flex justify-center">
+						<img draggable="false" oncontextmenu={(e) => e.preventDefault()} src={photo.originalUrl || photo.imageUrl} alt={photo.title} class="select-none w-full h-auto {isPortrait ? '' : 'max-h-[70vh]'} object-cover opacity-0 scale-[1.03] group-hover:scale-100 transition-all duration-700 ease-out" onload={(e) => e.currentTarget.classList.remove('opacity-0', 'scale-[1.03]')}/>
+					</div>
+					<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+						<div class="space-y-2 md:w-1/2">
+							<div class="flex items-center gap-3 text-[#888888] text-[10px] font-mono uppercase tracking-widest mb-1">
+								{#if photo.locationName}<span>{photo.locationName}</span>{/if}
+								<div class="w-8 h-px bg-[#333]"></div>
+								<span class="text-[#ededed]">{(i+1).toString().padStart(2, '0')}</span>
+							</div>
+							<h2 class="text-4xl md:text-5xl font-bold text-[#ededed] font-['Space_Grotesk'] tracking-tighter leading-[1.1] group-hover:text-white transition-colors">
+								{photo.title}
+							</h2>
+						</div>
+						<div class="md:w-1/2 flex flex-col md:items-end gap-2 text-left md:text-right">
+							{#if photo.shortDesc}
+								<p class="text-base text-[#a1a1a1] leading-relaxed max-w-sm">{photo.shortDesc}</p>
+							{/if}
+							{#if photo.cameraDesc || photo.createdAt}
+								<div class="flex items-center md:justify-end gap-3 pt-2 text-[10px] text-[#666] font-mono uppercase tracking-wider whitespace-nowrap overflow-x-auto w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+									{#if photo.cameraDesc}<span>{photo.cameraDesc}</span>{/if}
+									{#if photo.cameraDesc && photo.createdAt}<span class="opacity-40">|</span>{/if}
+									{#if photo.createdAt}<span>{formatDate(new Date(photo.createdAt))}</span>{/if}
+								</div>
+							{/if}
+						</div>
+					</div>
+				</div>
+
+			{:else}
+				<!-- Image Right (Small), Text Left (Massive) -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="gallery-item flex flex-col md:flex-row items-center gap-8 md:gap-12 group cursor-pointer w-full md:w-[90%] mx-auto" onclick={() => openPhoto(photo)}>
+					<div class="w-full md:w-1/2 space-y-5 order-2 md:order-1 md:pr-12">
+						<div class="flex items-center gap-3 text-[#888888] text-[10px] font-mono uppercase tracking-widest">
+							{#if photo.locationName}<span>{photo.locationName}</span>{/if}
+							<div class="w-8 h-px bg-[#333]"></div>
+							<span class="text-[#ededed]">{(i+1).toString().padStart(2, '0')}</span>
+						</div>
+						<h2 class="text-5xl md:text-7xl font-bold text-[#ededed] font-['Space_Grotesk'] tracking-tighter leading-[0.95] group-hover:text-white transition-colors">
+							{photo.title}
+						</h2>
+						{#if photo.shortDesc}
+							<p class="text-lg text-[#a1a1a1] leading-relaxed pt-2">{photo.shortDesc}</p>
+						{/if}
+						{#if photo.cameraDesc || photo.createdAt}
+							<div class="flex items-center gap-3 pt-2 text-[10px] text-[#666] font-mono uppercase tracking-wider whitespace-nowrap overflow-x-auto w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+								{#if photo.cameraDesc}<span>{photo.cameraDesc}</span>{/if}
+								{#if photo.cameraDesc && photo.createdAt}<span class="opacity-40">|</span>{/if}
+								{#if photo.createdAt}<span>{formatDate(new Date(photo.createdAt))}</span>{/if}
+							</div>
+						{/if}
+					</div>
+					<div class="w-full md:w-1/2 overflow-hidden rounded-xl bg-[#141414] shadow-2xl relative order-1 md:order-2">
+						<img draggable="false" oncontextmenu={(e) => e.preventDefault()} src={photo.originalUrl || photo.imageUrl} alt={photo.title} class="select-none w-full h-auto object-cover opacity-0 scale-[1.03] group-hover:scale-100 transition-all duration-700 ease-out" onload={(e) => e.currentTarget.classList.remove('opacity-0', 'scale-[1.03]')}/>
+					</div>
+				</div>
+			{/if}
 		{/each}
 	</div>
 	<div
@@ -336,24 +434,81 @@
 		onmousemove={handleMouseMove}
 	>
 		<div
-			class="relative max-w-6xl max-h-[90vh] w-full flex {isPortrait ? 'flex-col md:flex-row md:items-center' : 'flex-col items-center'} justify-center gap-6 md:gap-8 cursor-default mx-auto transform-gpu"
+			class="relative max-w-6xl max-h-[90vh] w-full flex {isPortrait
+				? 'flex-col md:flex-row md:items-center'
+				: 'flex-col items-center'} justify-center gap-6 md:gap-8 cursor-default mx-auto transform-gpu"
 			onclick={(e) => e.stopPropagation()}
 			bind:this={modalImageEl}
 		>
-			<img
-				src={selectedPhoto.originalUrl || selectedPhoto.imageUrl}
-				alt={selectedPhoto.title}
-				decoding="async"
-				class="max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-[#2a2a2a]"
-				bind:clientWidth={imgWidth}
-				bind:clientHeight={imgHeight}
-			/>
+			<div class="relative w-fit h-fit flex-shrink-0">
+				<img
+					draggable="false"
+					oncontextmenu={(e) => e.preventDefault()}
+					src={selectedPhoto.originalUrl || selectedPhoto.imageUrl}
+					alt={selectedPhoto.title}
+					decoding="async"
+					class="select-none max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-[#2a2a2a]"
+					bind:clientWidth={imgWidth}
+					bind:clientHeight={imgHeight}
+				/>
+				<!-- Close Button -->
+				<button
+					class="absolute top-3 right-3 md:top-4 md:right-4 z-[60] p-2 rounded-full bg-[#111]/80 hover:bg-[#222] border border-[#333] text-[#ededed] backdrop-blur-md cursor-pointer flex items-center justify-center transition-colors shadow-lg"
+					onclick={(e) => {
+						e.stopPropagation();
+						closeModal();
+					}}
+					onmouseenter={(e) => {
+						const icon = e.currentTarget.querySelector('svg');
+						if(icon) {
+							import('gsap').then(({ gsap }) => {
+								gsap.to(icon, { rotation: 90, scale: 1.2, duration: 0.4, ease: 'back.out(2)' });
+							});
+						}
+					}}
+					onmouseleave={(e) => {
+						const icon = e.currentTarget.querySelector('svg');
+						if(icon) {
+							import('gsap').then(({ gsap }) => {
+								gsap.to(icon, { rotation: 0, scale: 1, duration: 0.3, ease: 'power2.out' });
+							});
+						}
+					}}
+					onmousedown={(e) => {
+						const icon = e.currentTarget.querySelector('svg');
+						if(icon) {
+							import('gsap').then(({ gsap }) => {
+								gsap.to(icon, { scale: 0.8, duration: 0.1 });
+							});
+						}
+					}}
+					onmouseup={(e) => {
+						const icon = e.currentTarget.querySelector('svg');
+						if(icon) {
+							import('gsap').then(({ gsap }) => {
+								gsap.to(icon, { scale: 1.2, duration: 0.2, ease: 'back.out(2)' });
+							});
+						}
+					}}
+					aria-label="Close modal"
+				>
+					<X class="w-4 h-4 md:w-5 md:h-5" />
+				</button>
+			</div>
 
 			<div
-				class="text-left flex flex-col {isPortrait ? 'justify-center w-full md:w-[260px] lg:w-[300px] shrink-0' : 'md:flex-row md:items-start'} justify-between gap-6 spotlight-mask {isPortrait ? 'mx-0' : 'mx-auto'}"
+				class="text-left flex flex-col {isPortrait
+					? 'justify-center w-full md:w-[260px] lg:w-[300px] shrink-0'
+					: 'md:flex-row md:items-start'} justify-between gap-6 spotlight-mask {isPortrait
+					? 'mx-0'
+					: 'mx-auto'}"
 				bind:this={metaContainer}
-				style:width={isPortrait ? null : (imgWidth ? imgWidth + 'px' : '100%')}
-				style:min-width={isPortrait ? null : 'min(100%, 560px)'}
+				style:width={isPortrait
+					? null
+					: imgWidth
+						? imgWidth + "px"
+						: "100%"}
+				style:min-width={isPortrait ? null : "min(100%, 560px)"}
 			>
 				<div class="space-y-1.5 flex-1">
 					<h2
@@ -371,26 +526,26 @@
 				</div>
 
 				<div
-					class="flex flex-row flex-wrap items-start {isPortrait ? '' : 'md:flex-col md:items-end md:pt-1 md:gap-0'} shrink-0 pt-2 gap-2"
+					class="flex flex-col items-stretch shrink-0 pt-2 gap-2 {isPortrait ? '' : 'md:ml-auto'}"
 				>
 					{#if selectedPhoto.cameraDesc}
 						<div
-							class="flex items-center gap-1.5 md:gap-2 font-mono text-[10px] md:text-xs text-[#ededed] px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-xl {isPortrait ? '' : 'md:rounded-none md:rounded-tl-xl'} {(!selectedPhoto.locationName && !selectedPhoto.createdAt && !isPortrait) ? 'md:rounded-bl-xl' : ''}"
+							class="flex items-center gap-1.5 md:gap-2 font-mono text-[10px] md:text-xs text-[#ededed] px-3 md:px-4 py-1.5 md:py-2 bg-[#222222]/80 backdrop-blur-md rounded-xl"
 						>
-							<Camera class="w-3.5 h-3.5 text-[#a1a1a1]" />
+							<Camera class="w-3.5 h-3.5 md:w-4 md:h-4 text-[#a1a1a1] shrink-0" />
 							<span>{selectedPhoto.cameraDesc}</span>
 						</div>
 					{/if}
 					{#if selectedPhoto.locationName || selectedPhoto.createdAt}
 						<div
-							class="flex items-center flex-wrap gap-2 md:gap-3 px-3 py-1.5 bg-[#222222]/80 backdrop-blur-md w-fit rounded-xl {isPortrait ? '' : 'md:rounded-none md:rounded-bl-xl'}"
+							class="flex items-center flex-wrap gap-2 md:gap-3 px-3 md:px-4 py-1.5 md:py-2 bg-[#222222]/80 backdrop-blur-md rounded-xl"
 						>
 							{#if selectedPhoto.locationName}
 								<div
 									class="flex items-center gap-1.5 md:gap-2 font-mono text-[9px] md:text-xs text-[#ededed]"
 								>
 									<MapPin
-										class="w-3.5 h-3.5 text-[#a1a1a1]"
+										class="w-3.5 h-3.5 md:w-4 md:h-4 text-[#a1a1a1] shrink-0"
 									/>
 									<span>{selectedPhoto.locationName}</span>
 								</div>
@@ -406,7 +561,7 @@
 									class="flex items-center gap-1.5 md:gap-2 font-mono text-[8px] md:text-[10px] text-[#888888] uppercase tracking-wider"
 								>
 									<Calendar
-										class="w-3.5 h-3.5 text-[#555555]"
+										class="w-3.5 h-3.5 md:w-4 md:h-4 text-[#555555] shrink-0"
 									/>
 									<span
 										>{formatDate(
@@ -424,11 +579,6 @@
 {/if}
 
 <style>
-	.gallery-img-anim {
-		transition: opacity 700ms ease-out;
-		will-change: opacity;
-	}
-
 	.gallery-item {
 		--base-height: 120px;
 	}
@@ -442,6 +592,8 @@
 			--base-height: 240px;
 		}
 	}
+
+
 
 	/* Flashlight Spotlight Effect - Disabled on Mobile/Tablet devices and small viewports */
 	@media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
