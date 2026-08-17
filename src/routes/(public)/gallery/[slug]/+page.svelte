@@ -22,12 +22,14 @@
 			{/if}
 			
 			<img
+				draggable="false"
+				oncontextmenu={(e) => e.preventDefault()}
 				src={data.photo.imageUrl}
 				alt={data.photo.title}
 				loading="eager"
 				decoding="async"
 				onload={() => (imageLoaded = true)}
-				class="w-full h-auto block transition-opacity duration-700 {imageLoaded ? 'opacity-100' : 'opacity-0'}"
+				class="select-none w-full h-auto block transition-opacity duration-700 {imageLoaded ? 'opacity-100' : 'opacity-0'}"
 				{...data.photo.width && data.photo.height ? { width: data.photo.width, height: data.photo.height } : {}}
 			/>
 		</div>
