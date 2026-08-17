@@ -16,9 +16,11 @@
 	{#if data.site.avatarUrl}
 		<div class="blur-fade-in mb-6">
 			<img
+					draggable="false"
+					oncontextmenu={(e) => e.preventDefault()}
 					src={data.site.avatarUrl}
 					alt={data.site.fullName}
-					class="w-20 h-20 rounded-full object-cover bg-[#181818]"
+					class="select-none w-20 h-20 rounded-full object-cover bg-[#181818]"
 					width="80"
 					height="80"
 					loading="lazy"
