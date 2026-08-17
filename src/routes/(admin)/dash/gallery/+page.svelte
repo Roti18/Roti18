@@ -14,6 +14,8 @@
 	let editingItem = $state<any>(null);
 	let imageUrl = $state("");
 	let originalUrl = $state("");
+	let width = $state(0);
+	let height = $state(0);
 	let cameraDesc = $state("");
 	let locationName = $state("");
 	let takenAt = $state("");
@@ -32,6 +34,8 @@
 		editingItem = null;
 		imageUrl = "";
 		originalUrl = "";
+		width = 0;
+		height = 0;
 		cameraDesc = "";
 		locationName = "";
 		takenAt = "";
@@ -42,6 +46,8 @@
 		editingItem = item;
 		imageUrl = item.imageUrl || "";
 		originalUrl = item.originalUrl || "";
+		width = item.width || 0;
+		height = item.height || 0;
 		cameraDesc = item.cameraDesc || "";
 		locationName = item.locationName || "";
 		if (item.createdAt) {
@@ -182,9 +188,11 @@
 
 	<input type="hidden" name="imageUrl" value={imageUrl} />
 	<input type="hidden" name="originalUrl" value={originalUrl} />
+	<input type="hidden" name="width" value={width} />
+	<input type="hidden" name="height" value={height} />
 
 	<!-- Dedicated Gallery Photo Uploader (WebP R2) -->
-	<HeroCoverUploader bind:coverUrl={imageUrl} bind:originalUrl={originalUrl} folder="gallery" onExifExtract={(desc, dateStr, loc) => {
+	<HeroCoverUploader bind:coverUrl={imageUrl} bind:originalUrl={originalUrl} bind:width={width} bind:height={height} folder="gallery" onExifExtract={(desc, dateStr, loc) => {
 		if (desc && !cameraDesc) cameraDesc = desc;
 		if (loc && !locationName) locationName = loc;
 		if (dateStr && !takenAt) {
