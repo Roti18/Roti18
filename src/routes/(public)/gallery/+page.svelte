@@ -166,7 +166,7 @@
 
 	function openPhoto(photo: (typeof data.photos)[number]) {
 		const plainPhoto = $state.snapshot(photo);
-		pushState(`/gallery/${photo.slug}`, { photo: plainPhoto });
+		pushState("", { photo: plainPhoto });
 	}
 
 	async function showModal() {
@@ -277,15 +277,17 @@
 
 <div class="max-w-5xl mx-auto px-6 py-12 space-y-8">
 	<div
-		class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+		class="flex flex-wrap gap-3 md:gap-4 after:content-[''] after:flex-grow-[9999]"
 		bind:this={gridEl}
 		id="gallery-grid"
 	>
 		{#each loadedPhotos as photo (photo.id)}
+			{@const ratio = photo.width && photo.height ? photo.width / photo.height : 1}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
-				class="gallery-item group relative aspect-4/3 overflow-hidden rounded-2xl bg-[#141414] cursor-pointer text-left border border-[#1f1f1f] shadow-lg flex items-center justify-center transform-gpu"
+				class="gallery-item group relative overflow-hidden rounded-xl bg-[#141414] cursor-pointer text-left border border-[#1f1f1f] shadow-lg transform-gpu"
+				style="flex-grow: {ratio}; flex-basis: calc({ratio} * var(--base-height)); aspect-ratio: {ratio};"
 				onclick={() => openPhoto(photo)}
 				id="gallery-{photo.slug}"
 			>
@@ -296,16 +298,17 @@
 					{...photo.width && photo.height
 						? { width: photo.width, height: photo.height }
 						: {}}
-					onload={(e) => e.currentTarget.classList.remove('opacity-0')}
-					class="w-full h-full object-cover opacity-0 gallery-img-anim"
+					onload={(e) => e.currentTarget.classList.remove('opacity-0', 'scale-[1.05]')}
+					class="w-full h-full object-cover opacity-0 scale-[1.05] group-hover:scale-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]"
 				/>
 				<div
-					class="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
+					class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 md:p-5"
 				>
 					<span
-						class="text-sm font-medium text-white font-['Space_Grotesk']"
-						>{photo.title}</span
+						class="text-sm md:text-base font-medium text-white font-['Space_Grotesk'] translate-y-2 group-hover:translate-y-0 transition-transform duration-300"
 					>
+						{photo.title}
+					</span>
 				</div>
 			</div>
 		{/each}
@@ -424,6 +427,20 @@
 	.gallery-img-anim {
 		transition: opacity 700ms ease-out;
 		will-change: opacity;
+	}
+
+	.gallery-item {
+		--base-height: 120px;
+	}
+	@media (min-width: 640px) {
+		.gallery-item {
+			--base-height: 180px;
+		}
+	}
+	@media (min-width: 1024px) {
+		.gallery-item {
+			--base-height: 240px;
+		}
 	}
 
 	/* Flashlight Spotlight Effect - Disabled on Mobile/Tablet devices and small viewports */
