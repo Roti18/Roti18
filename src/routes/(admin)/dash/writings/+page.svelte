@@ -58,7 +58,7 @@
 	<PageHeader
 		badgeLabel="Writings Content Manager"
 		title="Articles & Essay Entries"
-		description="Create, edit, publish or unpublish blog writings with WebP R2 image storage & Markdown"
+		description="Create, edit, publish or unpublish blog writings with WebP image storage & Markdown"
 		icon={FileText}
 	>
 		<button
