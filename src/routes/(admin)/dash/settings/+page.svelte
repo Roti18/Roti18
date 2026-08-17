@@ -76,14 +76,14 @@
 		<div class="rounded-2xl border border-[#222222] bg-[#121212] p-6 space-y-4 shadow-xl">
 			<div class="flex items-center gap-2 text-white font-bold font-['Space_Grotesk']">
 				<Database class="w-5 h-5 text-emerald-400" />
-				<span>Turso SQLite DB Health</span>
+				<span>Database Connection Health</span>
 			</div>
 			<p class="text-xs text-[#777777]">Production database connection and status</p>
 
 			<div class="space-y-2 pt-2 text-xs font-mono">
 				<div class="flex items-center justify-between rounded-xl bg-[#161616] p-3 border border-[#262626]">
 					<span class="text-[#888888]">Database Provider</span>
-					<span class="text-white font-bold">Turso libSQL / Drizzle ORM</span>
+					<span class="text-white font-bold">SQL Database / Drizzle ORM</span>
 				</div>
 
 				<div class="flex items-center justify-between rounded-xl bg-[#161616] p-3 border border-[#262626]">
