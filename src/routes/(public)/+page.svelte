@@ -43,6 +43,17 @@
 					<SocialIcon icon={link.icon || link.platform} size={20} />
 				</a>
 			{/each}
+			{#if data.cvUrlEn}
+				<div class="h-4 w-px bg-[#333333] mx-1"></div>
+				<a
+					href={data.cvUrlEn}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-sm font-medium text-[#ededed] hover:underline underline-offset-4"
+				>
+					Resume
+				</a>
+			{/if}
 		</div>
 	</header>
 
