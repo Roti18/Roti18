@@ -17,9 +17,11 @@
 		{#if data.site.avatarUrl}
 			<div class="mb-6">
 				<img
+					draggable="false"
+					oncontextmenu={(e) => e.preventDefault()}
 					src={data.site.avatarUrl}
 					alt={data.site.fullName}
-					class="w-16 h-16 rounded-full object-cover bg-[#181818]"
+					class="select-none w-16 h-16 rounded-full object-cover bg-[#181818]"
 					width="64"
 					height="64"
 					loading="eager"
