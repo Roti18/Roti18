@@ -258,12 +258,14 @@
 								>
 									{#if track.coverUrl}
 										<img
+											draggable="false"
+											oncontextmenu={(e) => e.preventDefault()}
 											src={track.coverUrl}
 											alt={track.title}
 											loading="lazy"
 											decoding="async"
 											referrerpolicy="no-referrer"
-											class="w-full h-full object-cover"
+											class="select-none w-full h-full object-cover"
 										/>
 									{:else}
 										<Disc
@@ -334,9 +336,11 @@
 				<!-- Cover Art (The Picture) -->
 				{#if currentTrack.coverUrl}
 					<img
+						draggable="false"
+						oncontextmenu={(e) => e.preventDefault()}
 						src={currentTrack.coverUrl}
 						alt="Cover"
-						class="w-full h-full object-cover saturate-[1.2]"
+						class="select-none w-full h-full object-cover saturate-[1.2]"
 					/>
 				{:else}
 					<div
