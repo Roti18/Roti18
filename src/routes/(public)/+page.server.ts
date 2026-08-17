@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { writing, project, music } from '$lib/server/db/schema';
 import { eq, desc, asc } from 'drizzle-orm';
 import { getDynamicSiteConfig } from '$lib/server/db/siteConfig';
+import { CV_URL_EN } from '$env/static/private';
 
 export const load: PageServerLoad = async () => {
 	try {
@@ -27,7 +28,8 @@ export const load: PageServerLoad = async () => {
 			site: dynamicSite,
 			recentWritings,
 			projects,
-			recentMusic
+			recentMusic,
+			cvUrlEn: CV_URL_EN
 		};
 	} catch (err) {
 		console.error('Failed to load home data from DB:', err);
@@ -36,7 +38,8 @@ export const load: PageServerLoad = async () => {
 			site: dynamicSite,
 			recentWritings: [],
 			projects: [],
-			recentMusic: []
+			recentMusic: [],
+			cvUrlEn: CV_URL_EN
 		};
 	}
 };
