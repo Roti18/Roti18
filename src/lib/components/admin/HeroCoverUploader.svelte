@@ -2,7 +2,7 @@
 	import { Upload, ImageIcon, Trash2, RefreshCw, Sparkles, FileImage, Check } from "lucide-svelte";
 	import AssetManager from "./AssetManager.svelte";
 
-	let { coverUrl = $bindable(""), originalUrl = $bindable(""), content = "", articleSlug = "new-article", folder = "", onExifExtract = undefined as ((desc: string, dateStr?: string, locationName?: string) => void) | undefined } = $props();
+	let { coverUrl = $bindable(""), originalUrl = $bindable(""), width = $bindable(0), height = $bindable(0), content = "", articleSlug = "new-article", folder = "", onExifExtract = undefined as ((desc: string, dateStr?: string, locationName?: string) => void) | undefined } = $props();
 
 	let uploading = $state(false);
 	let uploadError = $state<string | null>(null);
@@ -91,8 +91,10 @@
 			if (!json.success) {
 				uploadError = json.message || "Upload failed";
 			} else if (json.files && json.files[0]) {
-				coverUrl = json.files[0].optimizedUrl;
+				coverUrl = json.files[0].optimizedUrl || json.files[0].url;
 				originalUrl = json.files[0].originalUrl;
+				if (json.files[0].width) width = json.files[0].width;
+				if (json.files[0].height) height = json.files[0].height;
 			}
 		} catch (err: any) {
 			uploadError = err.message || "Upload error";
