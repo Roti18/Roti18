@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
 import { music } from '$lib/server/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, desc, notInArray } from 'drizzle-orm';
 import { env } from '$env/dynamic/private';
 
 // CORS is enforced by the browser BEFORE the POST is sent (preflight OPTIONS).
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		let targetTrack = null;
 
 		if (existingTracks.length > 0) {
-			// Update timestamp and optional metadata
+			// Update timestamp and optional metadata (Keeps only 1 row per unique song to prevent DB bloat)
 			const existing = existingTracks[0];
 			await db
 				.update(music)
